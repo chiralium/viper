@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 /*
  * The functions which terminate the program with specific exceptions
  */
