@@ -82,10 +82,10 @@ Array ** recursive_descent(char * input_stream) {
             char * nodes = cut_complex_structure(input_stream);
             Array ** structure_nodes = recursive_descent(nodes);
             code_structure = append(code_structure, ARRAY, structure_nodes);
-        } else {
+        } else if (!is_ignored(*input_stream)) {
             char * node = cut_structure_node(input_stream);
             if (*node) code_structure = append(code_structure, STRING, node);
-        }
+        } else pop_up(input_stream);
     }
     return code_structure;
 }
@@ -108,4 +108,14 @@ char pop_up(char * input_stream) {
         strcpy(input_stream - 1, input_stream);
     } else symbol = '\0';
     return symbol;
+}
+
+int is_ignored(char symbol) {
+    switch (symbol) {
+        case FPARSER_SPACE:
+            return 1;
+        case FPARSER_EOL:
+            return 1;
+    }
+    return 0;
 }

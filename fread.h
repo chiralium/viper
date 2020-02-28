@@ -45,4 +45,7 @@ char * alloc_structure(char * structure);
 /* Pop up the first element of input_stream */
 char pop_up(char * input_stream);
 
+/* The symbols is ignored? */
+int is_ignored(char symbol);
+
 #endif //VIPER_V4_FREAD_H
