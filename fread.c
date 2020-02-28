@@ -32,11 +32,12 @@ char * readfile(char * filename) {
 
 char * cut_structure_node(char * input_stream) {
     char stack_tmp_node[FPARSER_MAX_STRUCT_LEN + 1]; char symbol;
-    int node_counter = 0;
+    int node_counter = 0; int quote_counter = 0;
 
     while (symbol = pop_up(input_stream)) {
-        if (symbol != FPARSER_NODE_DELIMITER && symbol != FPARSER_NODE_DELIMITER_2) stack_tmp_node[node_counter++] = symbol;
-        else break;
+        if (symbol == FPARSER_QUOTE) (!quote_counter)  ? quote_counter++ : quote_counter--;
+        if (!quote_counter && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
+        else stack_tmp_node[node_counter++] = symbol;
     }
     stack_tmp_node[node_counter] = '\0';
     char * node = alloc_structure(stack_tmp_node);
