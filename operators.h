@@ -13,4 +13,7 @@
 #define OP_OPEN_CBRACK  '('
 #define OP_CLOSE_CBRACK ')'
 
+#define OP_QUOTE '"'
+#define OP_SPACE ' '
+
 #endif //VIPER_V4_OPERATORS_H

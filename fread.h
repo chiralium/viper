@@ -40,7 +40,7 @@ char * cut_complex_structure(char * input_stream);
 Array ** recursive_descent(char * input_stream);
 
 /* Allocated the memory for structure */
-char * alloc_structure(char * structure);
+char * alloc_string(char * structure);
 
 /* Pop up the first element of input_stream */
 char pop_up(char * input_stream);

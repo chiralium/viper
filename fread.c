@@ -40,7 +40,7 @@ char * cut_structure_node(char * input_stream) {
         else stack_tmp_node[node_counter++] = symbol;
     }
     stack_tmp_node[node_counter] = '\0';
-    char * node = alloc_structure(stack_tmp_node);
+    char * node = alloc_string(stack_tmp_node);
     return node;
 }
 
@@ -70,7 +70,7 @@ char * cut_complex_structure(char * input_stream) {
     }
 
     stack_tmp_structure[node_counter] = '\0';
-    char * complex_structure = alloc_structure(stack_tmp_structure);
+    char * complex_structure = alloc_string(stack_tmp_structure);
     return complex_structure;
 }
 
@@ -92,7 +92,7 @@ Array ** recursive_descent(char * input_stream) {
 
 /* Environment tools */
 
-char * alloc_structure(char stack_tmp_structure[FPARSER_MAX_STRUCT_LEN + 1]) {
+char * alloc_string(char stack_tmp_structure[FPARSER_MAX_STRUCT_LEN + 1]) {
     size_t size = 0;
     while (stack_tmp_structure[size]) size++;
     char * structure; structure = (char *)calloc(size + 1, sizeof(char));

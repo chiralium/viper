@@ -1,1 +1,16 @@
-if (a > 2) : {1}else: {2};
+function f(y): {
+  if (a > 2): {
+    function foo(x): {
+      printf("woohoo");
+      exit(0);
+    }
+  } else: {
+    return(0);
+  }
+}
+
+instruction1;
+instruction2;
+if (f(y)): {
+  instruction12;
+}
