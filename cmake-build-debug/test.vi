@@ -14,3 +14,4 @@ instruction2;
 if (f(y)): {
   instruction12;
 }
+(1+2) * 3;

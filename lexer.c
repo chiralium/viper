@@ -12,8 +12,11 @@ char * cut_expression(char * literal) {
 char * cut_keyword(char * literal) {
     char stack_tmp[LEXER_MAX_VALUE + 1]; char symbol;
     int tmp_counter = 0;
-    while (symbol = pop_up(literal)) {
-        if (!is_special(symbol)) stack_tmp[tmp_counter++] = symbol;
+    while (*literal) {
+        if (!is_special(*literal)) {
+            symbol = pop_up(literal);
+            stack_tmp[tmp_counter++] = symbol;
+        }
         else break;
     }
     stack_tmp[tmp_counter] = '\0';
@@ -63,6 +66,8 @@ int is_special(char symbol) {
         case OP_MINUS:
         case OP_MUL:
         case OP_DIV:
+        case OP_CLOSE_CBRACK:
+        case OP_OPEN_CBRACK:
         case OP_QUOTE:
         case OP_SPACE:
             return 1;
