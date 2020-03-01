@@ -1,61 +1,56 @@
 #include "lexer.h"
 
-char * cut_expression(char * literal) {
+char * cut_token(char * literal, char stop_symbol) {
     char stack_tmp[LEXER_MAX_VALUE + 1]; char symbol;
     int tmp_counter = 0;
-    while (symbol = pop_up(literal)) stack_tmp[tmp_counter++] = symbol;
-    stack_tmp[tmp_counter] = '\0';
-    char * expression_value = alloc_string(stack_tmp);
-    return expression_value;
-}
-
-char * cut_keyword(char * literal) {
-    char stack_tmp[LEXER_MAX_VALUE + 1]; char symbol;
-    int tmp_counter = 0;
-    while (*literal) {
-        if (!is_special(*literal)) {
-            symbol = pop_up(literal);
-            stack_tmp[tmp_counter++] = symbol;
-        }
-        else break;
+    while (symbol = pop_up(literal)) {
+        if (symbol == stop_symbol) break;
+        else stack_tmp[tmp_counter++] = symbol;
     }
     stack_tmp[tmp_counter] = '\0';
-    char * keyword_token = alloc_string(stack_tmp);
-    return keyword_token;
+    char * token_value = alloc_string(stack_tmp);
+    return token_value;
+}
+
+Array ** extract_token(char * literal, Array ** tokens) {
+    char * token_value = cut_token(literal, OP_SPACE);
+    if (is_keyword(token_value)) {
+        char * keyword_param = cut_token(literal, '\0');
+        Token * keyword_token = (Token *)malloc(sizeof(Token));
+        keyword_token->type_id = LEXER_KEYWORD_TK;
+        keyword_token->value = token_value;
+
+        Token * keyword_param_token = (Token *)malloc(sizeof(Token));
+        keyword_param_token->type_id = LEXER_KEYWORD_PARAM_TK;
+        keyword_param_token->value = keyword_param;
+
+        tokens = append(tokens, TOKEN, keyword_token);
+        tokens = append(tokens, TOKEN, keyword_param_token);
+    } else {
+        strcat(token_value, cut_token(literal, '\0'));
+        Token * expression_token = (Token *)malloc(sizeof(Token));
+        expression_token->type_id = LEXER_EXPRESSION_TK;
+        expression_token->value = token_value;
+        tokens = append(tokens, TOKEN, expression_token);
+    }
+    return tokens;
 }
 
 Array ** lexer(Array ** literals) {
-    Array ** tokens = (Array **)calloc(LEXER_MAX_TOKENS, sizeof(Token *));
-    int literal_counter = 0;
-    while (literals[literal_counter]) {
-        /* if the literal is an array it means that literals is a structure complex token, which contained the other types of tokens */
-        if (literals[literal_counter] -> type_id != ARRAY) {
-            char *literal = (char *) (literals[literal_counter]->element);
-            while (*literal) {
-                /* Check is the first symbol of literal is an alphabetical symbol */
-                if (!is_special(*literal) && !isdigit(*literal)) {
-                    char *potential_keyword_tk = cut_keyword(literal);
-                    Token *token = (Token *) malloc(sizeof(Token));
-                    token->value = potential_keyword_tk;
-                    if (is_keyword(potential_keyword_tk)) token->type_id = LEXER_KEYWORD_TK;
-                    else token->type_id = LEXER_EXPRESSION_TK;
-                    tokens = append(tokens, TOKEN, token);
-                } else {
-                    /* Else, if the first symbol is not alphabetical it mean the token is a expression */
-                    char *expression_tk = cut_expression(literal);
-                    Token *token = (Token *) malloc(sizeof(Token));
-                    token->value = expression_tk;
-                    token->type_id = LEXER_EXPRESSION_TK;
-                    tokens = append(tokens, TOKEN, token);
-                }
-            }
+    Array ** tokens = new_array();
+    int literals_counter = 0;
+    while (literals[literals_counter]) {
+        if (literals[literals_counter] -> type_id != ARRAY) {
+            char * literal = (char *)(literals[literals_counter] -> element);
+            tokens = extract_token(literal, tokens);
         } else {
-            Token *token = (Token *)malloc(sizeof(Token));
-            token->value = literals[literal_counter] -> element;
-            token->type_id = LEXER_COMPLEX_TK;
-            tokens = append(tokens, COMPLEX_TOKEN, token);
+            /* It means the literal is a complex token which can contain the other types of tokens */
+            Token * complex_token = (Token *)malloc(sizeof(Token));
+            complex_token->type_id = LEXER_COMPLEX_TK;
+            complex_token->value = literals[literals_counter];
+            tokens = append(tokens, COMPLEX_TOKEN, complex_token);
         }
-        literal_counter++;
+        literals_counter++;
     }
     return tokens;
 }

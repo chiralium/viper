@@ -11,12 +11,12 @@
 #define VIPER_V4_LEXER_H
 
 /* Token types */
-#define LEXER_KEYWORD_TK    1
-#define LEXER_EXPRESSION_TK 2
-#define LEXER_COMPLEX_TK    3
+#define LEXER_KEYWORD_TK       1
+#define LEXER_KEYWORD_PARAM_TK 4
+#define LEXER_EXPRESSION_TK    2
+#define LEXER_COMPLEX_TK       3
 
 /* Lexer parameters */
-#define LEXER_MAX_TOKENS 100
 #define LEXER_MAX_VALUE  255
 
 /*
@@ -30,11 +30,11 @@ typedef struct Token {
 /* The main lexer function */
 Array ** lexer(Array ** literals);
 
-/* The function cut_keyword divide the string by tokens at LEXER_KEYWORD_TK and LEXER_EXPRESSION_TK */
-char * cut_keyword(char * literal);
+/* The function will extracting a token from a string and store it in the array of tokens */
+Array ** extract_token(char * literal, Array ** tokens);
 
-/* The function will cutting the expression token */
-char * cut_expression(char * literal);
+/* The function will cut the substring while not meet the stop symbol */
+char * cut_token(char * literal, char stop_symbol);
 
 /* The function return 1 if the symbol is special symbols as +, -, ", etc. */
 int is_special(char symbol);
