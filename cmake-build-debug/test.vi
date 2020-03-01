@@ -16,4 +16,4 @@ if (f(y)): {
 }
 (1+2) * 3;
 a = 1;
-string = "Hello world;"
+string = "Hello world;";

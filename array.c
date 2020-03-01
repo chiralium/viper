@@ -1,4 +1,5 @@
 #include "array.h"
+#include "lexer.h"
 
 Array ** new_array(void) {
     Array **_array = (Array **)calloc(2, sizeof(Array *));
@@ -69,6 +70,7 @@ void array_destructor(Array **_array) {
     int i = 0;
     while (_array[i]) {
         if (_array[i] -> type_id == ARRAY) array_destructor(_array[i] -> element);
+        else if (_array[i] -> type_id == TOKEN) token_destructor(_array[i] -> element);
         else free(_array[i] -> element);
         free(_array[i]);
         i++;

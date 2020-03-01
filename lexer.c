@@ -27,7 +27,10 @@ Array ** extract_token(char * literal, Array ** tokens) {
         tokens = append(tokens, TOKEN, keyword_token);
         tokens = append(tokens, TOKEN, keyword_param_token);
     } else {
-        strcat(token_value, cut_token(literal, '\0'));
+        char * token_part = cut_token(literal, '\0'); char stack_tmp[LEXER_MAX_VALUE + 1];
+        strcpy(stack_tmp, token_value); strcat(stack_tmp, token_part);
+        free(token_part); free(token_value);
+        token_value = alloc_string(stack_tmp);
         Token * expression_token = (Token *)malloc(sizeof(Token));
         expression_token->type_id = LEXER_EXPRESSION_TK;
         expression_token->value = token_value;
@@ -76,4 +79,10 @@ int is_keyword(char * literal) {
     else if (strcmp(literal, KW_ELSE) == 0) return 1;
     else if (strcmp(literal, KW_FOR) == 0) return 1;
     return 0;
+}
+
+void token_destructor(Token * token) {
+    if (token->type_id != COMPLEX_TOKEN) free(token->value);
+    else array_destructor(token->value);
+    free(token);
 }

@@ -81,7 +81,7 @@ Array ** recursive_descent(char * input_stream) {
         if (*input_stream == FPARSER_COMPLEX_DELIMITER) {
             char * nodes = cut_complex_structure(input_stream);
             Array ** structure_nodes = recursive_descent(nodes);
-            code_structure = append(code_structure, ARRAY, structure_nodes);
+            code_structure = append(code_structure, ARRAY, structure_nodes); free(nodes);
         } else if (!is_ignored(*input_stream)) {
             char * node = cut_structure_node(input_stream);
             if (*node) code_structure = append(code_structure, STRING, node);

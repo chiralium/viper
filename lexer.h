@@ -42,4 +42,7 @@ int is_special(char symbol);
 /* The function return 1 if the literal is keyword */
 int is_keyword(char * literal);
 
+/* Free the memory of token */
+void token_destructor(Token * token);
+
 #endif //VIPER_V4_LEXER_H
