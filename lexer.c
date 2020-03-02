@@ -5,7 +5,7 @@ char * cut_token(char * literal, char stop_symbol) {
     int tmp_counter = 0;
     while (symbol = get_first(literal)) {
         if (symbol == stop_symbol) break;
-        else stack_tmp[tmp_counter++] = pop_up(literal);
+        else stack_tmp[tmp_counter++] = pop_first(literal);
     }
     stack_tmp[tmp_counter] = '\0';
     char * token_value = alloc_string(stack_tmp);
@@ -89,4 +89,13 @@ void token_destructor(Token * token) {
 
 char get_first(char * literal) {
     return *literal;
+}
+
+char get_last(char * literal) {
+    if (*literal) {
+        int length = strlen(literal) - 1;
+        return literal[length];
+    } else {
+        return 0;
+    }
 }

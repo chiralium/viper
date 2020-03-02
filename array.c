@@ -66,6 +66,20 @@ unsigned long _get_len(Array **_array) {
     return l;
 }
 
+Array * pop_el(Array **X) {
+    if (*X) {
+        Array *first = *X; X++;
+        memcpy(X - 1, X, sizeof(Array *) * _get_len(X));
+        return first;
+    } else {
+        return 0;
+    }
+}
+
+Array * get_first_el(Array **X) {
+    return *X;
+}
+
 void array_destructor(Array **_array) {
     int i = 0;
     while (_array[i]) {

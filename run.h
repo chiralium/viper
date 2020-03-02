@@ -1,5 +1,6 @@
 #include "fread.h"
 #include "lexer.h"
+#include "parser.h"
 #include "display.h"
 
 #ifndef VIPER_V4_RUN_H

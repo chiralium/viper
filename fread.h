@@ -48,7 +48,10 @@ Array ** recursive_descent(char * input_stream);
 char * alloc_string(char * structure);
 
 /* Pop up the first element of input_stream */
-char pop_up(char * input_stream);
+char pop_first(char * input_stream);
+
+/* Pop up the last element of input_stream */
+char pop_last(char * input_stream);
 
 /* The symbols is ignored? */
 int is_ignored(char symbol);

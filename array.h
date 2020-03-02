@@ -29,6 +29,12 @@ unsigned long _get_len(Array **_array);
 /* Copying array X to array Y */
 Array ** copy_array(Array **Y, Array **X);
 
+/* Pop-up the first element of array X */
+Array * pop_el(Array **X);
+
+/* Get the first element of array X */
+Array * get_first_el(Array **X);
+
 /* Freed memory from heap */
 void array_destructor(Array **_array);
 

@@ -48,4 +48,7 @@ void token_destructor(Token * token);
 /* Getting the first symbol from literal */
 char get_first(char * literal);
 
+/* Getting the last symbol from literal */
+char get_last(char * literal);
+
 #endif //VIPER_V4_LEXER_H

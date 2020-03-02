@@ -36,7 +36,7 @@ char * cut_structure_node(char * input_stream) {
     char stack_tmp_node[FPARSER_MAX_STRUCT_LEN + 1]; char symbol;
     int node_counter = 0; int _quote_counter = 0; int _obracket_counter = 0; int _cbracket_counter = 0;
 
-    while (symbol = pop_up(input_stream)) {
+    while (symbol = pop_first(input_stream)) {
         switch (symbol) {
             case FPARSER_QUOTE:
                 (!_quote_counter)  ? _quote_counter++ : _quote_counter--;
@@ -63,10 +63,10 @@ char * cut_structure_node(char * input_stream) {
 
 char * cut_complex_structure(char * input_stream) {
     char stack_tmp_structure[FPARSER_MAX_STRUCT_LEN + 1]; char symbol;
-    int node_counter = 0; pop_up(input_stream); // pop the first '{'
+    int node_counter = 0; pop_first(input_stream); // pop the first '{'
 
     int open_delimiter = 1; int close_delimiter = 0; int _quote_counter = 0;
-    while (symbol = pop_up(input_stream)) {
+    while (symbol = pop_first(input_stream)) {
         switch (symbol) {
             case FPARSER_QUOTE:
                 _quote_counter++;
@@ -102,7 +102,7 @@ Array ** recursive_descent(char * input_stream) {
         } else if (!is_ignored(*input_stream)) {
             char * node = cut_structure_node(input_stream);
             if (*node) code_structure = append(code_structure, STRING, node);
-        } else pop_up(input_stream);
+        } else pop_first(input_stream);
     }
     return code_structure;
 }
@@ -117,7 +117,7 @@ char * alloc_string(char stack_tmp_structure[FPARSER_MAX_STRUCT_LEN + 1]) {
     return structure;
 }
 
-char pop_up(char * input_stream) {
+char pop_first(char * input_stream) {
     char symbol;
     if (*input_stream) {
         symbol = *input_stream;
@@ -125,6 +125,18 @@ char pop_up(char * input_stream) {
         strcpy(input_stream - 1, input_stream);
     } else symbol = '\0';
     return symbol;
+}
+
+char pop_last(char * input_stream) {
+    char symbol;
+    if (*input_stream) {
+        int length = strlen(input_stream) - 1;
+        symbol = input_stream[length];
+        input_stream[length] = '\0';
+        return symbol;
+    } else {
+        return 0;
+    }
 }
 
 int is_ignored(char symbol) {
