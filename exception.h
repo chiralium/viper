@@ -7,7 +7,7 @@
 #ifndef VIPER_V4_EXCEPTION_H
 #define VIPER_V4_EXCEPTION_H
 
-#define EXCEPTION_CODE_STRUCTURE_ERROR "Code structure error at line %d: %s"
+#define EXCEPTION_CODE_STRUCTURE_ERROR "StructureError: at line %d (%s)"
 
 /* Getting the line and terminate a program with CODE_STRUCTURE_ERROR at line */
 void throw_code_structure_exception(int line, char * message);

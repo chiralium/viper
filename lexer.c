@@ -3,9 +3,9 @@
 char * cut_token(char * literal, char stop_symbol) {
     char stack_tmp[LEXER_MAX_VALUE + 1]; char symbol;
     int tmp_counter = 0;
-    while (symbol = pop_up(literal)) {
+    while (symbol = get_first(literal)) {
         if (symbol == stop_symbol) break;
-        else stack_tmp[tmp_counter++] = symbol;
+        else stack_tmp[tmp_counter++] = pop_up(literal);
     }
     stack_tmp[tmp_counter] = '\0';
     char * token_value = alloc_string(stack_tmp);
@@ -85,4 +85,8 @@ void token_destructor(Token * token) {
     if (token->type_id != COMPLEX_TOKEN) free(token->value);
     else array_destructor(token->value);
     free(token);
+}
+
+char get_first(char * literal) {
+    return *literal;
 }

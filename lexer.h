@@ -45,4 +45,7 @@ int is_keyword(char * literal);
 /* Free the memory of token */
 void token_destructor(Token * token);
 
+/* Getting the first symbol from literal */
+char get_first(char * literal);
+
 #endif //VIPER_V4_LEXER_H
