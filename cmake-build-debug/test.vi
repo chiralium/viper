@@ -1,14 +1,13 @@
 function f(y): {
   if (a > 2): {
     function foo(x): {
-      printf("woohoo");
+      printf("woohoo{;");
       exit(0);
     }
   } else: {
     return(0);
   }
 }
-
 instruction1;
 instruction2;
 if (f(y)): {
@@ -16,4 +15,6 @@ if (f(y)): {
 }
 (1+2) * 3;
 a = 1;
-string = "Hello world;";
+string = "Hello{ }world;";a;
+{printf("broken");}
+array = {1,2,"3",4};

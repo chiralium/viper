@@ -23,6 +23,11 @@
 #define FPARSER_EOL                      10
 #define FPARSER_SPACE                    32
 
+/* The fread-module message about some problems with parsing */
+#define FPARSER_QUOTE_BALANCED_MSG "quote mark(s) is not balanced"
+#define FPRASE_STRUCT_BALANCED_MSG "structure identifier '{}' is not balanced"
+#define FPRASE_STRUCT_IS_EMPTY_MSG "the structure of code should be not empty"
+
 
 /* Getting the size of file in bytes */
 unsigned long get_size(FILE * f);

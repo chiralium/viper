@@ -1,5 +1,7 @@
 #include "fread.h"
 
+int ROW_NUMBER = 1; // the global constant which display the current line for exception causes
+
 unsigned long get_size(FILE *f) {
     unsigned long size = 0;
     while (getc(f) != EOF) size++;
@@ -32,13 +34,28 @@ char * readfile(char * filename) {
 
 char * cut_structure_node(char * input_stream) {
     char stack_tmp_node[FPARSER_MAX_STRUCT_LEN + 1]; char symbol;
-    int node_counter = 0; int quote_counter = 0;
+    int node_counter = 0; int _quote_counter = 0; int _obracket_counter = 0; int _cbracket_counter = 0;
 
     while (symbol = pop_up(input_stream)) {
-        if (symbol == FPARSER_QUOTE) (!quote_counter)  ? quote_counter++ : quote_counter--;
-        if (!quote_counter && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
+        switch (symbol) {
+            case FPARSER_QUOTE:
+                (!_quote_counter)  ? _quote_counter++ : _quote_counter--;
+                break;
+            case FPARSER_COMPLEX_DELIMITER:
+                (!_quote_counter) ? _obracket_counter++ : _obracket_counter;
+                break;
+            case FPARSER_COMPLEX_DELIMITER_CLOSE:
+                (!_quote_counter) ? _cbracket_counter++ : _cbracket_counter;
+                break;
+        }
+
+        if (!_quote_counter && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
         else stack_tmp_node[node_counter++] = symbol;
     }
+
+    if (_quote_counter) throw_code_structure_exception(ROW_NUMBER, FPARSER_QUOTE_BALANCED_MSG);
+    if ((_obracket_counter - _cbracket_counter) != 0) throw_code_structure_exception(ROW_NUMBER, FPRASE_STRUCT_BALANCED_MSG);
+
     stack_tmp_node[node_counter] = '\0';
     char * node = alloc_string(stack_tmp_node);
     return node;
@@ -48,26 +65,25 @@ char * cut_complex_structure(char * input_stream) {
     char stack_tmp_structure[FPARSER_MAX_STRUCT_LEN + 1]; char symbol;
     int node_counter = 0; pop_up(input_stream); // pop the first '{'
 
-    int line = 1;
-    int open_delimiter = 1; int close_delimiter = 0; int quote_counter = 0;
+    int open_delimiter = 1; int close_delimiter = 0; int _quote_counter = 0;
     while (symbol = pop_up(input_stream)) {
         switch (symbol) {
             case FPARSER_QUOTE:
-                (!quote_counter) ? quote_counter++ : quote_counter--;
+                _quote_counter++;
                 break;
             case FPARSER_COMPLEX_DELIMITER:
-                (quote_counter) ?: open_delimiter++;
+                (!_quote_counter || _quote_counter >= 2) ? open_delimiter++ : open_delimiter;
                 break;
             case FPARSER_COMPLEX_DELIMITER_CLOSE:
-                (quote_counter) ?: close_delimiter++;
-                break;
-            case FPARSER_EOL:
-                line++;
+                (!_quote_counter || _quote_counter >= 2) ? close_delimiter++ : close_delimiter;
                 break;
         }
         if (close_delimiter == open_delimiter) break;
         stack_tmp_structure[node_counter++] = symbol;
     }
+
+    if (close_delimiter - open_delimiter != 0) throw_code_structure_exception(ROW_NUMBER, FPRASE_STRUCT_BALANCED_MSG);
+    if (!node_counter) throw_code_structure_exception(ROW_NUMBER, FPRASE_STRUCT_IS_EMPTY_MSG);
 
     stack_tmp_structure[node_counter] = '\0';
     char * complex_structure = alloc_string(stack_tmp_structure);
@@ -78,6 +94,7 @@ Array ** recursive_descent(char * input_stream) {
     Array ** code_structure;
     if (*input_stream) code_structure = new_array();
     while (*input_stream) {
+        if (*input_stream == FPARSER_EOL) ROW_NUMBER++;
         if (*input_stream == FPARSER_COMPLEX_DELIMITER) {
             char * nodes = cut_complex_structure(input_stream);
             Array ** structure_nodes = recursive_descent(nodes);
@@ -113,7 +130,6 @@ char pop_up(char * input_stream) {
 int is_ignored(char symbol) {
     switch (symbol) {
         case FPARSER_SPACE:
-            return 1;
         case FPARSER_EOL:
             return 1;
     }
