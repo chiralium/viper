@@ -14,5 +14,6 @@ void run(void) {
     printf("\nParsed tokens: \n\n");
     Array ** parsed_tokens = parser(tokens);
     display_array(parsed_tokens);
-    array_destructor(literals); array_destructor(tokens);
+
+    array_destructor(parsed_tokens);
 }

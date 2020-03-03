@@ -58,4 +58,9 @@ char * extract_name(char * literal);
 /* The function will cut the space from start and end of the literal */
 char * trim(char * literal);
 
+/* Destructors */
+void if_destructor(If * statement);
+void for_destructor(For * statement);
+void function_destructor(Function * statement);
+
 #endif //VIPER_V4_PARSER_H

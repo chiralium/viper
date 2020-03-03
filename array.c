@@ -1,5 +1,6 @@
 #include "array.h"
 #include "lexer.h"
+#include "parser.h"
 
 Array ** new_array(void) {
     Array **_array = (Array **)calloc(2, sizeof(Array *));
@@ -71,7 +72,7 @@ Array * pop_el(Array **X) {
         int length = _get_len(X);
         Array *first = *X; X++;
         memcpy(X - 1, X, sizeof(Array *) * length);
-        X[length] = 0;
+        X[length - 1] = 0;
         return first;
     } else {
         return 0;
@@ -87,6 +88,7 @@ void array_destructor(Array **_array) {
     while (_array[i]) {
         if (_array[i] -> type_id == ARRAY) array_destructor(_array[i] -> element);
         else if (_array[i] -> type_id == TOKEN) token_destructor(_array[i] -> element);
+        else if (_array[i] -> type_id == STMT_IF) if_destructor(_array[i] -> element);
         else free(_array[i] -> element);
         free(_array[i]);
         i++;

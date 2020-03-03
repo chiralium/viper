@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "display.h"
 
 char * cut_token(char * literal, char stop_symbol) {
     char stack_tmp[LEXER_MAX_VALUE + 1]; char symbol;
@@ -51,7 +52,7 @@ Array ** lexer(Array ** literals) {
             /* It means the literal is a complex token which can contain the other types of tokens */
             Token * complex_token = (Token *)malloc(sizeof(Token));
             complex_token->type_id = LEXER_COMPLEX_TK;
-            complex_token->value = literals[literals_counter];
+            complex_token->value = literals[literals_counter] -> element;
             tokens = append(tokens, COMPLEX_TOKEN, complex_token);
         }
         literals_counter++;

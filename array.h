@@ -2,7 +2,6 @@
 #include <string.h>
 #include "types.h"
 
-
 /*
  * The header which describing the array structure
  */
