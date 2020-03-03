@@ -15,6 +15,7 @@ if (f(y)): {
 }
 (1+2) * 3;
 a = 1;
+"";
 string = "Hello }world;";a;
 {printf("broken");}
 array = {1,2,"3",4};

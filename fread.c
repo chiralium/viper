@@ -39,21 +39,21 @@ char * cut_structure_node(char * input_stream) {
     while (symbol = pop_first(input_stream)) {
         switch (symbol) {
             case FPARSER_QUOTE:
-                (!_quote_counter)  ? _quote_counter++ : _quote_counter--;
+                _quote_counter++;
                 break;
             case FPARSER_COMPLEX_DELIMITER:
-                (!_quote_counter) ? _obracket_counter++ : _obracket_counter;
+                (!_quote_counter || _quote_counter >= 2) ? _obracket_counter++ : _obracket_counter;
                 break;
             case FPARSER_COMPLEX_DELIMITER_CLOSE:
-                (!_quote_counter) ? _cbracket_counter++ : _cbracket_counter;
+                (!_quote_counter || _quote_counter >= 2) ? _cbracket_counter++ : _cbracket_counter;
                 break;
         }
 
-        if (!_quote_counter && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
+        if ((!_quote_counter || _quote_counter >= 2) && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
         else stack_tmp_node[node_counter++] = symbol;
     }
 
-    if (_quote_counter) throw_code_structure_exception(ROW_NUMBER, FPARSER_QUOTE_BALANCED_MSG);
+    if (_quote_counter == 1 || _quote_counter > 2) throw_code_structure_exception(ROW_NUMBER, FPARSER_QUOTE_BALANCED_MSG);
     if ((_obracket_counter - _cbracket_counter) != 0) throw_code_structure_exception(ROW_NUMBER, FPRASE_STRUCT_BALANCED_MSG);
 
     stack_tmp_node[node_counter] = '\0';
