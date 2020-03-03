@@ -2,6 +2,7 @@
 #include "exception.h"
 #include "array.h"
 #include "operators.h"
+#include "keywords.h"
 
 /*
  * The tools for parsing the token-list from lexer-module and create special structures for keyword-tokens.
@@ -29,6 +30,13 @@ typedef struct For {
     char * params;
     Array ** body;
 } For;
+
+/* The structure Expression will contained the information about the expression-statement */
+typedef struct Expression {
+    char * expr;
+    char type_id;
+    void * value;
+} Expression;
 
 /* The function will parse the input token list and return the array with structures */
 Array ** parser(Array ** tokens);
