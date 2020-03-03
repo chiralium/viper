@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "array.h"
 #include "lexer.h"
+#include "parser.h"
 
 /*
  * The tools for formatted display a complex structure

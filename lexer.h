@@ -15,6 +15,11 @@
 #define LEXER_KEYWORD_PARAM_TK 4
 #define LEXER_EXPRESSION_TK    2
 #define LEXER_COMPLEX_TK       3
+#define LEXER_IF_TK            5
+#define LEXER_ELSE_TK          6
+#define LEXER_FOR_TK           7
+#define LEXER_FUNCTION_TK      8
+#define LEXER_NULL_TK          9
 
 /* Lexer parameters */
 #define LEXER_MAX_VALUE  255
@@ -39,7 +44,7 @@ char * cut_token(char * literal, char stop_symbol);
 /* The function return 1 if the symbol is special symbols as +, -, ", etc. */
 int is_special(char symbol);
 
-/* The function return 1 if the literal is keyword */
+/* The function return the token id if the literal is keyword, else return 0 */
 int is_keyword(char * literal);
 
 /* Free the memory of token */
@@ -50,5 +55,8 @@ char get_first(char * literal);
 
 /* Getting the last symbol from literal */
 char get_last(char * literal);
+
+/* Return the null token */
+Token * get_null_token(void);
 
 #endif //VIPER_V4_LEXER_H

@@ -9,6 +9,8 @@
 
 /* Entire system types */
 #define TOKEN         't'
+#define NULL_TOKEN    'n'
 #define COMPLEX_TOKEN 'c'
+#define STMT_IF        1
 
 #endif //VIPER_V4_TYPES_H

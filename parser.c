@@ -1,15 +1,52 @@
 #include "parser.h"
 
-Array ** cut_tokens(Array ** tokens, int stop_id) {
-    Array ** cuted_tokens = new_array(); Token * token;
-    while (token = (Token *)(get_first_el(tokens) -> element)) {
-        if (token->type_id == stop_id) break;
-        else {
-            Array * cuted_token = pop_el(tokens);
-            cuted_tokens = append(cuted_tokens, cuted_token->type_id, (Token *)(cuted_token -> element));
-        }
+Array ** parser(Array ** tokens) {
+    Array ** parsed_tokens = new_array();
+    Token * token;
+    while (*tokens) {
+        token = (*tokens) -> element;
+        if (token -> type_id == LEXER_IF_TK) {
+            If * if_statement = cut_if_statement(tokens);
+            parsed_tokens = append(parsed_tokens, STMT_IF, if_statement);
+        } else if (token -> type_id == LEXER_EXPRESSION_TK) {
+            Array * expression_token = pop_el(tokens);
+            parsed_tokens = append(parsed_tokens, TOKEN, (Token *)(expression_token -> element));
+        } else if (token -> type_id == LEXER_NULL_TK) pop_el(tokens);
     }
-    return cuted_tokens;
+    parsed_tokens = append(parsed_tokens, NULL_TOKEN, get_null_token());
+    return parsed_tokens;
+}
+
+If * cut_if_statement(Array ** tokens) {
+    // if pop el returned the token with LEXER_NULL_TK -- throw exception
+    pop_el(tokens);
+    Array * condition_element = pop_el(tokens);
+    char * condition = ((Token *)(condition_element -> element)) -> value;
+
+    Array * body_element = pop_el(tokens); Array ** else_body;
+    Array ** body = body_element -> element;
+
+    Token * token = (*tokens) -> element;
+    if (token -> type_id == LEXER_ELSE_TK) else_body = cut_else_statement(tokens);
+
+    If * if_statement = make_if(condition, body, else_body);
+    return if_statement;
+}
+
+If * make_if(char * condition, Array ** body, Array ** else_body) {
+    If * if_statement = (If *)malloc(sizeof(If));
+    if_statement -> condition = condition;
+    if_statement -> body = body;
+    if (else_body) if_statement -> else_body = else_body;
+}
+
+Array ** cut_else_statement(Array ** tokens) {
+    pop_el(tokens); pop_el(tokens);
+
+    Array * else_body_element = pop_el(tokens);
+    Array ** else_body = else_body_element -> element;
+
+    return else_body;
 }
 
 char * trim(char * literal) {

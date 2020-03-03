@@ -68,8 +68,10 @@ unsigned long _get_len(Array **_array) {
 
 Array * pop_el(Array **X) {
     if (*X) {
+        int length = _get_len(X);
         Array *first = *X; X++;
-        memcpy(X - 1, X, sizeof(Array *) * _get_len(X));
+        memcpy(X - 1, X, sizeof(Array *) * length);
+        X[length] = 0;
         return first;
     } else {
         return 0;
