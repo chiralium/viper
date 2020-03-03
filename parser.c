@@ -19,6 +19,7 @@ Array ** parser(Array ** tokens) {
         }
     }
     parsed_tokens = append(parsed_tokens, NULL_TOKEN, get_null_token());
+    free(tokens);
     return parsed_tokens;
 }
 
