@@ -32,7 +32,7 @@ If * get_if_statement(Array ** tokens) {
             if (token && token->type_id == LEXER_ELSE_TK) {
                 token = next_token(tokens);
                 if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
-                    else_condition = (char *)token->value;
+                    else_condition = trim((char *)token->value);
                     token = next_token(tokens);
                     if (token && token->type_id == LEXER_COMPLEX_TK) {
                         else_body = token->value;
