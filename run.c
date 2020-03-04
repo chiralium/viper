@@ -4,16 +4,16 @@ void run(void) {
     char *filename = "C:\\viper\\viper-v4\\cmake-build-debug\\test.vi";
     char *input_stream; input_stream = readfile(filename);
     Array ** literals = recursive_descent(input_stream); free(input_stream);
-    printf("\nCode structure: \n\n");
+    printf("\n\nCode structure: \n");
     display_array(literals);
 
-    printf("\nTokens: \n\n");
+    printf("\n\nTokens: \n");
     Array ** tokens = lexer(literals);
     display_array(tokens);
 
-    printf("\nParsed tokens: \n\n");
-    Array ** parsed_tokens = parser(tokens);
-    display_array(parsed_tokens);
+    printf("\n\nParsed:\n");
+    Array ** parsed_token = parser(tokens);
+    display_array(parsed_token);
 
-    array_destructor(parsed_tokens);
+    array_destructor(literals); array_destructor(tokens);
 }

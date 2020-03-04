@@ -1,4 +1,12 @@
-if (a > 2): {
-  "hello world";
-  1+2;
+if (x > 2): {
+  instruction1;
+  if (x * 2): {
+    "hello";
+  }
+} else (x < 2): {
+  instruction2;
+}
+instruction3;
+if (x): {
+  "hello"
 }

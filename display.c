@@ -19,3 +19,18 @@ void display_array(Array ** _array) {
     }
     printf("]<a>(0x%p)", _array);
 }
+
+void display_statements(void * statement, char type_id) {
+    If * if_statement;
+    switch (type_id) {
+        case 1:
+            /* if-else statement */
+            if_statement = statement;
+            printf("\nif `%s` ", if_statement->condition); display_array(if_statement->body);
+            if (if_statement->else_body) {
+                printf(" [else] `%s` ", if_statement->else_condition ? if_statement->else_condition : "<empty>");
+                display_array(if_statement->else_body);
+            }
+            break;
+    }
+}

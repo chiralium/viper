@@ -20,14 +20,13 @@ Array ** extract_token(char * literal, Array ** tokens) {
         Token * keyword_token = (Token *)malloc(sizeof(Token));
         keyword_token->type_id = token_id;
         keyword_token->value = token_value;
-
-        Token * keyword_param_token = (Token *)malloc(sizeof(Token));
-        keyword_param_token->type_id = LEXER_KEYWORD_PARAM_TK;
-        keyword_param_token->value = keyword_param;
-
         tokens = append(tokens, TOKEN, keyword_token);
-        tokens = append(tokens, TOKEN, keyword_param_token);
-
+        if (*keyword_param) {
+            Token *keyword_param_token = (Token *) malloc(sizeof(Token));
+            keyword_param_token->type_id = LEXER_KEYWORD_PARAM_TK;
+            keyword_param_token->value = keyword_param;
+            tokens = append(tokens, TOKEN, keyword_param_token);
+        }
     } else {
         char * token_part = cut_token(literal, '\0'); char stack_tmp[LEXER_MAX_VALUE + 1];
         strcpy(stack_tmp, token_value); strcat(stack_tmp, token_part);
@@ -57,7 +56,6 @@ Array ** lexer(Array ** literals) {
         }
         literals_counter++;
     }
-    tokens = append(tokens, NULL_TOKEN, get_null_token());
     return tokens;
 }
 

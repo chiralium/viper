@@ -4,57 +4,63 @@
 Array ** parser(Array ** tokens) {
     Array ** parsed_tokens = new_array();
     Token * token;
-    while (*tokens) {
-        token = (*tokens) -> element;
-        if (token -> type_id == LEXER_IF_TK) {
-            If * if_statement = cut_if_statement(tokens);
+    while (token = next_token(tokens)) {
+        if (token->type_id == LEXER_IF_TK) {
+            If * if_statement = get_if_statement(tokens);
             parsed_tokens = append(parsed_tokens, STMT_IF, if_statement);
-        } else if (token -> type_id == LEXER_EXPRESSION_TK) {
-            Array * expression_token = pop_el(tokens);
-            parsed_tokens = append(parsed_tokens, TOKEN, (Token *)(expression_token -> element));
-        } else if (token -> type_id == LEXER_NULL_TK) {
-            Array * _for_freed = pop_el(tokens);
-            token_destructor(_for_freed->element);
-            free(_for_freed);
+        } else if (token->type_id == LEXER_EXPRESSION_TK) {
+            parsed_tokens = append(parsed_tokens, TOKEN, token);
         }
     }
-    parsed_tokens = append(parsed_tokens, NULL_TOKEN, get_null_token());
-    free(tokens);
     return parsed_tokens;
 }
 
-If * make_if(char * condition, Array ** body, Array ** else_body) {
-    If * if_statement = (If *)malloc(sizeof(If));
-    if_statement -> condition = condition;
-    if_statement -> body = body;
-    if (else_body) if_statement -> else_body = else_body;
-    else if_statement -> else_body = NULL;
-}
+If * get_if_statement(Array ** tokens) {
+    char * condition; char * else_condition = NULL;
+    Array ** body; Array ** else_body = NULL;
 
-If * cut_if_statement(Array ** tokens) {
-    // if pop el returned the token with LEXER_NULL_TK -- throw exception
-    pop_el(tokens);
-    Array * condition_element = pop_el(tokens);
-    char * condition = ((Token *)(condition_element -> element)) -> value;
+    Token * token = next_token(tokens);
 
-    Array * body_element = pop_el(tokens); Array ** else_body;
-    Array ** body = ((Token *)(body_element -> element)) -> value;
-
-    Token * token = (*tokens) -> element;
-    if (token -> type_id == LEXER_ELSE_TK) else_body = cut_else_statement(tokens);
-    else else_body = 0;
-
-    If * if_statement = make_if(condition, body, else_body);
+    if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
+        condition = trim((char *)token->value);
+        if (!*condition) throw_statement_exception("if", PARSER_MISSING_IF_CONDITION);
+        token = next_token(tokens);
+        if (token && token->type_id == LEXER_COMPLEX_TK) {
+            body = token->value;
+            // the next token can be ELSE statement, but its not necessary, lets check it
+            token = next_token(tokens);
+            if (token && token->type_id == LEXER_ELSE_TK) {
+                token = next_token(tokens);
+                if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
+                    else_condition = (char *)token->value;
+                    token = next_token(tokens);
+                    if (token && token->type_id == LEXER_COMPLEX_TK) {
+                        else_body = token->value;
+                    } else throw_statement_exception(else_condition, PARSER_MISSING_ELSE_BODY_MSG);
+                } else if (token && token->type_id == LEXER_COMPLEX_TK) else_body = token->value; else throw_statement_exception("else", PARSER_MISSING_ELSE_BODY_MSG);
+            }
+        } else throw_statement_exception(condition, PARSER_MISSING_IF_BODY_MSG);
+    } else throw_statement_exception("if", PARSER_MISSING_IF_CONDITION);
+    If * if_statement = make_if(condition, body, else_condition, else_body);
     return if_statement;
 }
 
-Array ** cut_else_statement(Array ** tokens) {
-    pop_el(tokens); pop_el(tokens);
+If * make_if(char * condition, Array ** body, char * else_condition, Array ** else_body) {
+    If * if_statement = malloc(sizeof(If));
+    if_statement -> condition = condition;
+    if_statement -> body = body;
 
-    Array * else_body_element = pop_el(tokens);
-    Array ** else_body = ((Token *)(else_body_element -> element)) -> value;
+    if (else_body) {
+        if_statement->else_condition = else_condition;
+        if_statement->else_body = else_body;
+    }
+    return if_statement;
+}
 
-    return else_body;
+Token * next_token(Array ** tokens) {
+    static int _next;
+    if (tokens[_next]) return (Token *)(tokens[_next++] -> element);
+    else return 0;
 }
 
 char * trim(char * literal) {

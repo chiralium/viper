@@ -5,3 +5,7 @@ void throw_code_structure_exception(int line, char * message) {
     exit(0);
 }
 
+void throw_statement_exception(char * broken_line, char * message) {
+    printf(EXCEPTION_STATEMENT_ERROR, broken_line, message);
+    exit(0);
+}
