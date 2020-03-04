@@ -15,5 +15,5 @@ void run(void) {
     Array ** parsed_token = parser(tokens);
     display_array(parsed_token);
 
-    array_destructor(literals); array_destructor(tokens);
+    array_destructor(literals); array_destructor(tokens); parsed_token_destructor(parsed_token);
 }

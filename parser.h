@@ -63,4 +63,6 @@ void if_destructor(If * statement);
 void for_destructor(For * statement);
 void function_destructor(Function * statement);
 
+void parsed_token_destructor(Array ** parsed_token);
+
 #endif //VIPER_V4_PARSER_H

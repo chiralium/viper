@@ -88,3 +88,13 @@ void function_destructor(Function * statement) {
     free(statement->name);
     free(statement);
 }
+
+void parsed_token_destructor(Array ** parsed_token) {
+    int counter = 0;
+    while (parsed_token[counter]) {
+        if (parsed_token[counter]->type_id == STMT_IF) free(parsed_token[counter]->element);
+        free(parsed_token[counter]);
+        counter++;
+    }
+    free(parsed_token);
+}
