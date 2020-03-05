@@ -128,13 +128,6 @@ char * trim(char * literal) {
     return literal;
 }
 
-void if_destructor(If * statement) {
-    array_destructor(statement->body);
-    if (statement->else_body) array_destructor(statement->else_body);
-    free(statement->condition);
-    free(statement);
-}
-
 void for_destructor(For * statement) {
     array_destructor(statement->body);
     free(statement->params);
@@ -142,7 +135,6 @@ void for_destructor(For * statement) {
 }
 
 void function_destructor(Function * statement) {
-    array_destructor(statement->body);
     array_destructor(statement->arg_list);
     free(statement->name);
     free(statement);
@@ -152,6 +144,7 @@ void parsed_token_destructor(Array ** parsed_token) {
     int counter = 0;
     while (parsed_token[counter]) {
         if (parsed_token[counter]->type_id == STMT_IF) free(parsed_token[counter]->element);
+        else if (parsed_token[counter]->type_id == STMT_FUNC) function_destructor(parsed_token[counter]->element);
         free(parsed_token[counter]);
         counter++;
     }

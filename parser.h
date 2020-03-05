@@ -76,7 +76,6 @@ Token * get_token(Array ** tokens);
 char * trim(char * literal);
 
 /* Destructors */
-void if_destructor(If * statement);
 void for_destructor(For * statement);
 void function_destructor(Function * statement);
 
