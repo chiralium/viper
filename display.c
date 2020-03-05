@@ -35,8 +35,12 @@ void display_statements(void * statement, char type_id) {
             if_statement = statement;
             printf("\nIF `%s` ", if_statement->condition); display_array(if_statement->body);
             if (if_statement->else_body) {
-                printf(" [ELSE] `%s` ", if_statement->else_condition ? if_statement->else_condition : "<empty>");
-                display_array(if_statement->else_body);
+                int else_counter = 0;
+                while (if_statement->else_body[else_counter]) {
+                    Else * else_statement = if_statement->else_body[else_counter]->element;
+                    printf(" \n[ELSE]"); printf(else_statement->condition); display_array(else_statement->body);
+                    else_counter++;
+                }
             }
             break;
         case 2:
