@@ -10,3 +10,11 @@ instruction3;
 if (x): {
   "hello"
 }
+function foo(x, y): {
+  if (x < 2): {
+    function foo2(x): {
+      return x * x;
+    }
+  }
+  return x / y;
+}

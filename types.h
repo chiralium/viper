@@ -12,5 +12,6 @@
 #define NULL_TOKEN    'n'
 #define COMPLEX_TOKEN 'c'
 #define STMT_IF        1
+#define STMT_FUNC      2
 
 #endif //VIPER_V4_TYPES_H
