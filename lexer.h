@@ -19,7 +19,7 @@
 #define LEXER_ELSE_TK          6
 #define LEXER_FOR_TK           7
 #define LEXER_FUNCTION_TK      8
-#define LEXER_NULL_TK          9
+#define LEXER_WHILE_TK         9
 
 /* Lexer parameters */
 #define LEXER_MAX_VALUE  255
@@ -55,8 +55,5 @@ char get_first(char * literal);
 
 /* Getting the last symbol from literal */
 char get_last(char * literal);
-
-/* Return the null token */
-Token * get_null_token(void);
 
 #endif //VIPER_V4_LEXER_H

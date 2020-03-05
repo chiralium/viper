@@ -79,6 +79,7 @@ int is_keyword(char * literal) {
     else if (strcmp(literal, KW_IF) == 0) return LEXER_IF_TK;
     else if (strcmp(literal, KW_ELSE) == 0) return LEXER_ELSE_TK;
     else if (strcmp(literal, KW_FOR) == 0) return LEXER_FOR_TK;
+    else if (strcmp(literal, KW_WHILE) == 0) return LEXER_WHILE_TK;
     return 0;
 }
 
@@ -99,9 +100,4 @@ char get_last(char * literal) {
     } else {
         return 0;
     }
-}
-
-Token * get_null_token(void) {
-    Token * null_token = (Token *)malloc(sizeof(Token));
-    null_token->type_id = LEXER_NULL_TK;
 }

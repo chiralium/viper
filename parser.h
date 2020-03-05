@@ -12,14 +12,16 @@
 #define VIPER_V4_PARSER_H
 
 /* The message about problem with token parsing */
-#define PARSER_MISSING_ELSE_BODY_MSG         "the body of `else` statement is not defined"
-#define PARSER_MISSING_IF_BODY_MSG           "the body of `if` statement is not defined"
+#define PARSER_MISSING_ELSE_BODY             "the body of `else` statement is not defined"
+#define PARSER_MISSING_IF_BODY               "the body of `if` statement is not defined"
 #define PARSER_MISSING_IF_CONDITION          "the expression of `if` statement is not defined"
 #define PARSER_MISSING_FUNC_BODY             "the body of `function` statement is not defined"
 #define PARSER_MISSING_FUNC_NAME             "the function name is not defined"
 #define PARSER_MISSING_FUNC_ARGS_BRACKET     "the argument list of function should start on `(` and end on `)`"
 #define PARSER_MISSING_FUNC_ARGS             "the enumerations argument error"
 #define PARSER_MISSING_FUNC_PARAMS           "the function parameters is not defined"
+#define PARSER_MISSING_WHILE_CONDITION       "the expression of `while` statement is not defined"
+#define PARSER_MISSING_WHILE_BODY            "the body of `while` statement is not defined"
 
 /* The structure function will contained the information of function. Then this structure stored in NameSpace */
 typedef struct Function {
@@ -42,6 +44,12 @@ typedef struct For {
     Array ** body;
 } For;
 
+/* The structure While will contained the information about the while-statement */
+typedef struct While {
+    char * condition;
+    Array ** body;
+} While;
+
 /* The function will parse the input token list and return the array with structures */
 Array ** parser(Array ** tokens);
 
@@ -54,14 +62,20 @@ If * get_if_statement(Array ** tokens);
 /* The function will create the new structure of Function */
 Function * make_function(char * name, Array ** arg_list, Array ** body);
 
+/* The function will collect the elements of function-statement */
+Function * get_function_statement(Array ** tokens);
+
 /* The function will extract the args name from literal */
 Array ** extract_args(char * literal);
 
 /* The function will extract the name from literal */
 char * extract_name(char * literal);
 
-/* The function will collect the elements of function-statement */
-Function * get_function_statement(Array ** tokens);
+/* The function will create the new structure of While */
+While * make_while(char * condition, Array ** body);
+
+/* The function will collect the elements of while-statements */
+While * get_while_statement(Array ** tokens);
 
 /* The function will create the new structure of For */
 For * make_for(char * params, Array ** body);
@@ -76,7 +90,6 @@ Token * get_token(Array ** tokens);
 char * trim(char * literal);
 
 /* Destructors */
-void for_destructor(For * statement);
 void function_destructor(Function * statement);
 
 void parsed_token_destructor(Array ** parsed_token);
