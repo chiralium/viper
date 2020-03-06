@@ -3,8 +3,6 @@
 
 static int _next;
 
-//TODO: Dr.Memory and review new code!!!
-
 Array ** parser(Array ** tokens) {
     Array ** parsed_tokens = new_array();
     Token * token;
@@ -26,68 +24,40 @@ Array ** parser(Array ** tokens) {
 }
 
 If * get_if_statement(Array ** tokens) {
-    char * condition; char * else_condition = NULL;
-    Array ** body; Array ** else_bodies = NULL;
+    static int is_else_tail;
+
+    char * condition = NULL; If * else_condition = NULL; Array ** body;
 
     Token * token = next_token(tokens);
 
     if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
         condition = trim(token->value);
-        if (!*condition) throw_statement_exception("if", PARSER_MISSING_IF_CONDITION);
         token = next_token(tokens);
-        if (token && token->type_id == LEXER_COMPLEX_TK) {
-            body = token->value;
-            // the next token can be ELSE statement, but its not necessary, lets check it
-            else_bodies = get_else_statement(tokens);
-        } else throw_statement_exception(condition, PARSER_MISSING_IF_BODY);
-    } else throw_statement_exception("if", PARSER_MISSING_IF_CONDITION);
-    If * if_statement = make_if(condition, body, else_bodies);
+    } else if (!is_else_tail) throw_statement_exception("if", PARSER_MISSING_IF_CONDITION);
+    if (!condition && !is_else_tail) throw_statement_exception("if", PARSER_MISSING_IF_CONDITION);
+
+    if (token && token->type_id == LEXER_COMPLEX_TK) {
+        body = token->value;
+        // the next token can be ELSE statement, but its not necessary, lets check it
+        token = get_token(tokens);
+        if (token && token->type_id == LEXER_ELSE_TK) {
+            is_else_tail = 1; _next++;
+            else_condition = get_if_statement(tokens);
+        }
+    } else throw_statement_exception(condition, is_else_tail ? PARSER_MISSING_ELSE_BODY : PARSER_MISSING_IF_BODY);
+
+    If * if_statement = make_if(condition, body, else_condition);
     return if_statement;
 }
 
-If * make_if(char * condition, Array ** body,  Array ** else_body) {
+If * make_if(char * condition, Array ** body,  If * else_condition) {
     If * if_statement = malloc(sizeof(If));
     if_statement -> condition = condition;
     if_statement -> body = body;
+    if_statement -> else_condition = else_condition;
 
-    if (else_body) if_statement->else_body = else_body;
     return if_statement;
 }
-
-Array ** get_else_statement(Array ** tokens) {
-    Array ** else_bodies = new_array(); char * else_condition;
-
-    Token * token;
-
-    while(token = get_token(tokens)) {
-        if (token && token->type_id == LEXER_ELSE_TK) {
-            _next++;
-            token = next_token(tokens);
-            if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
-                else_condition = trim(token->value);
-                token = next_token(tokens);
-                if (token && token->type_id == LEXER_COMPLEX_TK) {
-                    Array ** else_body = token->value;
-                    Else * else_statement = make_else(else_condition, else_body);
-                    else_bodies = append(else_bodies, STMT_ELSE, else_statement);
-                } else throw_statement_exception(else_condition, PARSER_MISSING_ELSE_BODY);
-            } else if (token && token->type_id == LEXER_COMPLEX_TK) {
-                Array ** else_body = token->value;
-                Else * else_statement = make_else('\0', else_body);
-                else_bodies = append(else_bodies, STMT_ELSE, else_statement);
-            } else throw_statement_exception("else", PARSER_MISSING_ELSE_BODY);
-        } else break;
-    }
-    return else_bodies;
-}
-
-Else * make_else(char * condition, Array ** body) {
-    Else * else_statement = malloc(sizeof(Else));
-    else_statement->condition = condition;
-    else_statement->body = body;
-    return else_statement;
-}
-
 
 While * get_while_statement(Array ** tokens) {
     char * condition = NULL; Array ** body;
@@ -176,28 +146,18 @@ Token * get_token(Array ** tokens) {
 char * trim(char * literal) {
     while (get_first(literal) == FPARSER_SPACE) pop_first(literal); // left side cutter
     while (get_last(literal) == FPARSER_SPACE) pop_last(literal);   // right side cutter
+    if (!*literal) return NULL;
     return literal;
-}
-
-void if_destructor(If * statement) {
-    if (statement->else_body) {
-        int else_counter = 0;
-        while (statement->else_body[else_counter]) {
-            else_destructor(statement->else_body[else_counter]->element);
-            else_counter++;
-        }
-        array_destructor(statement->else_body);
-    }
-    free(statement);
-}
-
-void else_destructor(Else * statement) {
-    free(statement);
 }
 
 void function_destructor(Function * statement) {
     array_destructor(statement->arg_list);
     free(statement->name);
+    free(statement);
+}
+
+void if_destructor(If * statement) {
+    if (statement->else_condition) if_destructor(statement->else_condition);
     free(statement);
 }
 

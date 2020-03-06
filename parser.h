@@ -34,14 +34,8 @@ typedef struct Function {
 typedef struct If {
     char * condition;
     Array ** body;
-    Array ** else_body;
+    struct If * else_condition;
 } If;
-
-/* The structure Else will contained the information about the else-statement */
-typedef struct Else {
-    char * condition;
-    Array ** body;
-} Else;
 
 /* The structure For will contained the information about the for-statement */
 typedef struct For {
@@ -59,10 +53,7 @@ typedef struct While {
 Array ** parser(Array ** tokens);
 
 /* The function will create the new structure of If */
-If * make_if(char * condition, Array ** body, Array ** else_bodies);
-
-/* The function will crate the new structure of Else */
-Else * make_else(char * condition, Array ** body);
+If * make_if(char * condition, Array ** body, If * else_condition);
 
 /* The function will collect the tail of elements of else-statement */
 Array ** get_else_statement(Array ** tokens);
@@ -102,8 +93,6 @@ char * trim(char * literal);
 
 /* Destructors */
 void function_destructor(Function * statement);
-void if_destructor(If * statement);
-void else_destructor(Else * statement);
 void parsed_token_destructor(Array ** parsed_token);
 
 #endif //VIPER_V4_PARSER_H

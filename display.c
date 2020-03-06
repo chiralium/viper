@@ -34,14 +34,7 @@ void display_statements(void * statement, char type_id) {
             /* if-else statement */
             if_statement = statement;
             printf("\nIF `%s` ", if_statement->condition); display_array(if_statement->body);
-            if (if_statement->else_body) {
-                int else_counter = 0;
-                while (if_statement->else_body[else_counter]) {
-                    Else * else_statement = if_statement->else_body[else_counter]->element;
-                    printf(" \n[ELSE]"); printf(else_statement->condition); display_array(else_statement->body);
-                    else_counter++;
-                }
-            }
+            if (if_statement->else_condition) display_statements(if_statement->else_condition, 4);
             break;
         case 2:
             /* function statement */
@@ -57,6 +50,16 @@ void display_statements(void * statement, char type_id) {
             /* while-statement */
             while_statement = statement;
             printf("\nWHILE `%s` ", while_statement->condition); display_array(while_statement->body);
+            break;
+
+        case 4:
+            /* else-tails */
+            if_statement = statement;
+            if (if_statement->condition) {
+                printf(" [ELSE] `%s`", if_statement->condition); display_array(if_statement->body);
+            } else printf(" [ELSE] "); display_array(if_statement->body);
+
+            if (if_statement->else_condition) display_statements(if_statement->else_condition, 4);
             break;
     }
 }

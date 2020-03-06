@@ -26,7 +26,7 @@ Array ** extract_token(char * literal, Array ** tokens) {
             keyword_param_token->type_id = LEXER_KEYWORD_PARAM_TK;
             keyword_param_token->value = keyword_param;
             tokens = append(tokens, TOKEN, keyword_param_token);
-        }
+        } else free(keyword_param);
     } else {
         char * token_part = cut_token(literal, '\0'); char stack_tmp[LEXER_MAX_VALUE + 1];
         strcpy(stack_tmp, token_value); strcat(stack_tmp, token_part);
