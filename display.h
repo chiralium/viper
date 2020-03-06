@@ -2,6 +2,7 @@
 #include "array.h"
 #include "lexer.h"
 #include "parser.h"
+#include "expression.h"
 
 /*
  * The tools for formatted display a complex structure

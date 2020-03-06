@@ -13,28 +13,12 @@ void run(void) {
     display_array(tokens);
 
     printf("\n\nParsed:\n");
-    Array ** parsed_token = parser(tokens);
+    Array ** parsed_tokens = parser(tokens);
+    display_array(parsed_tokens);
 
-    display_array(parsed_token);
+    printf("\n\nExpression Tokens:");
+    Array ** expression_tokens = expression_lexer(parsed_tokens);
+    display_array(expression_tokens);
 
-    array_destructor(literals); array_destructor(tokens); parsed_token_destructor(parsed_token);
-
-
-
-//    char * filename = "C:\\viper\\viper-v4\\cmake-build-debug\\test.vi";
-//    char * expr; expr = readfile(filename);
-//    printf("EXPR: %s\n", expr);
-//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
-//    printf("AFTER: %s\n", expr);
-//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
-//    printf("AFTER: %s\n", expr);
-//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
-//    printf("AFTER: %s\n", expr);
-//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
-//    printf("AFTER: %s\n", expr);
-//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
-//    printf("AFTER: %s\n", expr);
-//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
-//    printf("AFTER: %s\n", expr);
-
+    array_destructor(literals); array_destructor(tokens); parsed_token_destructor(parsed_tokens);
 }
