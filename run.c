@@ -18,4 +18,23 @@ void run(void) {
     display_array(parsed_token);
 
     array_destructor(literals); array_destructor(tokens); parsed_token_destructor(parsed_token);
+
+
+
+//    char * filename = "C:\\viper\\viper-v4\\cmake-build-debug\\test.vi";
+//    char * expr; expr = readfile(filename);
+//    printf("EXPR: %s\n", expr);
+//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
+//    printf("AFTER: %s\n", expr);
+//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
+//    printf("AFTER: %s\n", expr);
+//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
+//    printf("AFTER: %s\n", expr);
+//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
+//    printf("AFTER: %s\n", expr);
+//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
+//    printf("AFTER: %s\n", expr);
+//    printf("%s\n", smart_cut(expr, EXPRESSION_TERMINATE_C));
+//    printf("AFTER: %s\n", expr);
+
 }
