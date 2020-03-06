@@ -93,6 +93,7 @@ char * trim(char * literal);
 
 /* Destructors */
 void function_destructor(Function * statement);
+void if_destructor(If * statement);
 void parsed_token_destructor(Array ** parsed_token);
 
 #endif //VIPER_V4_PARSER_H
