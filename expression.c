@@ -1,7 +1,5 @@
 #include "expression.h"
 
-// TODO: Review new modules code(!!!) and review the parsed_token_destructor(!!!)
-
 Array ** expression_lexer(Array ** tokens) {
     Array ** expression = new_array(); // expression is a container that store a ExpressionTokens
     int tokens_counter = 0;
@@ -41,7 +39,7 @@ Array ** extract_exp_token(char * literal) {
             bracket_token->type_id = EXPRESSION_BRACKET_TK;
             bracket_token->literal = bracket_literal;
             expression_token = append(expression_token, EXP_TK, bracket_token);
-        } // else throw_expression_exception(literal, "unexpected symbol of expression");
+        }
     }
     return expression_token;
 }

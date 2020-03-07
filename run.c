@@ -16,7 +16,7 @@ void run(void) {
     Array ** parsed_tokens = parser(tokens);
     display_array(parsed_tokens);
 
-    printf("\n\nExpression Tokens:");
+    printf("\n\nExpression Tokens:\n");
     Array ** expression_tokens = expression_lexer(parsed_tokens);
     display_array(expression_tokens);
 
