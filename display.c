@@ -13,7 +13,7 @@ void display_array(Array ** _array) {
         else if (_array[array_counter] -> type_id == NULL_TOKEN) printf("{TK:NULL}, ");
 
         else if (_array[array_counter] -> type_id == STMT_IF) printf("{STMT_IF; `%s`}, ", ((If *)(_array[array_counter] -> element)) -> condition);
-        else if (_array[array_counter] -> type_id == STMT_FUNC) printf("{STMT_IF; `%s`}, ", ((Function *)(_array[array_counter] -> element)) -> name);
+        else if (_array[array_counter] -> type_id == STMT_FUNC) printf("{STMT_FUNC; `%s`}, ", ((Function *)(_array[array_counter] -> element)) -> name);
         else if (_array[array_counter] -> type_id == STMT_WHILE) printf("{STMT_WHILE; `%s`}, ", ((While *)(_array[array_counter] -> element)) -> condition);
 
         else if (_array[array_counter] -> type_id == EXP_TK) printf("{EXP_TK:%d; `%s`}, ", ((ExpressionToken *)(_array[array_counter] -> element)) -> type_id,

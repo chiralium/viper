@@ -20,5 +20,8 @@ void run(void) {
     Array ** expression_tokens = expression_lexer(parsed_tokens);
     display_array(expression_tokens);
 
-    array_destructor(literals); array_destructor(tokens); parsed_token_destructor(parsed_tokens);
+    array_destructor(literals);
+    array_destructor(tokens);
+    parsed_token_destructor(parsed_tokens);
+    exp_tokens_destructor(expression_tokens);
 }

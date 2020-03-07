@@ -3,20 +3,22 @@
 // TODO: Review new modules code(!!!) and review the parsed_token_destructor(!!!)
 
 Array ** expression_lexer(Array ** tokens) {
-    Array ** expression_tokens = new_array();
+    Array ** expression = new_array(); // expression is a container that store a ExpressionTokens
     int tokens_counter = 0;
     while (tokens[tokens_counter]) {
         if (tokens[tokens_counter]->type_id == TOKEN) {
             Token * token = (tokens[tokens_counter]->element);
             char * token_literal = token->value;
-            expression_tokens = extract_exp_token(token_literal, expression_tokens);
-        } else expression_tokens = append(expression_tokens, tokens[tokens_counter]->type_id, tokens[tokens_counter]->element);
+            Array ** expression_tokens = extract_exp_token(token_literal);
+            expression = append(expression, ARRAY, expression_tokens);
+        } else expression = append(expression, tokens[tokens_counter]->type_id, tokens[tokens_counter]->element);
         tokens_counter++;
     }
-    return expression_tokens;
+    return expression;
 }
 
-Array ** extract_exp_token(char * literal, Array ** exp_tokens) {
+Array ** extract_exp_token(char * literal) {
+    Array ** expression_token = new_array();
     while (*literal) {
         if (*literal == FPARSER_SPACE) pop_first(literal);
         if (!is_in(*literal, EXPRESSION_TERMINATE_OPERATORS) && !is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
@@ -25,23 +27,23 @@ Array ** extract_exp_token(char * literal, Array ** exp_tokens) {
             ExpressionToken *constant_token = malloc(sizeof(ExpressionToken));
             constant_token->type_id = EXPRESSION_CONSTANT_TK;
             constant_token->literal = constant_literal;
-            exp_tokens = append(exp_tokens, EXP_TK, constant_token);
+            expression_token = append(expression_token, EXP_TK, constant_token);
         } else if (is_in(*literal, EXPRESSION_TERMINATE_OPERATORS)) {
             char *operator_literal = cut_operator(literal);
             ExpressionToken *operator_token = malloc(sizeof(ExpressionToken));
             operator_token->type_id = EXPRESSION_OPERATOR_TK;
             operator_token->literal = operator_literal;
-            exp_tokens = append(exp_tokens, EXP_TK, operator_token);
+            expression_token = append(expression_token, EXP_TK, operator_token);
         } else if (is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
             char stack_tmp[2]; stack_tmp[0] = pop_first(literal); stack_tmp[1] = '\0';
             char * bracket_literal = alloc_string(stack_tmp);
             ExpressionToken *bracket_token = malloc(sizeof(ExpressionToken));
             bracket_token->type_id = EXPRESSION_BRACKET_TK;
             bracket_token->literal = bracket_literal;
-            exp_tokens = append(exp_tokens, EXP_TK, bracket_token);
+            expression_token = append(expression_token, EXP_TK, bracket_token);
         } // else throw_expression_exception(literal, "unexpected symbol of expression");
     }
-    return exp_tokens;
+    return expression_token;
 }
 
 char * cut_constant(char * token) {
@@ -76,4 +78,19 @@ int is_in(char symbol, char * stop_symbols) {
     int counter = 0;
     while (stop_symbols[counter] != symbol && stop_symbols[counter]) counter++;
     return !stop_symbols[counter] ? 0 : 1;
+}
+
+void exp_token_destructor(ExpressionToken * token) {
+    free(token->literal);
+    free(token);
+}
+
+void exp_tokens_destructor(Array ** tokens) {
+    int counter = 0;
+    while (tokens[counter]) {
+        if (tokens[counter]->type_id == ARRAY) array_destructor(tokens[counter]->element);
+        free(tokens[counter]);
+        counter++;
+    }
+    free(tokens);
 }
