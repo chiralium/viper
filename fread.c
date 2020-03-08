@@ -49,11 +49,11 @@ char * cut_structure_node(char * input_stream) {
                 break;
         }
 
-        if ((!_quote_counter || _quote_counter >= 2) && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
+        if ((!(_quote_counter % 2)) && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
         else stack_tmp_node[node_counter++] = symbol;
     }
 
-    if (_quote_counter == 1 || _quote_counter > 2) throw_code_structure_exception(ROW_NUMBER, FPARSER_QUOTE_BALANCED_MSG);
+    if (_quote_counter % 2) throw_code_structure_exception(ROW_NUMBER, FPARSER_QUOTE_BALANCED_MSG);
     if ((_obracket_counter - _cbracket_counter) != 0) throw_code_structure_exception(ROW_NUMBER, FPRASE_STRUCT_BALANCED_MSG);
 
     stack_tmp_node[node_counter] = '\0';
@@ -72,10 +72,10 @@ char * cut_complex_structure(char * input_stream) {
                 _quote_counter++;
                 break;
             case FPARSER_COMPLEX_DELIMITER:
-                (!_quote_counter || _quote_counter >= 2) ? open_delimiter++ : open_delimiter;
+                !(_quote_counter % 2) ? open_delimiter++ : open_delimiter;
                 break;
             case FPARSER_COMPLEX_DELIMITER_CLOSE:
-                (!_quote_counter || _quote_counter >= 2) ? close_delimiter++ : close_delimiter;
+                !(_quote_counter % 2) ? close_delimiter++ : close_delimiter;
                 break;
         }
         if (close_delimiter == open_delimiter) break;
