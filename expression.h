@@ -31,6 +31,9 @@ typedef struct ExpressionToken {
     char vtype_id;    // the type of real value
 } ExpressionToken;
 
+/* The function will typecasting the token */
+void token_typecast(Array ** tokens);
+
 /* The function will extract the expression tokens and return the list of it */
 Array ** expression_lexer(Array ** tokens);
 
@@ -43,6 +46,9 @@ char * cut_constant(char * token);
 /* The function will cut the operator from literal */
 char * cut_operator(char * token);
 
+/* The function will create real value of token in a heap */
+void token_typecast(Array ** exp_tokens);
+
 /* The function will allocate data of integer, float or string type into heap */
 void allocate_token_value(ExpressionToken * exp_token);
 
@@ -54,6 +60,11 @@ int is_int_number(char * literal);
 
 /* The function will return 1, if the litreal containing only number and dot-symbol */
 int is_float_number(char * literal);
+
+/* Tools */
+ExpressionToken * get_next_exp_token(Array ** exp_tokens);
+ExpressionToken * pop_next_exp_token(Array ** exp_tokens);
+ExpressionToken * get_curr_exp_token(Array ** exp_tokens);
 
 /* Destructor */
 void exp_token_destructor(ExpressionToken * token);
