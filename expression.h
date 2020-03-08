@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include "fread.h"
 #include "parser.h"
 #include "operators.h"
@@ -5,7 +6,7 @@
 #include "exception.h"
 
 /*
- * Tools for parsing the type 2 tokens. Return a list of expression tokens
+ * Tools for parsing the type 2 tokensr (parser-module).
  */
 #ifndef VIPER_V4_EXPRESSION_H
 #define VIPER_V4_EXPRESSION_H
@@ -16,8 +17,8 @@
 #define EXPRESSION_BRACKET_TK  3
 
 /* Terminate symbols */
-#define EXPRESSION_TERMINATE_OPERATORS "+-*/=<>\0"
-#define EXPRESSION_TERMINATE_BRACKETS  "()[]\"\0"
+#define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\0"
+#define EXPRESSION_TERMINATE_BRACKETS  "{}()[]\"\0"
 
 /* Module parameters */
 #define EXPRESSION_MAX_LEN 255
@@ -26,6 +27,8 @@
 typedef struct ExpressionToken {
     char * literal;   // literal which define the tokens
     char type_id;     // the type of token
+    void * value;      // the real value of token
+    char vtype_id;    // the type of real value
 } ExpressionToken;
 
 /* The function will extract the expression tokens and return the list of it */
@@ -40,10 +43,19 @@ char * cut_constant(char * token);
 /* The function will cut the operator from literal */
 char * cut_operator(char * token);
 
+/* The function will allocate data of integer, float or string type into heap */
+void allocate_token_value(ExpressionToken * exp_token);
+
 /* The function will return 1, if the symbol in the stop_symbols array */
 int is_in(char symbol, char * stop_symbols);
 
+/* The function will return 1, if the literal containing only number */
+int is_int_number(char * literal);
+
+/* The function will return 1, if the litreal containing only number and dot-symbol */
+int is_float_number(char * literal);
+
 /* Destructor */
 void exp_token_destructor(ExpressionToken * token);
-void exp_tokens_destructor(Array ** );
+void exp_tokens_destructor(Array **);
 #endif //VIPER_V4_EXPRESSION_H

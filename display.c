@@ -16,8 +16,10 @@ void display_array(Array ** _array) {
         else if (_array[array_counter] -> type_id == STMT_FUNC) printf("{STMT_FUNC; `%s`}, ", ((Function *)(_array[array_counter] -> element)) -> name);
         else if (_array[array_counter] -> type_id == STMT_WHILE) printf("{STMT_WHILE; `%s`}, ", ((While *)(_array[array_counter] -> element)) -> condition);
 
-        else if (_array[array_counter] -> type_id == EXP_TK) printf("{EXP_TK:%d; `%s`}, ", ((ExpressionToken *)(_array[array_counter] -> element)) -> type_id,
-                                                                                                           ((ExpressionToken *)(_array[array_counter] -> element)) -> literal);
+        else if (_array[array_counter] -> type_id == EXP_TK) printf("{EXP_TK:%d; `%s` <%c>(0x%p)}, ", ((ExpressionToken *)(_array[array_counter] -> element)) -> type_id,
+                                                                                                      ((ExpressionToken *)(_array[array_counter] -> element)) -> literal,
+                                                                                                      ((ExpressionToken *)(_array[array_counter] -> element)) -> vtype_id,
+                                                                                                      ((ExpressionToken *)(_array[array_counter] -> element)) -> value);
 
         else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("{TK:%d; `<complex>`}, ", ((Token *)(_array[array_counter] -> element)) -> type_id);
         else if (_array[array_counter] -> type_id == ARRAY) {
