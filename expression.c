@@ -86,10 +86,10 @@ ExpressionToken * cut_string(Array ** exp_tokens) {
         token = get_curr_exp_token(exp_tokens);
         // may be need to free pop-up token ?
     }
-    pop_next_exp_token(exp_tokens); // just pop up and free the quote mark
+    exp_token_destructor(pop_next_exp_token(exp_tokens)); // just pop up and free the quote mark
     char * string_literal = alloc_string(stack_tmp);
     ExpressionToken * string_tk = malloc(sizeof(ExpressionToken));
-    string_tk->literal = string_literal;
+    string_tk->literal = NULL;
     string_tk->type_id = EXPRESSION_CONSTANT_TK;
     string_tk->vtype_id = STRING;
     string_tk->value = string_literal;
@@ -101,6 +101,7 @@ void token_typecast(Array ** exp_tokens) {
     while (token = get_next_exp_token(exp_tokens)) {
         if (token->literal[0] == FPARSER_QUOTE) {
             int position = _next - 1;
+            exp_token_destructor(exp_tokens[position]->element);
             exp_tokens[position]->element = cut_string(exp_tokens);
         }
         else allocate_token_value(token);
@@ -172,6 +173,7 @@ ExpressionToken * pop_next_exp_token(Array ** exp_tokens) {
 }
 
 void exp_token_destructor(ExpressionToken * token) {
+    if (token->vtype_id != UNDEFINED) free(token->value);
     free(token->literal);
     free(token);
 }
