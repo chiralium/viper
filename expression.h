@@ -6,7 +6,7 @@
 #include "exception.h"
 
 /*
- * Tools for parsing the type 2 tokensr (parser-module).
+ * Tools for parsing the type 2 tokens (parser-module).
  */
 #ifndef VIPER_V4_EXPRESSION_H
 #define VIPER_V4_EXPRESSION_H
@@ -30,9 +30,6 @@ typedef struct ExpressionToken {
     void * value;      // the real value of token
     char vtype_id;    // the type of real value
 } ExpressionToken;
-
-/* The function will typecasting the token */
-void token_typecast(Array ** tokens);
 
 /* The function will extract the expression tokens and return the list of it */
 Array ** expression_lexer(Array ** tokens);

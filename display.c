@@ -22,8 +22,8 @@ void display_array(Array ** _array) {
             char token_value_type_id = ((ExpressionToken *)(_array[array_counter] -> element)) -> vtype_id;
             void * token_value = ((ExpressionToken *)(_array[array_counter] -> element)) -> value;
 
-            if (token_literal != NULL) printf("{EXP_TK:%d; `%s` <%c>(0x%p)", token_type_id, token_literal, token_value_type_id, token_value);
-            else printf("{EXP_TK:%d; `%s` <%c>(0x%p)", token_type_id, (char *)token_value, token_value_type_id, token_value);
+            if (token_literal != NULL) printf("{EXP:%d; `%s` <%c>(0x%p)}", token_type_id, token_literal, token_value_type_id, token_value);
+            else printf("{EXP:%d; `%s` <%c>(0x%p)}", token_type_id, (char *)token_value, token_value_type_id, token_value);
 
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("{TK:%d; `<complex>`}, ", ((Token *)(_array[array_counter] -> element)) -> type_id);
         else if (_array[array_counter] -> type_id == ARRAY) {

@@ -28,12 +28,14 @@ Array ** extract_exp_token(char * literal) {
             ExpressionToken *constant_token = malloc(sizeof(ExpressionToken));
             constant_token->type_id = EXPRESSION_CONSTANT_TK;
             constant_token->literal = constant_literal;
+            constant_token->vtype_id = UNDEFINED;
             expression_token = append(expression_token, EXP_TK, constant_token);
         } else if (is_in(*literal, EXPRESSION_TERMINATE_OPERATORS)) {
             char *operator_literal = cut_operator(literal);
             ExpressionToken *operator_token = malloc(sizeof(ExpressionToken));
             operator_token->type_id = EXPRESSION_OPERATOR_TK;
             operator_token->literal = operator_literal;
+            operator_token->vtype_id = UNDEFINED;
             expression_token = append(expression_token, EXP_TK, operator_token);
         } else if (is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
             char stack_tmp[2]; stack_tmp[0] = pop_first(literal); stack_tmp[1] = '\0';
@@ -83,10 +85,11 @@ ExpressionToken * cut_string(Array ** exp_tokens) {
     while (token && token->literal[0] != FPARSER_QUOTE) {
         ExpressionToken * inner_token = pop_next_exp_token(exp_tokens);
         strcat(stack_tmp, inner_token->literal);
+        exp_token_destructor(inner_token); // after copy the literal free the pop-up token
         token = get_curr_exp_token(exp_tokens);
-        // may be need to free pop-up token ?
     }
     exp_token_destructor(pop_next_exp_token(exp_tokens)); // just pop up and free the quote mark
+
     char * string_literal = alloc_string(stack_tmp);
     ExpressionToken * string_tk = malloc(sizeof(ExpressionToken));
     string_tk->literal = NULL;
@@ -164,8 +167,8 @@ ExpressionToken * get_curr_exp_token(Array ** exp_tokens) {
 ExpressionToken * pop_next_exp_token(Array ** exp_tokens) {
     if (exp_tokens[_next]) {
         int length = _get_len(exp_tokens);
-        ExpressionToken * next = exp_tokens[_next]->element;
-        memcpy(exp_tokens + _next, exp_tokens + (_next + 1), sizeof(Array *) * (length - _next));
+        ExpressionToken * next = exp_tokens[_next]->element; free(exp_tokens[_next]); // free the element of Array **
+        memcpy(exp_tokens + _next, exp_tokens + (_next + 1), sizeof(Array *) * (length - _next)); // and write the next element to this position
         return next;
     } else {
         return 0;
