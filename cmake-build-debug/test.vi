@@ -37,3 +37,4 @@ function foo(x, y): {
 }
 1+2;
 "hello world";
+"hello " + "world " + "!!!";
