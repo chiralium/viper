@@ -79,7 +79,7 @@ char * cut_operator(char * token) {
     return operator_literal;
 }
 
-ExpressionToken * cut_string(Array ** exp_tokens) {
+char * cut_string(Array ** exp_tokens) {
     char stack_tmp[EXPRESSION_MAX_LEN + 1] = "\0";
     ExpressionToken * token = get_curr_exp_token(exp_tokens);
     while (token && token->literal[0] != FPARSER_QUOTE) {
@@ -91,12 +91,7 @@ ExpressionToken * cut_string(Array ** exp_tokens) {
     exp_token_destructor(pop_next_exp_token(exp_tokens)); // just pop up and free the quote mark
 
     char * string_literal = alloc_string(stack_tmp);
-    ExpressionToken * string_tk = malloc(sizeof(ExpressionToken));
-    string_tk->literal = NULL;
-    string_tk->type_id = EXPRESSION_CONSTANT_TK;
-    string_tk->vtype_id = STRING;
-    string_tk->value = string_literal;
-    return string_tk;
+    return string_literal;
 }
 
 void token_typecast(Array ** exp_tokens) {
@@ -105,7 +100,14 @@ void token_typecast(Array ** exp_tokens) {
         if (token->literal[0] == FPARSER_QUOTE) {
             int position = _next - 1;
             exp_token_destructor(exp_tokens[position]->element);
-            exp_tokens[position]->element = cut_string(exp_tokens);
+            char * string_literal = cut_string(exp_tokens);
+
+            ExpressionToken * string_tk = malloc(sizeof(ExpressionToken));
+            string_tk->type_id = EXPRESSION_CONSTANT_TK;
+            string_tk->literal = NULL;
+            string_tk->vtype_id = STRING;
+            string_tk->value = string_literal;
+            exp_tokens[position]->element = string_tk;
         }
         else allocate_token_value(token);
     }

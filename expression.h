@@ -43,6 +43,9 @@ char * cut_constant(char * token);
 /* The function will cut the operator from literal */
 char * cut_operator(char * token);
 
+/* The function will concatenating the literal of tokens and return a string */
+char * cut_string(Array ** exp_tokens);
+
 /* The function will create real value of token in a heap */
 void token_typecast(Array ** exp_tokens);
 
