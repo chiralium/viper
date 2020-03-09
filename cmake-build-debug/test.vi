@@ -35,6 +35,6 @@ function foo(x, y): {
   }
   return x / y;
 }
-1+2;
+([1+2] >= 7);
 "hello world";
 "hello " + "world " + "!!!";

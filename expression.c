@@ -33,7 +33,7 @@ Array ** extract_exp_token(char * literal) {
         } else if (is_in(*literal, EXPRESSION_TERMINATE_OPERATORS)) {
             char *operator_literal = cut_operator(literal);
             ExpressionToken *operator_token = malloc(sizeof(ExpressionToken));
-            operator_token->type_id = EXPRESSION_OPERATOR_TK;
+            operator_token->type_id = get_token_type(*operator_literal);
             operator_token->literal = operator_literal;
             operator_token->vtype_id = UNDEFINED;
             expression_token = append(expression_token, EXP_TK, operator_token);
@@ -92,6 +92,17 @@ char * cut_string(Array ** exp_tokens) {
 
     char * string_literal = alloc_string(stack_tmp);
     return string_literal;
+}
+
+Array ** cut_array(Array ** exp_tokens) {
+    Array ** _array = new_array();
+    ExpressionToken * token = get_curr_exp_token(exp_tokens);
+    while (token && token->type_id != OP_CLOSE_BBRACK) {
+        token = pop_next_exp_token(exp_tokens);
+        if (token->type_id != OP_COMA) _array = append(_array, EXP_TK, token);
+        token = get_curr_exp_token(exp_tokens);
+    }
+    return _array;
 }
 
 void token_typecast(Array ** exp_tokens) {
@@ -193,7 +204,7 @@ void exp_tokens_destructor(Array ** tokens) {
     free(tokens);
 }
 
-int get_token_type(char symbol) {
+char get_token_type(char symbol) {
     switch (symbol) {
         case OP_OPEN_BBRACK: return OP_OPEN_BBRACK;
         case OP_CLOSE_BBRACK: return OP_CLOSE_BBRACK;
@@ -207,5 +218,6 @@ int get_token_type(char symbol) {
         case OP_DIV: return OP_DIV;
 
         case OP_COMA: return OP_COMA;
+        default: return EXPRESSION_OPERATOR_TK;
     }
 }

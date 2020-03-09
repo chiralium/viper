@@ -14,7 +14,6 @@
 /* Tokens type */
 #define EXPRESSION_CONSTANT_TK 1
 #define EXPRESSION_OPERATOR_TK 2
-#define EXPRESSION_BRACKET_TK  3
 
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\0"
@@ -46,6 +45,9 @@ char * cut_operator(char * token);
 /* The function will concatenating the literal of tokens and return a string */
 char * cut_string(Array ** exp_tokens);
 
+/* The function will store the tokens between {} and return it as array */
+Array ** cut_array(Array ** exp_tokens);
+
 /* The function will create real value of token in a heap */
 void token_typecast(Array ** exp_tokens);
 
@@ -62,7 +64,7 @@ int is_int_number(char * literal);
 int is_float_number(char * literal);
 
 /* Function will return the type of non-symbolic and non-numeric literal */
-int get_token_type(char symbol);
+char get_token_type(char symbol);
 
 /* Tools */
 ExpressionToken * get_next_exp_token(Array ** exp_tokens);
