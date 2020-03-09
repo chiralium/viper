@@ -41,7 +41,7 @@ Array ** extract_exp_token(char * literal) {
             char stack_tmp[2]; stack_tmp[0] = pop_first(literal); stack_tmp[1] = '\0';
             char * bracket_literal = alloc_string(stack_tmp);
             ExpressionToken *bracket_token = malloc(sizeof(ExpressionToken));
-            bracket_token->type_id = EXPRESSION_BRACKET_TK;
+            bracket_token->type_id = get_token_type(stack_tmp[0]);
             bracket_token->literal = bracket_literal;
             bracket_token->vtype_id = SYS;
             bracket_token->value = NULL;
@@ -82,7 +82,7 @@ char * cut_operator(char * token) {
 char * cut_string(Array ** exp_tokens) {
     char stack_tmp[EXPRESSION_MAX_LEN + 1] = "\0";
     ExpressionToken * token = get_curr_exp_token(exp_tokens);
-    while (token && token->literal[0] != FPARSER_QUOTE) {
+    while (token && token->type_id != OP_QUOTE) {
         ExpressionToken * inner_token = pop_next_exp_token(exp_tokens);
         strcat(stack_tmp, inner_token->literal);
         exp_token_destructor(inner_token); // after copy the literal free the pop-up token
@@ -97,7 +97,7 @@ char * cut_string(Array ** exp_tokens) {
 void token_typecast(Array ** exp_tokens) {
     ExpressionToken * token;
     while (token = get_next_exp_token(exp_tokens)) {
-        if (token->literal[0] == FPARSER_QUOTE) {
+        if (token->type_id == OP_QUOTE) {
             int position = _next - 1;
             exp_token_destructor(exp_tokens[position]->element);
             char * string_literal = cut_string(exp_tokens);
@@ -191,4 +191,21 @@ void exp_tokens_destructor(Array ** tokens) {
         counter++;
     }
     free(tokens);
+}
+
+int get_token_type(char symbol) {
+    switch (symbol) {
+        case OP_OPEN_BBRACK: return OP_OPEN_BBRACK;
+        case OP_CLOSE_BBRACK: return OP_CLOSE_BBRACK;
+        case OP_OPEN_SBRACK: return OP_OPEN_SBRACK;
+        case OP_CLOSE_SBRACK: return OP_CLOSE_SBRACK;
+        case OP_QUOTE: return OP_QUOTE;
+
+        case OP_PLUS: return OP_PLUS;
+        case OP_MINUS: return OP_MINUS;
+        case OP_MUL: return OP_MUL;
+        case OP_DIV: return OP_DIV;
+
+        case OP_COMA: return OP_COMA;
+    }
 }

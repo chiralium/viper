@@ -61,6 +61,9 @@ int is_int_number(char * literal);
 /* The function will return 1, if the litreal containing only number and dot-symbol */
 int is_float_number(char * literal);
 
+/* Function will return the type of non-symbolic and non-numeric literal */
+int get_token_type(char symbol);
+
 /* Tools */
 ExpressionToken * get_next_exp_token(Array ** exp_tokens);
 ExpressionToken * pop_next_exp_token(Array ** exp_tokens);

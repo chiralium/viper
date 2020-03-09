@@ -12,6 +12,10 @@
 
 #define OP_OPEN_CBRACK  '('
 #define OP_CLOSE_CBRACK ')'
+#define OP_OPEN_BBRACK  '{'
+#define OP_CLOSE_BBRACK '}'
+#define OP_OPEN_SBRACK  '['
+#define OP_CLOSE_SBRACK ']'
 
 #define OP_QUOTE '"'
 #define OP_SPACE ' '
