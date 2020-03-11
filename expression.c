@@ -97,15 +97,29 @@ char * cut_string(Array ** exp_tokens) {
 Array ** cut_array(Array ** exp_tokens) {
     Array ** _array = new_array();
     ExpressionToken * token = get_curr_exp_token(exp_tokens);
-    while (token && token->type_id != OP_CLOSE_BBRACK) {
+    int o_counter = 1; int c_counter = 0;
+    while (token) {
+        switch (token->type_id) {
+            case OP_OPEN_BBRACK:
+                o_counter++;
+                break;
+            case OP_CLOSE_BBRACK:
+                c_counter++;
+                break;
+        }
+        if (o_counter == c_counter) break;
         token = pop_next_exp_token(exp_tokens);
         if (token->type_id != OP_COMA) _array = append(_array, EXP_TK, token);
+        else exp_token_destructor(token);
         token = get_curr_exp_token(exp_tokens);
     }
+    exp_token_destructor(pop_next_exp_token(exp_tokens)); // just pop up end free the }
+
     return _array;
 }
 
 void token_typecast(Array ** exp_tokens) {
+    _next = 0; // reset the counter for tokens
     ExpressionToken * token;
     while (token = get_next_exp_token(exp_tokens)) {
         if (token->type_id == OP_QUOTE) {
@@ -119,10 +133,22 @@ void token_typecast(Array ** exp_tokens) {
             string_tk->vtype_id = STRING;
             string_tk->value = string_literal;
             exp_tokens[position]->element = string_tk;
+        } else if (token->type_id == OP_OPEN_BBRACK) {
+            int position = _next - 1;
+            exp_token_destructor(exp_tokens[position]->element);
+            Array ** array = cut_array(exp_tokens);
+            token_typecast(array);
+            _next = position + 1; // return counter to above state
+
+            ExpressionToken * array_tk = malloc(sizeof(ExpressionToken));
+            array_tk->type_id = EXPRESSION_CONSTANT_TK;
+            array_tk->literal = NULL;
+            array_tk->vtype_id = ARRAY;
+            array_tk->value = array;
+            exp_tokens[position]->element = array_tk;
         }
         else allocate_token_value(token);
     }
-    _next = 0; // reset the counter for tokens
 }
 
 void allocate_token_value(ExpressionToken * exp_token) {
@@ -189,7 +215,15 @@ ExpressionToken * pop_next_exp_token(Array ** exp_tokens) {
 }
 
 void exp_token_destructor(ExpressionToken * token) {
-    if (token->vtype_id != UNDEFINED) free(token->value);
+    switch (token->vtype_id) {
+        case INTEGER: case FLOAT: case STRING:
+            free(token->value);
+            break;
+        case ARRAY:
+            array_destructor(token->value);
+            break;
+    }
+
     free(token->literal);
     free(token);
 }
