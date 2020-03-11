@@ -13,11 +13,19 @@ void display_array_beauty(Array ** _array, char * tabs) {
                                                                                                  (char *)((Token *)(_array[array_counter] -> element)) -> value);
         else if (_array[array_counter] -> type_id == NULL_TOKEN) printf("%s%s{TK:NULL}, \n", tabs, tabs);
 
-        else if (_array[array_counter] -> type_id == STMT_IF) printf("%s%s{STMT_IF; `%s`}, \n", tabs, tabs, ((If *)(_array[array_counter] -> element)) -> condition);
-        else if (_array[array_counter] -> type_id == STMT_FUNC) printf("%s%s{STMT_FUNC; `%s`}, \n", tabs, tabs, ((Function *)(_array[array_counter] -> element)) -> name);
-        else if (_array[array_counter] -> type_id == STMT_WHILE) printf("%s%s{STMT_WHILE; `%s`}, \n", tabs, tabs, ((While *)(_array[array_counter] -> element)) -> condition);
-
-        else if (_array[array_counter] -> type_id == EXP_TK) {
+        else if (_array[array_counter] -> type_id == STMT_IF) {
+            printf("\n%s%s{STMT_IF; `%s`}: \n", tabs, tabs, ((If *)(_array[array_counter] -> element)) -> condition);
+            display_statements(_array[array_counter] -> element, 1, tabs);
+            printf("\n\n");
+        } else if (_array[array_counter] -> type_id == STMT_FUNC) {
+            printf("%s%s{STMT_FUNC; `%s`}: \n", tabs, tabs, ((Function *)(_array[array_counter] -> element)) -> name);
+            display_statements(_array[array_counter] -> element, 2, tabs);
+            printf("\n\n");
+        } else if (_array[array_counter] -> type_id == STMT_WHILE) {
+            printf("\n%s%s{STMT_WHILE; `%s`}: \n", tabs, tabs, ((While *) (_array[array_counter]->element))->condition);
+            display_statements(_array[array_counter] -> element, 3, tabs);
+            printf("\n\n");
+        } else if (_array[array_counter] -> type_id == EXP_TK) {
             char token_type_id = ((ExpressionToken *)(_array[array_counter] -> element)) -> type_id;
             char * token_literal = ((ExpressionToken *)(_array[array_counter] -> element)) -> literal;
             char token_value_type_id = ((ExpressionToken *)(_array[array_counter] -> element)) -> vtype_id;
@@ -107,7 +115,7 @@ void display_array(Array ** _array) {
     printf("]");
 }
 
-void display_statements(void * statement, char type_id) {
+void display_statements(void * statement, char type_id, char tabs[255]) {
     If * if_statement;
     Function * function_statement;
     While * while_statement;
@@ -115,33 +123,40 @@ void display_statements(void * statement, char type_id) {
         case 1:
             /* if-else statement */
             if_statement = statement;
-            printf("\nIF `%s` ", if_statement->condition); display_array(if_statement->body);
-            if (if_statement->else_condition) display_statements(if_statement->else_condition, 4);
+            printf("%s%s%sIF `%s`: ", tabs, tabs, tabs, if_statement->condition); display_array(if_statement->body);
+            if (if_statement->else_condition) display_statements(if_statement->else_condition, 4, tabs);
             break;
         case 2:
             /* function statement */
             function_statement = statement;
-            printf("\nFUNCTION `%s` ARG: ", function_statement->name);
-            if (function_statement->arg_list) display_array(function_statement->arg_list);
-            else printf("[empty]");
-            printf("\nBODY: ");
-            display_array(function_statement->body);
+            printf("%s%s%sFUNCTION `%s` ARG: ", tabs, tabs, tabs, function_statement->name);
+            if (function_statement->arg_list) {
+                display_array(function_statement->arg_list);
+            }
+            else printf("[empty]\n");
+            printf("\n%s%s%sBODY:\n", tabs, tabs, tabs);
+            char child_tabs[255]; strcat(child_tabs, tabs); strcat(child_tabs, "   ");
+            display_array_beauty(function_statement->body, child_tabs);
             break;
 
         case 3:
             /* while-statement */
             while_statement = statement;
-            printf("\nWHILE `%s` ", while_statement->condition); display_array(while_statement->body);
+            printf("%s%s%sWHILE `%s`: ", tabs, tabs, tabs, while_statement->condition); display_array(while_statement->body);
             break;
 
         case 4:
             /* else-tails */
             if_statement = statement;
             if (if_statement->condition) {
-                printf(" [ELSE] `%s`", if_statement->condition); display_array(if_statement->body);
-            } else printf(" [ELSE] "); display_array(if_statement->body);
+                printf("\n%s%s%s[ELSE] `%s`: ", tabs, tabs, tabs, if_statement->condition);
+                display_array(if_statement->body);
+            } else {
+                printf("\n%s%s%s[ELSE]: ", tabs, tabs, tabs);
+                display_array(if_statement->body);
+            }
 
-            if (if_statement->else_condition) display_statements(if_statement->else_condition, 4);
+            if (if_statement->else_condition) display_statements(if_statement->else_condition, 4, tabs);
             break;
     }
 }
