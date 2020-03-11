@@ -1,5 +1,60 @@
 #include "display.h"
 
+void display_array_beauty(Array ** _array, char * tabs) {
+    strcat(tabs, " ");
+    printf("%s[\n", tabs);
+    if (!_array) printf("]");
+    int array_counter = 0;
+    while (_array[array_counter]) {
+        if (_array[array_counter] -> type_id == INTEGER) printf("`%d`, ", *(int *)_array[array_counter] -> element);
+        else if (_array[array_counter] -> type_id == FLOAT) printf("`%d`, ", *(float *)_array[array_counter] -> element);
+        else if (_array[array_counter] -> type_id == STRING) printf("%s%s`%s`, \n", tabs, tabs, (char *)_array[array_counter] -> element);
+        else if (_array[array_counter] -> type_id == TOKEN) printf ("%s%s{TK:%d; `%s`}, \n", tabs, tabs, ((Token *)(_array[array_counter] -> element)) -> type_id,
+                                                                                                 (char *)((Token *)(_array[array_counter] -> element)) -> value);
+        else if (_array[array_counter] -> type_id == NULL_TOKEN) printf("%s%s{TK:NULL}, \n", tabs, tabs);
+
+        else if (_array[array_counter] -> type_id == STMT_IF) printf("%s%s{STMT_IF; `%s`}, \n", tabs, tabs, ((If *)(_array[array_counter] -> element)) -> condition);
+        else if (_array[array_counter] -> type_id == STMT_FUNC) printf("%s%s{STMT_FUNC; `%s`}, \n", tabs, tabs, ((Function *)(_array[array_counter] -> element)) -> name);
+        else if (_array[array_counter] -> type_id == STMT_WHILE) printf("%s%s{STMT_WHILE; `%s`}, \n", tabs, tabs, ((While *)(_array[array_counter] -> element)) -> condition);
+
+        else if (_array[array_counter] -> type_id == EXP_TK) {
+            char token_type_id = ((ExpressionToken *)(_array[array_counter] -> element)) -> type_id;
+            char * token_literal = ((ExpressionToken *)(_array[array_counter] -> element)) -> literal;
+            char token_value_type_id = ((ExpressionToken *)(_array[array_counter] -> element)) -> vtype_id;
+            void * token_value = ((ExpressionToken *)(_array[array_counter] -> element)) -> value;
+
+            switch(token_value_type_id) {
+                case STRING:
+                    printf("%s%s{`%s` <%c>(0x%p)}, \n", tabs, tabs, (char *)token_value, token_value_type_id, token_value);
+                    break;
+                case ARRAY:
+                    printf("%s%s{`<array>`:\n", tabs, tabs, token_type_id);
+                    char child_tabs[255]; strcpy(child_tabs, tabs);
+                    display_array_beauty(token_value, child_tabs);
+                    printf("%s%s}, \n", tabs, tabs);
+                    break;
+                case INTEGER:
+                    printf("%s%s{`%d` <%c>(0x%p)}, \n", tabs, tabs, *(int *)token_value, token_value_type_id, token_value);
+                    break;
+                case FLOAT:
+                    printf("%s%s{`%f` <%c>(0x%p)}, \n", tabs, tabs, *(float *)token_value, token_value_type_id, token_value);
+                    break;
+                case FUNCTION:
+                    printf("%s%s{`function`:<%s> (0x%p)}, \n", tabs, tabs, token_literal, token_value);
+                    break;
+                default:
+                    printf("%s%s{`%s` <%c>(0x%p)}, \n", tabs, tabs, token_literal, token_value_type_id, token_value);
+            }
+        } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("%s%s{TK:%d; `<complex>`}, \n", tabs, tabs, ((Token *)(_array[array_counter] -> element)) -> type_id);
+        else if (_array[array_counter] -> type_id == ARRAY) {
+            char child_tabs[255]; strcpy(child_tabs, tabs);
+            display_array_beauty((Array **)(_array[array_counter] -> element), child_tabs);
+        }
+        array_counter++;
+    }
+    printf("%s]\n", tabs);
+}
+
 void display_array(Array ** _array) {
     printf("[");
     if (!_array) printf("]");
