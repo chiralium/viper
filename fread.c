@@ -42,10 +42,10 @@ char * cut_structure_node(char * input_stream) {
                 _quote_counter++;
                 break;
             case FPARSER_COMPLEX_DELIMITER:
-                (!_quote_counter || _quote_counter >= 2) ? _obracket_counter++ : _obracket_counter;
+                (!(_quote_counter % 2)) ? _obracket_counter++ : _obracket_counter;
                 break;
             case FPARSER_COMPLEX_DELIMITER_CLOSE:
-                (!_quote_counter || _quote_counter >= 2) ? _cbracket_counter++ : _cbracket_counter;
+                (!(_quote_counter % 2)) ? _cbracket_counter++ : _cbracket_counter;
                 break;
         }
 
