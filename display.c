@@ -36,10 +36,10 @@ void display_array_beauty(Array ** _array, char * tabs) {
                     printf("%s%s{`%s` <%c>(0x%p)}, \n", tabs, tabs, (char *)token_value, token_value_type_id, token_value);
                     break;
                 case ARRAY:
-                    printf("%s%s{`<array>`:\n", tabs, tabs, token_type_id);
-                    char child_tabs[255]; strcpy(child_tabs, tabs);
+                    printf("%s%s{`<array>`}:\n", tabs, tabs, token_type_id);
+                    char child_tabs[255]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs);
                     display_array_beauty(token_value, child_tabs);
-                    printf("%s%s}, \n", tabs, tabs);
+                    //printf("%s%s}, \n", tabs, tabs);
                     break;
                 case INTEGER:
                     printf("%s%s{`%d` <%c>(0x%p)}, \n", tabs, tabs, *(int *)token_value, token_value_type_id, token_value);
@@ -135,7 +135,7 @@ void display_statements(void * statement, char type_id, char tabs[255]) {
             }
             else printf("[empty]\n");
             printf("\n%s%s%sBODY:\n", tabs, tabs, tabs);
-            char child_tabs[255]; strcat(child_tabs, tabs); strcat(child_tabs, "   ");
+            char child_tabs[255]; strcat(child_tabs, tabs); strcat(child_tabs, tabs);
             display_array_beauty(function_statement->body, child_tabs);
             break;
 
