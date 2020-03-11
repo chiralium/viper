@@ -8,6 +8,7 @@
 #define STRING    's'
 #define UNDEFINED 'u'
 #define SYS       '-'
+#define FUNCTION  '1'
 
 /* Entire system types */
 #define TOKEN         't'
@@ -17,6 +18,5 @@
 #define STMT_IF        1
 #define STMT_FUNC      2
 #define STMT_WHILE     3
-#define STMR_EXP       4
 
 #endif //VIPER_V4_TYPES_H

@@ -4,6 +4,7 @@
 #include "operators.h"
 #include "array.h"
 #include "exception.h"
+#include "arithmetica.h"
 
 /*
  * Tools for parsing the type 2 tokens (parser-module).

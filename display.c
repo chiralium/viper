@@ -24,21 +24,24 @@ void display_array(Array ** _array) {
 
             switch(token_value_type_id) {
                 case STRING:
-                    printf("{EXP:%d; `%s` <%c>(0x%p)}, ", token_type_id, (char *)token_value, token_value_type_id, token_value);
+                    printf("{`%s` <%c>(0x%p)}, ", (char *)token_value, token_value_type_id, token_value);
                     break;
                 case ARRAY:
-                    printf("{EXP:%d; `<array>`: ", token_type_id);
+                    printf("{`<array>`: ", token_type_id);
                     display_array(token_value);
                     printf("}, ");
                     break;
                 case INTEGER:
-                    printf("{EXP:%d; `%d` <%c>(0x%p)}, ", token_type_id, *(int *)token_value, token_value_type_id, token_value);
+                    printf("{`%d` <%c>(0x%p)}, ", *(int *)token_value, token_value_type_id, token_value);
                     break;
                 case FLOAT:
-                    printf("{EXP:%d; `%f` <%c>(0x%p)}, ", token_type_id, *(float *)token_value, token_value_type_id, token_value);
+                    printf("{`%f` <%c>(0x%p)}, ", *(float *)token_value, token_value_type_id, token_value);
+                    break;
+                case FUNCTION:
+                    printf("{`function`:<%s> (0x%p)}, ", token_literal, token_value);
                     break;
                 default:
-                    printf("{EXP:%d; `%s` <%c>(0x%p)}, ", token_type_id, token_literal, token_value_type_id, token_value);
+                    printf("{`%s` <%c>(0x%p)}, ", token_literal, token_value_type_id, token_value);
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("{TK:%d; `<complex>`}, ", ((Token *)(_array[array_counter] -> element)) -> type_id);
         else if (_array[array_counter] -> type_id == ARRAY) {

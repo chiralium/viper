@@ -159,7 +159,7 @@ void token_typecast(Array ** exp_tokens) {
 }
 
 int allocate_token_value(ExpressionToken * exp_token) {
-    char * literal = exp_token->literal;
+    char * literal = exp_token->literal; void * (*function_pointer)(void *, void *) = NULL;
     if (exp_token->value != NULL) return 0;
     if (is_int_number(literal)) {
         int * value = malloc(sizeof(int));
@@ -167,10 +167,13 @@ int allocate_token_value(ExpressionToken * exp_token) {
         exp_token->value = value;
         exp_token->vtype_id = INTEGER;
     } else if (is_float_number(literal)) {
-        float * value = malloc(sizeof(float));
+        float *value = malloc(sizeof(float));
         *value = atof(literal);
         exp_token->value = value;
         exp_token->vtype_id = FLOAT;
+    } else if (function_pointer = assign_function(literal)) {
+        exp_token->value = function_pointer;
+        exp_token->vtype_id = FUNCTION;
     } else {
         exp_token->value = NULL;
         exp_token->vtype_id = UNDEFINED;
@@ -215,7 +218,7 @@ ExpressionToken * pop_next_exp_token(Array ** exp_tokens) {
     if (exp_tokens[_next]) {
         int length = _get_len(exp_tokens);
         ExpressionToken * next = exp_tokens[_next]->element; free(exp_tokens[_next]); // free the element of Array **
-        memcpy(exp_tokens + _next, exp_tokens + (_next + 1), sizeof(Array *) * (length - _next)); // and write the next element to this position
+        memcpy(exp_tokens + _next, exp_tokens + (_next + 1), sizeof(Array *) * (length - _next)); // and write the next element at this position
         return next;
     } else {
         return 0;
