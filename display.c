@@ -1,7 +1,7 @@
 #include "display.h"
 
 void display_array_beauty(Array ** _array, char * tabs) {
-    strcat(tabs, " ");
+    strcat(tabs, "-");
     printf("%s[\n", tabs);
     if (!_array) printf("]");
     int array_counter = 0;
@@ -135,7 +135,7 @@ void display_statements(void * statement, char type_id, char tabs[255]) {
             }
             else printf("[empty]\n");
             printf("\n%s%s%sBODY:\n", tabs, tabs, tabs);
-            char child_tabs[255]; strcat(child_tabs, tabs); strcat(child_tabs, tabs);
+            char child_tabs[255]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs);
             display_array_beauty(function_statement->body, child_tabs);
             break;
 
