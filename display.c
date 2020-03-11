@@ -27,8 +27,9 @@ void display_array(Array ** _array) {
                     printf("{EXP:%d; `%s` <%c>(0x%p)}, ", token_type_id, (char *)token_value, token_value_type_id, token_value);
                     break;
                 case ARRAY:
-                    printf("{EXP:%d; `<array>` <%c>(0x%p)}, ", token_type_id, token_value_type_id, token_value);
+                    printf("{EXP:%d; `<array>`: ", token_type_id);
                     display_array(token_value);
+                    printf("}, ");
                     break;
                 case INTEGER:
                     printf("{EXP:%d; `%d` <%c>(0x%p)}, ", token_type_id, *(int *)token_value, token_value_type_id, token_value);
