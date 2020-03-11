@@ -52,7 +52,7 @@ Array ** cut_array(Array ** exp_tokens);
 void token_typecast(Array ** exp_tokens);
 
 /* The function will allocate data of integer, float or string type into heap */
-void allocate_token_value(ExpressionToken * exp_token);
+int allocate_token_value(ExpressionToken * exp_token);
 
 /* The function will return 1, if the symbol in the stop_symbols array */
 int is_in(char symbol, char * stop_symbols);

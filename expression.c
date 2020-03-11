@@ -29,6 +29,7 @@ Array ** extract_exp_token(char * literal) {
             constant_token->type_id = EXPRESSION_CONSTANT_TK;
             constant_token->literal = constant_literal;
             constant_token->vtype_id = UNDEFINED;
+            constant_token->value = NULL;
             expression_token = append(expression_token, EXP_TK, constant_token);
         } else if (is_in(*literal, EXPRESSION_TERMINATE_OPERATORS)) {
             char *operator_literal = cut_operator(literal);
@@ -36,6 +37,7 @@ Array ** extract_exp_token(char * literal) {
             operator_token->type_id = get_token_type(*operator_literal);
             operator_token->literal = operator_literal;
             operator_token->vtype_id = UNDEFINED;
+            operator_token->value = NULL;
             expression_token = append(expression_token, EXP_TK, operator_token);
         } else if (is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
             char stack_tmp[2]; stack_tmp[0] = pop_first(literal); stack_tmp[1] = '\0';
@@ -133,7 +135,13 @@ void token_typecast(Array ** exp_tokens) {
             string_tk->vtype_id = STRING;
             string_tk->value = string_literal;
             exp_tokens[position]->element = string_tk;
-        } else if (token->type_id == OP_OPEN_BBRACK) {
+        } else allocate_token_value(token);
+    }
+
+    // after the all simple type is ready necessary start typecasting for arrays
+    _next = 0; // reset the counter
+    while (token = get_next_exp_token(exp_tokens)) {
+        if (token->type_id == OP_OPEN_BBRACK) {
             int position = _next - 1;
             exp_token_destructor(exp_tokens[position]->element);
             Array ** array = cut_array(exp_tokens);
@@ -147,12 +155,12 @@ void token_typecast(Array ** exp_tokens) {
             array_tk->value = array;
             exp_tokens[position]->element = array_tk;
         }
-        else allocate_token_value(token);
     }
 }
 
-void allocate_token_value(ExpressionToken * exp_token) {
+int allocate_token_value(ExpressionToken * exp_token) {
     char * literal = exp_token->literal;
+    if (exp_token->value != NULL) return 0;
     if (is_int_number(literal)) {
         int * value = malloc(sizeof(int));
         *value = atoi(literal);
