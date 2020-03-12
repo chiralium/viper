@@ -82,51 +82,67 @@ char * cut_operator(char * token) {
 }
 
 char * cut_string(Array ** exp_tokens) {
-    char stack_tmp[EXPRESSION_MAX_LEN + 1] = "\0";
-    ExpressionToken * token = get_curr_exp_token(exp_tokens);
-    while (token && token->type_id != OP_QUOTE) {
-        ExpressionToken * inner_token = pop_next_exp_token(exp_tokens);
-        strcat(stack_tmp, inner_token->literal);
-        exp_token_destructor(inner_token); // after copy the literal free the pop-up token
-        token = get_curr_exp_token(exp_tokens);
-    }
-    exp_token_destructor(pop_next_exp_token(exp_tokens)); // just pop up and free the quote mark
-
-    char * string_literal = alloc_string(stack_tmp);
-    return string_literal;
-}
-
-Array ** cut_while(Array ** exp_tokens, char * cut_factor) {
-    Array ** tokens = new_array(); ExpressionToken * token;
+    ExpressionToken * token; char * string = NULL; char stack_tmp[255] ="\0"; _next++;
     while (token = get_curr_exp_token(exp_tokens)) {
-        char * literal = token->literal;
-        if (!is_in(*literal, cut_factor)) {
+        if (token->type_id != OP_QUOTE) {
+            strcat(stack_tmp, token->literal);
+            exp_token_destructor(token);
             token = pop_next_exp_token(exp_tokens);
-            tokens = append(tokens, EXP_TK, token);
-        }
-        else {
-            exp_token_destructor(pop_next_exp_token(exp_tokens)); // just free stop_token
+        } else {
+            exp_token_destructor(pop_next_exp_token(exp_tokens));
             break;
         }
     }
-    return tokens;
+    string = alloc_string(stack_tmp);
+    return string;
 }
 
-Array ** cut_array(Array ** exp_tokens) {
-    Array ** _array = new_array();
-    ExpressionToken * token;
-
-    int o = 1; int c = 0;
-    while (token = get_curr_exp_token(exp_tokens)) {
-        if (token->type_id != OP_COMA) {
-            if (token->type_id == OP_OPEN_BBRACK) {
-                _next++;
-                _array = append(_array, ARRAY, cut_array(exp_tokens));
-            } else _array = append(_array, ARRAY, cut_while(exp_tokens, EXPRESSION_ARRAY_CUT_FACTOR));
-        } else if (is_empty(_array)) throw_arithmetical_exception(token->literal, EXPRESSION_EXPECTED_VALUE);
-    }
-    return _array;
-}
+//char * cut_string(Array ** exp_tokens) {
+//    char stack_tmp[EXPRESSION_MAX_LEN + 1] = "\0";
+//    ExpressionToken * token = get_curr_exp_token(exp_tokens);
+//    while (token && token->type_id != OP_QUOTE) {
+//        ExpressionToken * inner_token = pop_next_exp_token(exp_tokens);
+//        strcat(stack_tmp, inner_token->literal);
+//        exp_token_destructor(inner_token); // after copy the literal free the pop-up token
+//        token = get_curr_exp_token(exp_tokens);
+//    }
+//    exp_token_destructor(pop_next_exp_token(exp_tokens)); // just pop up and free the quote mark
+//
+//    char * string_literal = alloc_string(stack_tmp);
+//    return string_literal;
+//}
+//
+//Array ** cut_while(Array ** exp_tokens, char * cut_factor) {
+//    Array ** tokens = new_array(); ExpressionToken * token;
+//    while (token = get_curr_exp_token(exp_tokens)) {
+//        char * literal = token->literal;
+//        if (!is_in(*literal, cut_factor)) {
+//            token = pop_next_exp_token(exp_tokens);
+//            tokens = append(tokens, EXP_TK, token);
+//        }
+//        else {
+//            exp_token_destructor(pop_next_exp_token(exp_tokens)); // just free stop_token
+//            break;
+//        }
+//    }
+//    return tokens;
+//}
+//
+//Array ** cut_array(Array ** exp_tokens) {
+//    Array ** _array = new_array();
+//    ExpressionToken * token;
+//
+//    int o = 1; int c = 0;
+//    while (token = get_curr_exp_token(exp_tokens)) {
+//        if (token->type_id != OP_COMA) {
+//            if (token->type_id == OP_OPEN_BBRACK) {
+//                _next++;
+//                _array = append(_array, ARRAY, cut_array(exp_tokens));
+//            } else _array = append(_array, ARRAY, cut_while(exp_tokens, EXPRESSION_ARRAY_CUT_FACTOR));
+//        } else if (is_empty(_array)) throw_arithmetical_exception(token->literal, EXPRESSION_EXPECTED_VALUE);
+//    }
+//    return _array;
+//}
 
 //Array ** cut_array(Array ** exp_tokens) {
 //    Array ** _array = new_array();
@@ -153,40 +169,61 @@ Array ** cut_array(Array ** exp_tokens) {
 //    return _array;
 //}
 
-void token_typecast(Array ** exp_tokens) {
-    _next = 0; // reset the counter for tokens
-    ExpressionToken * token;
-    while (token = get_next_exp_token(exp_tokens)) {
-        if (token->type_id == OP_QUOTE) {
-            int position = _next - 1;
-            exp_token_destructor(exp_tokens[position]->element);
-            char * string_literal = cut_string(exp_tokens);
+//void token_typecast(Array ** exp_tokens) {
+//    _next = 0; // reset the counter for tokens
+//    ExpressionToken * token;
+//    while (token = get_next_exp_token(exp_tokens)) {
+//        if (token->type_id == OP_QUOTE) {
+//            int position = _next - 1;
+//            exp_token_destructor(exp_tokens[position]->element);
+//            char * string_literal = cut_string(exp_tokens);
+//
+//            ExpressionToken * string_tk = malloc(sizeof(ExpressionToken));
+//            string_tk->type_id = EXPRESSION_CONSTANT_TK;
+//            string_tk->literal = NULL;
+//            string_tk->vtype_id = STRING;
+//            string_tk->value = string_literal;
+//            exp_tokens[position]->element = string_tk;
+//        } else allocate_token_value(token);
+//    }
+//
+//    // after the all simple type is ready necessary start typecasting for arrays
+//    _next = 0; // reset the counter
+//    while (token = get_next_exp_token(exp_tokens)) {
+//        if (token->type_id == OP_OPEN_BBRACK) {
+//            int position = _next - 1;
+//            exp_token_destructor(exp_tokens[position]->element);
+//            Array ** array = cut_array(exp_tokens);
+//            display_array(array);
+//            _next = position + 1; // return counter to above state
+//
+//            ExpressionToken * array_tk = malloc(sizeof(ExpressionToken));
+//            array_tk->type_id = EXPRESSION_CONSTANT_TK;
+//            array_tk->literal = NULL;
+//            array_tk->vtype_id = ARRAY;
+//            array_tk->value = array;
+//            exp_tokens[position]->element = array_tk;
+//        }
+//    }
+//}
 
-            ExpressionToken * string_tk = malloc(sizeof(ExpressionToken));
+void token_typecast(Array ** exp_tokens) {
+    ExpressionToken * token;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        if (token->type_id == OP_QUOTE) {
+            int position = _next;
+            char * string = cut_string(exp_tokens);
+            ExpressionToken *string_tk = malloc(sizeof(ExpressionToken));
             string_tk->type_id = EXPRESSION_CONSTANT_TK;
             string_tk->literal = NULL;
             string_tk->vtype_id = STRING;
-            string_tk->value = string_literal;
+            string_tk->value = string;
+
+            exp_token_destructor(exp_tokens[position]->element); // free the current quote-token
             exp_tokens[position]->element = string_tk;
-        } else allocate_token_value(token);
-    }
-
-    // after the all simple type is ready necessary start typecasting for arrays
-    _next = 0; // reset the counter
-    while (token = get_next_exp_token(exp_tokens)) {
-        if (token->type_id == OP_OPEN_BBRACK) {
-            int position = _next - 1;
-            exp_token_destructor(exp_tokens[position]->element);
-            Array ** array = cut_array(exp_tokens);
-            display_array(array);
-            _next = position + 1; // return counter to above state
-
-            ExpressionToken * array_tk = malloc(sizeof(ExpressionToken));
-            array_tk->type_id = EXPRESSION_CONSTANT_TK;
-            array_tk->literal = NULL;
-            array_tk->vtype_id = ARRAY;
-            array_tk->value = array;
-            exp_tokens[position]->element = array_tk;
+        } else {
+            allocate_token_value(token);
+            _next++;
         }
     }
 }
