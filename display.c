@@ -31,27 +31,32 @@ void display_array_beauty(Array ** _array, char * tabs) {
             char token_value_type_id = ((ExpressionToken *)(_array[array_counter] -> element)) -> vtype_id;
             void * token_value = ((ExpressionToken *)(_array[array_counter] -> element)) -> value;
 
+
             switch(token_value_type_id) {
+                case ITERATOR:
+                    printf("%s%s{`<iterator>`}:\n", tabs, tabs, token_type_id);
+                    char child_tabs_iterator[255]; strcpy(child_tabs_iterator, tabs); strcat(child_tabs_iterator, tabs);
+                    display_iterator(token_value, child_tabs_iterator);
+                    break;
                 case STRING:
-                    printf("%s%s{`%s` <%c>(0x%p)}, \n", tabs, tabs, (char *)token_value, token_value_type_id, token_value);
+                    printf("%s%s{`%s`:<%c>(0x%p)}, \n", tabs, tabs, (char *)token_value, token_value_type_id, token_value);
                     break;
                 case ARRAY:
                     printf("%s%s{`<array>`}:\n", tabs, tabs, token_type_id);
                     char child_tabs[255]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs);
                     display_array_beauty(token_value, child_tabs);
-                    //printf("%s%s}, \n", tabs, tabs);
                     break;
                 case INTEGER:
-                    printf("%s%s{`%d` <%c>(0x%p)}, \n", tabs, tabs, *(int *)token_value, token_value_type_id, token_value);
+                    printf("%s%s{`%d`:<%c>(0x%p)}, \n", tabs, tabs, *(int *)token_value, token_value_type_id, token_value);
                     break;
                 case FLOAT:
-                    printf("%s%s{`%f` <%c>(0x%p)}, \n", tabs, tabs, *(float *)token_value, token_value_type_id, token_value);
+                    printf("%s%s{`%f`:<%c>(0x%p)}, \n", tabs, tabs, *(float *)token_value, token_value_type_id, token_value);
                     break;
                 case FUNCTION:
                     printf("%s%s{`function`:<%s> (0x%p)}, \n", tabs, tabs, token_literal, token_value);
                     break;
                 default:
-                    printf("%s%s{`%s` <%c>(0x%p)}, \n", tabs, tabs, token_literal, token_value_type_id, token_value);
+                    printf("%s%s{`%s`:<%c>(0x%p)}, \n", tabs, tabs, token_literal, token_value_type_id, token_value);
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("%s%s{TK:%d; `<complex>`}, \n", tabs, tabs, ((Token *)(_array[array_counter] -> element)) -> type_id);
         else if (_array[array_counter] -> type_id == ARRAY) {
@@ -87,7 +92,7 @@ void display_array(Array ** _array) {
 
             switch(token_value_type_id) {
                 case STRING:
-                    printf("{`%s` <%c>(0x%p)}, ", (char *)token_value, token_value_type_id, token_value);
+                    printf("{`%s`:<%c>(0x%p)}, ", (char *)token_value, token_value_type_id, token_value);
                     break;
                 case ARRAY:
                     printf("{`<array>`: ", token_type_id);
@@ -95,16 +100,16 @@ void display_array(Array ** _array) {
                     printf("}, ");
                     break;
                 case INTEGER:
-                    printf("{`%d` <%c>(0x%p)}, ", *(int *)token_value, token_value_type_id, token_value);
+                    printf("{`%d`:<%c>(0x%p)}, ", *(int *)token_value, token_value_type_id, token_value);
                     break;
                 case FLOAT:
-                    printf("{`%f` <%c>(0x%p)}, ", *(float *)token_value, token_value_type_id, token_value);
+                    printf("{`%f`:<%c>(0x%p)}, ", *(float *)token_value, token_value_type_id, token_value);
                     break;
                 case FUNCTION:
                     printf("{`function`:<%s> (0x%p)}, ", token_literal, token_value);
                     break;
                 default:
-                    printf("{`%s` <%c>(0x%p)}, ", token_literal, token_value_type_id, token_value);
+                    printf("{`%s`:<%c>(0x%p)}, ", token_literal, token_value_type_id, token_value);
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("{TK:%d; `<complex>`}, ", ((Token *)(_array[array_counter] -> element)) -> type_id);
         else if (_array[array_counter] -> type_id == ARRAY) {
@@ -159,4 +164,15 @@ void display_statements(void * statement, char type_id, char tabs[255]) {
             if (if_statement->else_condition) display_statements(if_statement->else_condition, 4, tabs);
             break;
     }
+}
+
+void display_iterator(Iterator * iterator, char tabs[255]) {
+    printf("%s%s%sITERATOR:\n", tabs, tabs, tabs);
+    printf("%s%s%s%sOBJECT:\n", tabs, tabs, tabs, tabs); {
+        char child_tabs[255]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs); strcat(child_tabs, tabs); strcat(child_tabs, tabs);
+        display_array_beauty(iterator->object, child_tabs);
+    }
+    printf("%s%s%s%sSTART:", tabs, tabs, tabs, tabs); (iterator->start) ? display_array(iterator->start) : printf("<null>"); printf("\n");
+    printf("%s%s%s%sSTOP:", tabs, tabs, tabs, tabs); (iterator->stop) ? display_array(iterator->stop) : printf("<null>"); printf("\n");
+    printf("%s%s%s%sSTEP:", tabs, tabs, tabs, tabs); (iterator->step) ? display_array(iterator->step) : printf("<null>"); printf("\n");
 }

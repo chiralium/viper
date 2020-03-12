@@ -3,6 +3,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "expression.h"
+#include "arithmetica.h"
 
 /*
  * The tools for formatted display a complex structure
@@ -14,5 +15,6 @@
 void display_array(Array ** _array);
 void display_array_beauty(Array ** _array, char tabs[255]);
 void display_statements(void * statement, char type_id, char tabs[255]);
+void display_iterator(Iterator * iterator, char tabs[255]);
 
 #endif //VIPER_V4_DISPLAY_H

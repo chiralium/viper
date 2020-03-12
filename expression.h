@@ -24,7 +24,8 @@
 #define EXPRESSION_MAX_LEN 255
 
 /* Expression exception messages */
-#define EXPRESSION_UNDEFINED_OPERATOR "undefined operator"
+#define EXPRESSION_UNDEFINED_OPERATOR     "undefined operator"
+#define EXPRESSION_MISSING_ITERATOR_PARAM "iterator parameter is not defined"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {
@@ -51,6 +52,9 @@ char * cut_string(Array ** exp_tokens);
 
 /* The function will store the tokens between {} and return it as array */
 Array ** cut_array(Array ** exp_tokens);
+
+/* The function will store the tokens between [] and return it as array of tokens */
+Array ** cut_iterator(Array ** exp_tokens);
 
 /* The function will create real value of token in a heap */
 void token_typecast(Array ** exp_tokens);

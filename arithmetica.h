@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "array.h"
 /*
  * This header file contained the simple arithmetical functions which assigned with tokens
  */
@@ -25,6 +26,13 @@
 #define ARITHMETICA_CSB  "]"
 #define ARITHMETICA_COMA ","
 
+/* The struct of iterator */
+typedef struct Iterator {
+    void * object;
+    Array ** start;
+    Array ** stop;
+    Array ** step;
+} Iterator;
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
