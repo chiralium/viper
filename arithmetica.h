@@ -16,6 +16,15 @@
 #define ARITHMETICA_MEQ  ">="
 #define ARITHMETICA_LEQ  "<="
 #define ARITHMETICA_EQ   "=="
+#define ARITHMETICA_ASG  "="
+#define ARITHMETICA_OCB  "("
+#define ARITHMETICA_CCB  ")"
+#define ARITHMETICA_OBB  "{"
+#define ARITHMETICA_CBB  "}"
+#define ARITHMETICA_OSB  "["
+#define ARITHMETICA_CSB  "]"
+#define ARITHMETICA_COMA ","
+
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -26,6 +35,7 @@ void * _less(void * x, void * y);
 void * _moreeq(void * x, void * y);
 void * _lesseq(void * x, void * y);
 void * _equal(void * x, void * y);
+void * _tmp(void * x, void * y);
 
 /* The function will return a pointer to a function which associated with token literal */
 void * assign_function(char * literal);

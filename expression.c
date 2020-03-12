@@ -174,7 +174,12 @@ int allocate_token_value(ExpressionToken * exp_token) {
     } else if (function_pointer = assign_function(literal)) {
         exp_token->value = function_pointer;
         exp_token->vtype_id = FUNCTION;
+    } else if (is_name(literal)) {
+        // getting value from name space ???
+        exp_token->value = NULL;
+        exp_token->vtype_id = UNDEFINED;
     } else {
+        throw_arithmetical_exception(literal, EXPRESSION_UNDEFINED_OPERATOR);
         exp_token->value = NULL;
         exp_token->vtype_id = UNDEFINED;
     }
@@ -202,6 +207,16 @@ int is_float_number(char * literal) {
         literal++;
     }
     return is_number;
+}
+
+int is_name(char * literal) {
+    int is_name = 0;
+    if (isdigit(*literal)) return 0;
+    while (*literal) {
+        if (is_name = isdigit(*literal) || isalpha(*literal)) break;
+        literal++;
+    }
+    return is_name;
 }
 
 ExpressionToken * get_next_exp_token(Array ** exp_tokens) {

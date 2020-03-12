@@ -18,10 +18,13 @@
 
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\0"
-#define EXPRESSION_TERMINATE_BRACKETS  "{}()[]\"\0"
+#define EXPRESSION_TERMINATE_BRACKETS  "|{}()[]\"\0"
 
 /* Module parameters */
 #define EXPRESSION_MAX_LEN 255
+
+/* Expression exception messages */
+#define EXPRESSION_UNDEFINED_OPERATOR "undefined operator"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {
@@ -63,6 +66,9 @@ int is_int_number(char * literal);
 
 /* The function will return 1, if the litreal containing only number and dot-symbol */
 int is_float_number(char * literal);
+
+/* The function will return 1, if the literal is exactly variable name */
+int is_name(char * literal);
 
 /* Function will return the type of non-symbolic and non-numeric literal */
 char get_token_type(char symbol);
