@@ -84,6 +84,10 @@ Array * get_first_el(Array **X) {
     return *X;
 }
 
+int is_empty(Array **X) {
+    return !(*X);
+}
+
 void array_destructor(Array **_array) {
     int i = 0;
     while (_array[i]) {

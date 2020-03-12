@@ -96,29 +96,62 @@ char * cut_string(Array ** exp_tokens) {
     return string_literal;
 }
 
+Array ** cut_while(Array ** exp_tokens, char * cut_factor) {
+    Array ** tokens = new_array(); ExpressionToken * token;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        char * literal = token->literal;
+        if (!is_in(*literal, cut_factor)) {
+            token = pop_next_exp_token(exp_tokens);
+            tokens = append(tokens, EXP_TK, token);
+        }
+        else {
+            exp_token_destructor(pop_next_exp_token(exp_tokens)); // just free stop_token
+            break;
+        }
+    }
+    return tokens;
+}
+
 Array ** cut_array(Array ** exp_tokens) {
     Array ** _array = new_array();
-    ExpressionToken * token = get_curr_exp_token(exp_tokens);
-    int o_counter = 1; int c_counter = 0;
-    while (token) {
-        switch (token->type_id) {
-            case OP_OPEN_BBRACK:
-                o_counter++;
-                break;
-            case OP_CLOSE_BBRACK:
-                c_counter++;
-                break;
-        }
-        if (o_counter == c_counter) break;
-        token = pop_next_exp_token(exp_tokens);
-        if (token->type_id != OP_COMA) _array = append(_array, EXP_TK, token);
-        else exp_token_destructor(token);
-        token = get_curr_exp_token(exp_tokens);
-    }
-    exp_token_destructor(pop_next_exp_token(exp_tokens)); // just pop up end free the }
+    ExpressionToken * token;
 
+    int o = 1; int c = 0;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        if (token->type_id != OP_COMA) {
+            if (token->type_id == OP_OPEN_BBRACK) {
+                _next++;
+                _array = append(_array, ARRAY, cut_array(exp_tokens));
+            } else _array = append(_array, ARRAY, cut_while(exp_tokens, EXPRESSION_ARRAY_CUT_FACTOR));
+        } else if (is_empty(_array)) throw_arithmetical_exception(token->literal, EXPRESSION_EXPECTED_VALUE);
+    }
     return _array;
 }
+
+//Array ** cut_array(Array ** exp_tokens) {
+//    Array ** _array = new_array();
+//    ExpressionToken * token = get_curr_exp_token(exp_tokens);
+//    int o_counter = 1; int c_counter = 0;
+//    while (token) {
+//        switch (token->type_id) {
+//            case OP_OPEN_BBRACK:
+//                o_counter++;
+//                break;
+//            case OP_CLOSE_BBRACK:
+//                c_counter++;
+//                break;
+//        }
+//        if (o_counter == c_counter) break;
+//
+//        token = pop_next_exp_token(exp_tokens);
+//        if (token->type_id != OP_COMA) _array = append(_array, EXP_TK, token);
+//        else exp_token_destructor(token);
+//        token = get_curr_exp_token(exp_tokens);
+//    }
+//    exp_token_destructor(pop_next_exp_token(exp_tokens)); // just pop up end free the }
+//
+//    return _array;
+//}
 
 void token_typecast(Array ** exp_tokens) {
     _next = 0; // reset the counter for tokens
@@ -145,7 +178,7 @@ void token_typecast(Array ** exp_tokens) {
             int position = _next - 1;
             exp_token_destructor(exp_tokens[position]->element);
             Array ** array = cut_array(exp_tokens);
-            token_typecast(array);
+            display_array(array);
             _next = position + 1; // return counter to above state
 
             ExpressionToken * array_tk = malloc(sizeof(ExpressionToken));

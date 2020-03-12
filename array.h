@@ -34,6 +34,9 @@ Array * pop_el(Array **X);
 /* Get the first element of array X */
 Array * get_first_el(Array **X);
 
+/* Return 1 if the array is empty */
+int is_empty(Array **X);
+
 /* Freed memory from heap */
 void array_destructor(Array **_array);
 

@@ -19,6 +19,7 @@
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\0"
 #define EXPRESSION_TERMINATE_BRACKETS  "|{}()[]\"\0"
+#define EXPRESSION_ARRAY_CUT_FACTOR    ",}"
 
 /* Module parameters */
 #define EXPRESSION_MAX_LEN 255
@@ -26,6 +27,7 @@
 /* Expression exception messages */
 #define EXPRESSION_UNDEFINED_OPERATOR     "undefined operator"
 #define EXPRESSION_MISSING_ITERATOR_PARAM "iterator parameter is not defined"
+#define EXPRESSION_EXPECTED_VALUE         "in array after coma must be value"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {
@@ -52,6 +54,9 @@ char * cut_string(Array ** exp_tokens);
 
 /* The function will store the tokens between {} and return it as array */
 Array ** cut_array(Array ** exp_tokens);
+
+/* The function will cut the tokens while not meet stop token in cut_factor string */
+Array ** cut_while(Array ** exp_tokens, char * cut_factor);
 
 /* The function will store the tokens between [] and return it as array of tokens */
 Array ** cut_iterator(Array ** exp_tokens);
