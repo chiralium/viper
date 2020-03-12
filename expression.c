@@ -97,6 +97,8 @@ char * cut_string(Array ** exp_tokens) {
     return string;
 }
 
+/* ROLLBACK SECTION */
+
 //char * cut_string(Array ** exp_tokens) {
 //    char stack_tmp[EXPRESSION_MAX_LEN + 1] = "\0";
 //    ExpressionToken * token = get_curr_exp_token(exp_tokens);
@@ -207,13 +209,15 @@ char * cut_string(Array ** exp_tokens) {
 //    }
 //}
 
+/* ROLLBACK SECTION */
+
 void token_typecast(Array ** exp_tokens) {
     ExpressionToken * token;
     while (token = get_curr_exp_token(exp_tokens)) {
         if (token->type_id == OP_QUOTE) {
             int position = _next;
             char * string = cut_string(exp_tokens);
-            ExpressionToken *string_tk = malloc(sizeof(ExpressionToken));
+            ExpressionToken * string_tk = malloc(sizeof(ExpressionToken));
             string_tk->type_id = EXPRESSION_CONSTANT_TK;
             string_tk->literal = NULL;
             string_tk->vtype_id = STRING;
@@ -221,6 +225,17 @@ void token_typecast(Array ** exp_tokens) {
 
             exp_token_destructor(exp_tokens[position]->element); // free the current quote-token
             exp_tokens[position]->element = string_tk;
+        } else if (token->type_id == OP_OPEN_BBRACK) {
+            int position = _next;
+            Array ** array = cut_array(exp_tokens);
+            ExpressionToken * array_tk = malloc(sizeof(ExpressionToken));
+            array_tk->type_id = EXPRESSION_CONSTANT_TK;
+            array_tk->literal = NULL;
+            array_tk->vtype_id = ARRAY;
+            array_tk->value = array;
+
+            exp_token_destructor(exp_tokens[position]->element); // free the current {-token =
+            exp_tokens[position]->element = array_tk;
         } else {
             allocate_token_value(token);
             _next++;
