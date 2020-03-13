@@ -56,12 +56,18 @@ char * cut_string(Array ** exp_tokens);
 Array ** cut_array(Array ** exp_tokens);
 
 /* The function will cut the tokens while not meet stop token in cut_factor string */
-Array ** cut_while(Array ** exp_tokens, char * cut_factor);
+Array ** cut_array_el(Array ** exp_tokens);
 
 /* The function will store the tokens between [] and return it as array of tokens */
 Array ** cut_iterator(Array ** exp_tokens);
 
-/* The function will create real value of token in a heap */
+/* The function will create real value of token in a heap just for simple data*/
+void typecast_constant(Array ** exp_tokens);
+
+/* The function will compose the arrays from tokens stream */
+void typecast_array(Array ** exp_tokens);
+
+/* The function will compose and typecasting all tokens */
 void token_typecast(Array ** exp_tokens);
 
 /* The function will allocate data of integer, float or string type into heap */
