@@ -109,13 +109,15 @@ Array ** cut_array_el(Array ** exp_tokens) {
 }
 
 Array ** cut_array(Array ** exp_tokens) {
-    Array ** array = new_array(); ExpressionToken * token;
+    Array ** array = new_array(); ExpressionToken * token; int coma_counter = 0;
     while (token = get_curr_exp_token(exp_tokens)) {
         if (token->type_id == OP_CLOSE_BBRACK) {
             exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the }-token
             break;
-        } else if (token->type_id == OP_COMA) exp_token_destructor(pop_next_exp_token(exp_tokens));
-          else if (token->type_id == OP_OPEN_BBRACK) {
+        } else if (token->type_id == OP_COMA) {
+            if (coma_counter++ > _get_len(array) || is_empty(array)) throw_arithmetical_exception(as_string(exp_tokens), EXPRESSION_INVALID_ARRAY_DECLARATION);
+            exp_token_destructor(pop_next_exp_token(exp_tokens));
+        } else if (token->type_id == OP_OPEN_BBRACK) {
               exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the {-token
               array = append(array, ARRAY, cut_array(exp_tokens));
           } else if (token->type_id != OP_OPEN_BBRACK) array = append(array, ARRAY, cut_array_el(exp_tokens));
@@ -290,4 +292,15 @@ char get_token_type(char symbol) {
         case OP_COMA: return OP_COMA;
         default: return EXPRESSION_OPERATOR_TK;
     }
+}
+
+char * as_string(Array ** exp_tokens) {
+    char stack_tmp[EXPRESSION_MAX_LEN + 1] = "\0"; int token_counter = 0;
+    ExpressionToken * token;
+    while (exp_tokens[token_counter]) {
+        token = exp_tokens[token_counter++]->element;
+        strcat(stack_tmp, token->literal);
+    }
+    char * string = alloc_string(stack_tmp);
+    return string;
 }

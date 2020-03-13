@@ -25,9 +25,9 @@
 #define EXPRESSION_MAX_LEN 255
 
 /* Expression exception messages */
-#define EXPRESSION_UNDEFINED_OPERATOR     "undefined operator"
-#define EXPRESSION_MISSING_ITERATOR_PARAM "iterator parameter is not defined"
-#define EXPRESSION_EXPECTED_VALUE         "in array after coma must be value"
+#define EXPRESSION_UNDEFINED_OPERATOR         "undefined operator"
+#define EXPRESSION_MISSING_ITERATOR_PARAM     "iterator parameter is not defined"
+#define EXPRESSION_INVALID_ARRAY_DECLARATION  "invalid array declaration"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {
@@ -87,6 +87,9 @@ int is_name(char * literal);
 
 /* Function will return the type of non-symbolic and non-numeric literal */
 char get_token_type(char symbol);
+
+/* Function will convert the token array to string */
+char * as_string(Array ** exp_token);
 
 /* Tools */
 ExpressionToken * get_next_exp_token(Array ** exp_tokens);
