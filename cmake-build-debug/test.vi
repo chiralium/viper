@@ -9,7 +9,7 @@ if (x > 2): {
   instruction3;
 } else: {
   aaa;
-}
+};
 "hello: {";
 if (x > 2): {
   instruction1;

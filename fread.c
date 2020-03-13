@@ -102,6 +102,7 @@ Array ** recursive_descent(char * input_stream) {
         } else if (!is_ignored(*input_stream)) {
             char * node = cut_structure_node(input_stream);
             if (*node) code_structure = append(code_structure, STRING, node);
+            else free(node);
         } else pop_first(input_stream);
     }
     return code_structure;
