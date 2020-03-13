@@ -21,7 +21,7 @@ Array ** expression_lexer(Array ** tokens) {
 Array ** extract_exp_token(char * literal) {
     Array ** expression_token = new_array();
     while (*literal) {
-        if (*literal == FPARSER_SPACE) pop_first(literal);
+        if (*literal == FPARSER_SPACE || *literal == FPARSER_EOL) pop_first(literal);
         else if (!is_in(*literal, EXPRESSION_TERMINATE_OPERATORS) && !is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
             // this if-statement means the first symbol of literal is not an operator and is not a any kind of bracket
             char *constant_literal = cut_constant(literal);
@@ -59,7 +59,7 @@ char * cut_constant(char * token) {
 
     while (*token && !(is_in(*token, EXPRESSION_TERMINATE_OPERATORS) || is_in(*token, EXPRESSION_TERMINATE_BRACKETS))) {
         symbol = pop_first(token);
-        stack_tmp[tmp_counter++] = symbol;
+        if (symbol != FPARSER_EOL) stack_tmp[tmp_counter++] = symbol;
     }
 
     stack_tmp[tmp_counter] = '\0';
