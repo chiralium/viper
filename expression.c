@@ -77,7 +77,7 @@ char * cut_operator(char * token) {
     }
 
     stack_tmp[tmp_counter] = '\0';
-    char * operator_literal = alloc_string(stack_tmp); operator_literal = trim(operator_literal);
+    char * operator_literal = alloc_string(stack_tmp);
     return operator_literal;
 }
 
