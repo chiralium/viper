@@ -100,7 +100,6 @@ char * cut_string(Array ** exp_tokens) {
 Array ** cut_array_el(Array ** exp_tokens) {
     Array ** tokens = new_array(); ExpressionToken * token;
     while (token = get_curr_exp_token(exp_tokens)) {
-        char * literal = token->literal;
         if (token->type_id != OP_COMA && token->type_id != OP_CLOSE_BBRACK) {
             token = pop_next_exp_token(exp_tokens);
             tokens = append(tokens, EXP_TK, token);
