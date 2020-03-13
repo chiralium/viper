@@ -106,7 +106,6 @@ Array ** cut_array_el(Array ** exp_tokens) {
             tokens = append(tokens, EXP_TK, token);
         } else break;
     }
-    if (is_empty(tokens)) tokens = NULL;
     return tokens;
 }
 
@@ -122,7 +121,6 @@ Array ** cut_array(Array ** exp_tokens) {
               array = append(array, ARRAY, cut_array(exp_tokens));
           } else if (token->type_id != OP_OPEN_BBRACK) array = append(array, ARRAY, cut_array_el(exp_tokens));
     }
-    if (is_empty(array)) array = NULL;
     return array;
 }
 
