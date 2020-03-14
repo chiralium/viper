@@ -21,19 +21,28 @@ Array ** expression_lexer(Array ** tokens) {
 Array ** extract_exp_token(char * literal) {
     Array ** expression_token = new_array();
     while (*literal) {
-        if (*literal == FPARSER_SPACE || *literal == FPARSER_EOL) pop_first(literal);
-        else if (!is_in(*literal, EXPRESSION_TERMINATE_OPERATORS) && !is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
+        if (*literal == FPARSER_SPACE) pop_first(literal);
+        else if (*literal == FPARSER_QUOTE) {
+            // this if-statement means the first symbol is quote marks, so next symbol must be aggregate into single tokens
+            char * string_literal = cut_string(literal);
+            ExpressionToken * string_token = malloc(sizeof(ExpressionToken));
+            string_token->type_id = EXPRESSION_CONSTANT_TK;
+            string_token->literal = NULL;
+            string_token->vtype_id = STRING;
+            string_token->value = string_literal;
+            expression_token = append(expression_token, EXP_TK, string_token);
+        } else if (!is_in(*literal, EXPRESSION_TERMINATE_OPERATORS) && !is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
             // this if-statement means the first symbol of literal is not an operator and is not a any kind of bracket
-            char *constant_literal = cut_constant(literal);
-            ExpressionToken *constant_token = malloc(sizeof(ExpressionToken));
+            char * constant_literal = cut_constant(literal);
+            ExpressionToken * constant_token = malloc(sizeof(ExpressionToken));
             constant_token->type_id = EXPRESSION_CONSTANT_TK;
             constant_token->literal = constant_literal;
             constant_token->vtype_id = UNDEFINED;
             constant_token->value = NULL;
             expression_token = append(expression_token, EXP_TK, constant_token);
         } else if (is_in(*literal, EXPRESSION_TERMINATE_OPERATORS)) {
-            char *operator_literal = cut_operator(literal);
-            ExpressionToken *operator_token = malloc(sizeof(ExpressionToken));
+            char * operator_literal = cut_operator(literal);
+            ExpressionToken * operator_token = malloc(sizeof(ExpressionToken));
             operator_token->type_id = get_token_type(*operator_literal);
             operator_token->literal = operator_literal;
             operator_token->vtype_id = UNDEFINED;
@@ -77,25 +86,25 @@ char * cut_operator(char * token) {
     }
 
     stack_tmp[tmp_counter] = '\0';
-    char * operator_literal = alloc_string(stack_tmp);
+    char * operator_literal = alloc_string(stack_tmp); operator_literal = trim(operator_literal);
     return operator_literal;
 }
 
-char * cut_string(Array ** exp_tokens) {
-    ExpressionToken * token; char * string = NULL; char stack_tmp[255] ="\0"; _next++;
-    while (token = get_curr_exp_token(exp_tokens)) {
-        if (token->type_id != OP_QUOTE) {
-            strcat(stack_tmp, token->literal);
-            exp_token_destructor(token);
-            token = pop_next_exp_token(exp_tokens);
-        } else {
-            exp_token_destructor(pop_next_exp_token(exp_tokens));
-            break;
-        }
+char * cut_string(char * token) {
+    char stack_tmp[EXPRESSION_MAX_LEN + 1]; int tmp_counter = 0;
+    char symbol; pop_first(token); // pup up the first quote mark
+
+    while (*token && *token != FPARSER_QUOTE) {
+        symbol = pop_first(token);
+        stack_tmp[tmp_counter++] = symbol;
     }
-    string = alloc_string(stack_tmp);
-    return string;
+
+    pop_first(token); // pop up the last quote mark
+    stack_tmp[tmp_counter] = '\0';
+    char * string_literal = alloc_string(stack_tmp);
+    return string_literal;
 }
+
 
 Array ** cut_array_el(Array ** exp_tokens) {
     Array ** tokens = new_array(); ExpressionToken * token;
@@ -131,25 +140,11 @@ void token_typecast(Array ** exp_tokens) {
 }
 
 void typecast_constant(Array ** exp_tokens) {
-    ExpressionToken * token;
-    while (token = get_curr_exp_token(exp_tokens)) {
-        if (token->type_id == OP_QUOTE) {
-            int position = _next;
-            char * string = cut_string(exp_tokens);
-            ExpressionToken * string_tk = malloc(sizeof(ExpressionToken));
-            string_tk->type_id = EXPRESSION_CONSTANT_TK;
-            string_tk->literal = NULL;
-            string_tk->vtype_id = STRING;
-            string_tk->value = string;
-
-            exp_token_destructor(exp_tokens[position]->element); // free the current quote-token
-            exp_tokens[position]->element = string_tk;
-        } else {
-            allocate_token_value(token);
-            _next++;
-        }
+    ExpressionToken * token; int token_counter = 0;
+    while (exp_tokens[token_counter]) {
+        token = exp_tokens[token_counter++]->element;
+        allocate_token_value(token);
     }
-    _next = 0;
 }
 
 void typecast_array(Array ** exp_tokens) {

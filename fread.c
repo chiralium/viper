@@ -50,7 +50,7 @@ char * cut_structure_node(char * input_stream) {
         }
 
         if ((!(_quote_counter % 2)) && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
-        else stack_tmp_node[node_counter++] = symbol;
+        else if (symbol != FPARSER_EOL) stack_tmp_node[node_counter++] = symbol;
     }
 
     if (_quote_counter % 2) throw_code_structure_exception(ROW_NUMBER, FPARSER_QUOTE_BALANCED_MSG);

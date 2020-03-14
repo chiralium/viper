@@ -18,7 +18,7 @@
 
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\0"
-#define EXPRESSION_TERMINATE_BRACKETS  "|{}()[]\"\0"
+#define EXPRESSION_TERMINATE_BRACKETS  "|{}()[]\0"
 #define EXPRESSION_ARRAY_CUT_FACTOR    ",}"
 
 /* Module parameters */
@@ -49,8 +49,8 @@ char * cut_constant(char * token);
 /* The function will cut the operator from literal */
 char * cut_operator(char * token);
 
-/* The function will concatenating the literal of tokens and return a string */
-char * cut_string(Array ** exp_tokens);
+/* The function will concatenating the all symbols between quote-marks */
+char * cut_string(char * literal);
 
 /* The function will store the tokens between {} and return it as array */
 Array ** cut_array(Array ** exp_tokens);
