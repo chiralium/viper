@@ -17,7 +17,7 @@
 #define EXPRESSION_OPERATOR_TK 2
 
 /* Terminate symbols */
-#define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\0"
+#define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\\\0"
 #define EXPRESSION_TERMINATE_BRACKETS  "|{}()[]\0"
 #define EXPRESSION_ARRAY_CUT_FACTOR    ",}"
 
