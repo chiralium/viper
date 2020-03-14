@@ -17,6 +17,7 @@
 #define FPARSER_COMPLEX_DELIMITER_CLOSE  '}'
 #define FPARSER_NODE_DELIMITER_2         ':'
 #define FPARSER_QUOTE                    '"'
+#define FPARSER_ESCAPE                   '\\'
 
 /* Special constants */
 #define FPARSER_MAX_STRUCT_LEN           255

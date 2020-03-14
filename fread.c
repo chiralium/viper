@@ -34,12 +34,12 @@ char * readfile(char * filename) {
 
 char * cut_structure_node(char * input_stream) {
     char stack_tmp_node[FPARSER_MAX_STRUCT_LEN + 1]; char symbol;
-    int node_counter = 0; int _quote_counter = 0; int _obracket_counter = 0; int _cbracket_counter = 0;
+    int node_counter = 0; int _quote_counter = 0; int _obracket_counter = 0; int _cbracket_counter = 0; int _is_escape = 0;
 
     while (symbol = pop_first(input_stream)) {
         switch (symbol) {
             case FPARSER_QUOTE:
-                _quote_counter++;
+                (!_is_escape) ? _quote_counter++ : 0;
                 break;
             case FPARSER_COMPLEX_DELIMITER:
                 (!(_quote_counter % 2)) ? _obracket_counter++ : _obracket_counter;
@@ -48,6 +48,7 @@ char * cut_structure_node(char * input_stream) {
                 (!(_quote_counter % 2)) ? _cbracket_counter++ : _cbracket_counter;
                 break;
         }
+        _is_escape = symbol == FPARSER_ESCAPE;
 
         if ((!(_quote_counter % 2)) && (symbol == FPARSER_NODE_DELIMITER || symbol == FPARSER_NODE_DELIMITER_2)) break;
         else if (symbol != FPARSER_EOL) stack_tmp_node[node_counter++] = symbol;

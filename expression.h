@@ -28,6 +28,7 @@
 #define EXPRESSION_UNDEFINED_OPERATOR         "undefined operator"
 #define EXPRESSION_MISSING_ITERATOR_PARAM     "iterator parameter is not defined"
 #define EXPRESSION_INVALID_ARRAY_DECLARATION  "invalid array declaration"
+#define EXPRESSION_INVALID_ESCAPE_CHAR        "invalid escape character"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {
@@ -51,6 +52,9 @@ char * cut_operator(char * token);
 
 /* The function will concatenating the all symbols between quote-marks */
 char * cut_string(char * literal);
+
+/* The function will return real character that assignment with escaped character */
+char escape2real(char symbol);
 
 /* The function will store the tokens between {} and return it as array */
 Array ** cut_array(Array ** exp_tokens);

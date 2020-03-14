@@ -20,5 +20,6 @@
 #define OP_QUOTE '"'
 #define OP_SPACE ' '
 #define OP_COMA  ','
+#define OP_ESCAPE '\\'
 
 #endif //VIPER_V4_OPERATORS_H

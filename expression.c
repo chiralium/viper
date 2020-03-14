@@ -21,8 +21,8 @@ Array ** expression_lexer(Array ** tokens) {
 Array ** extract_exp_token(char * literal) {
     Array ** expression_token = new_array();
     while (*literal) {
-        if (*literal == FPARSER_SPACE) pop_first(literal);
-        else if (*literal == FPARSER_QUOTE) {
+        if (*literal == OP_SPACE) pop_first(literal);
+        else if (*literal == OP_QUOTE) {
             // this if-statement means the first symbol is quote marks, so next symbol must be aggregate into single tokens
             char * string_literal = cut_string(literal);
             ExpressionToken * string_token = malloc(sizeof(ExpressionToken));
@@ -94,8 +94,12 @@ char * cut_string(char * token) {
     char stack_tmp[EXPRESSION_MAX_LEN + 1]; int tmp_counter = 0;
     char symbol; pop_first(token); // pup up the first quote mark
 
-    while (*token && *token != FPARSER_QUOTE) {
+    while (*token && *token != OP_QUOTE) {
         symbol = pop_first(token);
+        if (symbol == OP_ESCAPE) {
+            symbol = escape2real(pop_first(token));
+            if (!symbol) throw_arithmetical_exception(token, EXPRESSION_INVALID_ESCAPE_CHAR);
+        }
         stack_tmp[tmp_counter++] = symbol;
     }
 
@@ -286,6 +290,16 @@ char get_token_type(char symbol) {
 
         case OP_COMA: return OP_COMA;
         default: return EXPRESSION_OPERATOR_TK;
+    }
+}
+
+char escape2real(char symbol) {
+    switch(symbol) {
+        case 'n': return '\n';
+        case 't': return '\t';
+        case '\\': return '\\';
+        case '\"': return '"';
+        default: return NULL;
     }
 }
 
