@@ -1,4 +1,19 @@
+#include "expression.h"
 #include "arithmetica.h"
+
+Index * new_index(void * object, Array ** params, int params_count) {
+    Index * index = malloc(sizeof(Index));
+    index->object = object;
+    index->params = params;
+    index->params_count = params_count;
+    return index;
+}
+
+void index_destructor(Index * index) {
+    exp_token_destructor(index->object);
+    array_destructor(index->params);
+    free(index);
+}
 
 void * assign_function(char * literal) {
     void * (*function_pointer)(void *, void *) = NULL;

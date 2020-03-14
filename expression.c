@@ -2,6 +2,8 @@
 
 static int _next;
 
+//TODO: "Hello"[3.14[0,2,6], 10, 11]; exception, memory, another tests
+
 Array ** expression_lexer(Array ** tokens) {
     Array ** expression = new_array(); // expression is a container that store a ExpressionTokens
     int tokens_counter = 0;
@@ -133,14 +135,45 @@ Array ** cut_array(Array ** exp_tokens) {
         } else if (token->type_id == OP_OPEN_BBRACK) {
               exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the {-token
               array = append(array, ARRAY, cut_array(exp_tokens));
-          } else if (token->type_id != OP_OPEN_BBRACK) array = append(array, ARRAY, cut_array_el(exp_tokens));
+        } else if (token->type_id != OP_OPEN_BBRACK) array = append(array, ARRAY, cut_array_el(exp_tokens));
     }
     return array;
+}
+
+Array ** cut_index_el(Array ** exp_tokens) {
+    Array ** tokens = new_array(); ExpressionToken * token; int o = 1; int c = 0;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        (token->type_id == OP_OPEN_SBRACK) ? o++ : (token->type_id == OP_CLOSE_SBRACK) ? c++ : 0;
+        if (token->type_id == OP_CLOSE_SBRACK && o == c) break;
+        if (token->type_id != OP_COMA) {
+            token = pop_next_exp_token(exp_tokens);
+            tokens = append(tokens, EXP_TK, token);
+        } else if (o != c) {
+            token = pop_next_exp_token(exp_tokens);
+            tokens = append(tokens, EXP_TK, token);
+        } else if (token->type_id == OP_COMA && o == c) break;
+    }
+    return tokens;
+}
+
+Array ** cut_index(Array ** exp_tokens) {
+    Array ** index_params = new_array(); ExpressionToken * token; int coma_counter = 0;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        if (token->type_id == OP_CLOSE_SBRACK) {
+            exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the ]-token
+            break;
+        } else if (token->type_id == OP_COMA) {
+            if (coma_counter++ > _get_len(index_params) || is_empty(index_params)) throw_arithmetical_exception(as_string(exp_tokens), EXPRESSION_INVALID_INDEX_DECLARATION);
+            exp_token_destructor(pop_next_exp_token(exp_tokens));
+        } else if (token->type_id != OP_OPEN_SBRACK) index_params = append(index_params, ARRAY, cut_index_el(exp_tokens));
+    }
+    return index_params;
 }
 
 void token_typecast(Array ** exp_tokens) {
     typecast_constant(exp_tokens);
     typecast_array(exp_tokens);
+    typecast_index(exp_tokens);
 }
 
 void typecast_constant(Array ** exp_tokens) {
@@ -169,6 +202,24 @@ void typecast_array(Array ** exp_tokens) {
     _next = 0;
 }
 
+void typecast_index(Array ** exp_tokens) {
+    ExpressionToken * token;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        if (token->type_id == OP_OPEN_SBRACK) {
+            int position = _next - 1; exp_token_destructor(pop_next_exp_token(exp_tokens));
+            Array ** index_params = cut_index(exp_tokens);
+            Index * index = new_index(exp_tokens[position]->element, index_params, _get_len(index_params));
+            ExpressionToken * index_tk = malloc(sizeof(ExpressionToken));
+            index_tk->type_id = EXPRESSION_CONSTANT_TK;
+            index_tk->literal = NULL;
+            index_tk->vtype_id = INDEX;
+            index_tk->value = index;
+            exp_tokens[position]->element = index_tk;
+    } else _next++;
+    }
+    _next = 0;
+}
+
 int allocate_token_value(ExpressionToken * exp_token) {
     char * literal = exp_token->literal; void * (*function_pointer)(void *, void *) = NULL;
     if (exp_token->value != NULL) return 0;
@@ -186,7 +237,6 @@ int allocate_token_value(ExpressionToken * exp_token) {
         exp_token->value = function_pointer;
         exp_token->vtype_id = FUNCTION;
     } else if (is_name(literal)) {
-        // getting value from name space ???
         exp_token->value = NULL;
         exp_token->vtype_id = UNDEFINED;
     } else {
@@ -258,6 +308,9 @@ void exp_token_destructor(ExpressionToken * token) {
             break;
         case ARRAY:
             array_destructor(token->value);
+            break;
+        case INDEX:
+            index_destructor(token->value);
             break;
     }
 

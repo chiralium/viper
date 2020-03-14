@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "array.h"
+
 /*
  * This header file contained the simple arithmetical functions which assigned with tokens
  */
@@ -26,13 +27,12 @@
 #define ARITHMETICA_CSB  "]"
 #define ARITHMETICA_COMA ","
 
-/* The struct of iterator */
-typedef struct Iterator {
-    void * object;
-    Array ** start;
-    Array ** stop;
-    Array ** step;
-} Iterator;
+/* The struct of index */
+typedef struct Index {
+    void * object;;
+    Array ** params; // the first element - is a just index of array, if second element is exist - is a stop index, if third element is exist is a step value
+    int params_count;
+} Index;
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -45,7 +45,13 @@ void * _lesseq(void * x, void * y);
 void * _equal(void * x, void * y);
 void * _tmp(void * x, void * y);
 
-/* The function will return a pointer to a function which associated with token literal */
+/* The function will compose the Index-structure by input params */
+Index * new_index(void * object, Array ** params, int params_count);
+
+/* The function will return a pointer to a function which associated with a token literal */
 void * assign_function(char * literal);
+
+/* Destructors */
+void index_destructor(Index * index);
 
 #endif //VIPER_V4_ARITHMETICA_H

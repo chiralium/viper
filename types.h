@@ -9,7 +9,7 @@
 #define UNDEFINED 'u'
 #define SYS       '-'
 #define FUNCTION  '1'
-#define ITERATOR  '2'
+#define INDEX     '2'
 
 /* Entire system types */
 #define TOKEN         't'

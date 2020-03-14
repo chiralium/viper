@@ -26,7 +26,7 @@
 
 /* Expression exception messages */
 #define EXPRESSION_UNDEFINED_OPERATOR         "undefined operator"
-#define EXPRESSION_MISSING_ITERATOR_PARAM     "iterator parameter is not defined"
+#define EXPRESSION_INVALID_INDEX_DECLARATION  "invalid index declaration"
 #define EXPRESSION_INVALID_ARRAY_DECLARATION  "invalid array declaration"
 #define EXPRESSION_INVALID_ESCAPE_CHAR        "invalid escape character"
 
@@ -62,14 +62,20 @@ Array ** cut_array(Array ** exp_tokens);
 /* The function will cut the tokens while not meet stop token in cut_factor string */
 Array ** cut_array_el(Array ** exp_tokens);
 
+/* The function will cut the tokens between [] */
+Array ** cut_index_el(Array ** exp_tokens);
+
 /* The function will store the tokens between [] and return it as array of tokens */
-Array ** cut_iterator(Array ** exp_tokens);
+Array ** cut_index(Array ** exp_tokens);
 
 /* The function will create real value of token in a heap just for simple data*/
 void typecast_constant(Array ** exp_tokens);
 
 /* The function will compose the arrays from tokens stream */
 void typecast_array(Array ** exp_tokens);
+
+/* The function will compose the index from tokens stream */
+void typecast_index(Array ** exp_tokens);
 
 /* The function will compose and typecasting all tokens */
 void token_typecast(Array ** exp_tokens);

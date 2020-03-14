@@ -33,10 +33,10 @@ void display_array_beauty(Array ** _array, char * tabs) {
 
 
             switch(token_value_type_id) {
-                case ITERATOR:
-                    printf("%s%s{`<iterator>`}:\n", tabs, tabs, token_type_id);
-                    char child_tabs_iterator[255]; strcpy(child_tabs_iterator, tabs); strcat(child_tabs_iterator, tabs);
-                    display_iterator(token_value, child_tabs_iterator);
+                case INDEX:
+                    printf("%s%s{`<index>`}:\n", tabs, tabs, token_type_id);
+                    char child_tabs_index[255]; strcpy(child_tabs_index, tabs);  strcat(child_tabs_index, tabs); strcat(child_tabs_index, tabs);
+                    display_index(token_value, child_tabs_index);
                     break;
                 case STRING:
                     printf("%s%s{`%s`:<%c>(0x%p)}, \n", tabs, tabs, (char *)token_value, token_value_type_id, token_value);
@@ -95,7 +95,7 @@ void display_array(Array ** _array) {
                     printf("{`%s`:<%c>(0x%p)}, ", (char *)token_value, token_value_type_id, token_value);
                     break;
                 case ARRAY:
-                    printf("{`<array>`: ", token_type_id);
+                    printf("{`<array>`: ");
                     display_array(token_value);
                     printf("}, ");
                     break;
@@ -107,6 +107,9 @@ void display_array(Array ** _array) {
                     break;
                 case FUNCTION:
                     printf("{`function`:<%s> (0x%p)}, ", token_literal, token_value);
+                    break;
+                case INDEX:
+                    printf("{`index`}, ");
                     break;
                 default:
                     printf("{`%s`:<%c>(0x%p)}, ", token_literal, token_value_type_id, token_value);
@@ -166,13 +169,28 @@ void display_statements(void * statement, char type_id, char tabs[255]) {
     }
 }
 
-void display_iterator(Iterator * iterator, char tabs[255]) {
-    printf("%s%s%sITERATOR:\n", tabs, tabs, tabs);
-    printf("%s%s%s%sOBJECT:\n", tabs, tabs, tabs, tabs); {
-        char child_tabs[255]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs); strcat(child_tabs, tabs); strcat(child_tabs, tabs);
-        display_array_beauty(iterator->object, child_tabs);
+void display_index(Index * index, char tabs[255]) {
+
+    printf("%sINDEX:\n", tabs);
+    printf("%s%sOBJECT:\n", tabs, tabs);
+
+    char child_tabs[255];
+    strcpy(child_tabs, tabs);
+    strcat(child_tabs, tabs);
+
+    ExpressionToken * object = index->object;
+
+    if (object->vtype_id == ARRAY) display_array_beauty(object->value, child_tabs);
+    else if (object->vtype_id == INDEX) display_index(object->value, child_tabs);
+    else if (object->vtype_id == STRING) printf("%s%s`%s`\n", tabs, tabs, (char *)object->value);
+
+    printf("%s%sSTART:", tabs, tabs); display_array((index->params[0])->element); printf("\n");
+
+    if (index->params_count > 1) {
+        printf("%s%sSTOP:", tabs, tabs); display_array((index->params[1])->element); printf("\n");
+        printf("%s%sSTEP:", tabs, tabs); display_array((index->params[2])->element); printf("\n");
+    } else {
+        printf("%s%sSTOP:", tabs, tabs); printf("<null>"); printf("\n");
+        printf("%s%sSTEP:", tabs, tabs); printf("<null>"); printf("\n");
     }
-    printf("%s%s%s%sSTART:", tabs, tabs, tabs, tabs); (iterator->start) ? display_array(iterator->start) : printf("<null>"); printf("\n");
-    printf("%s%s%s%sSTOP:", tabs, tabs, tabs, tabs); (iterator->stop) ? display_array(iterator->stop) : printf("<null>"); printf("\n");
-    printf("%s%s%s%sSTEP:", tabs, tabs, tabs, tabs); (iterator->step) ? display_array(iterator->step) : printf("<null>"); printf("\n");
 }
