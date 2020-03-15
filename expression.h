@@ -19,7 +19,6 @@
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\\\0"
 #define EXPRESSION_TERMINATE_BRACKETS  "|{}()[]\0"
-#define EXPRESSION_ARRAY_CUT_FACTOR    ",}"
 
 /* Module parameters */
 #define EXPRESSION_MAX_LEN 255
@@ -27,6 +26,7 @@
 /* Expression exception messages */
 #define EXPRESSION_UNDEFINED_OPERATOR         "undefined operator"
 #define EXPRESSION_INVALID_INDEX_DECLARATION  "invalid index declaration"
+#define EXPRESSION_TOO_MUCH_INDEX_PARAMS      "too much index parameters"
 #define EXPRESSION_INVALID_ARRAY_DECLARATION  "invalid array declaration"
 #define EXPRESSION_INVALID_ESCAPE_CHAR        "invalid escape character"
 
@@ -61,6 +61,9 @@ Array ** cut_array(Array ** exp_tokens);
 
 /* The function will cut the tokens while not meet stop token in cut_factor string */
 Array ** cut_array_el(Array ** exp_tokens);
+
+/* The function will cut the tokens while not meet the stop token */
+Array ** cut_index_body(Array ** exp_tokens);
 
 /* The function will cut the tokens between [] */
 Array ** cut_index_el(Array ** exp_tokens);

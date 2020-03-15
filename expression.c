@@ -130,7 +130,7 @@ Array ** cut_array(Array ** exp_tokens) {
             exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the }-token
             break;
         } else if (token->type_id == OP_COMA) {
-            if (coma_counter++ > _get_len(array) || is_empty(array)) throw_arithmetical_exception(as_string(exp_tokens), EXPRESSION_INVALID_ARRAY_DECLARATION);
+            if (++coma_counter > _get_len(array) || is_empty(array)) throw_arithmetical_exception(as_string(exp_tokens), EXPRESSION_INVALID_ARRAY_DECLARATION);
             exp_token_destructor(pop_next_exp_token(exp_tokens));
         } else if (token->type_id == OP_OPEN_BBRACK) {
               exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the {-token
@@ -140,33 +140,57 @@ Array ** cut_array(Array ** exp_tokens) {
     return array;
 }
 
-Array ** cut_index_el(Array ** exp_tokens) {
-    Array ** tokens = new_array(); ExpressionToken * token; int o = 1; int c = 0;
+Array ** cut_index_body(Array ** exp_tokens) {
+    Array ** tokens = new_array(); ExpressionToken * token;
+    int o = 1; int c = 0;
     while (token = get_curr_exp_token(exp_tokens)) {
         (token->type_id == OP_OPEN_SBRACK) ? o++ : (token->type_id == OP_CLOSE_SBRACK) ? c++ : 0;
-        if (token->type_id == OP_CLOSE_SBRACK && o == c) break;
-        if (token->type_id != OP_COMA) {
+        if (token->type_id == OP_CLOSE_SBRACK && o == c){
+            exp_token_destructor(pop_next_exp_token(exp_tokens));
+            break;
+        } else {
+            token = pop_next_exp_token(exp_tokens);
+            tokens = append(tokens, EXP_TK,token);
+        }
+    }
+    return tokens;
+}
+
+Array ** cut_index_el(Array ** exp_tokens) {
+    Array ** tokens = new_array(); ExpressionToken * token; int o = 0; int c = 0;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        (token->type_id == OP_OPEN_SBRACK) ? o++ : (token->type_id == OP_CLOSE_SBRACK) ? c++ : 0;
+        if (o != c) {
             token = pop_next_exp_token(exp_tokens);
             tokens = append(tokens, EXP_TK, token);
-        } else if (o != c) {
-            token = pop_next_exp_token(exp_tokens);
-            tokens = append(tokens, EXP_TK, token);
-        } else if (token->type_id == OP_COMA && o == c) break;
+        } else {
+            if (token->type_id != OP_COMA) {
+                token = pop_next_exp_token(exp_tokens);
+                tokens = append(tokens, EXP_TK, token);
+            } else break;
+        }
     }
     return tokens;
 }
 
 Array ** cut_index(Array ** exp_tokens) {
-    Array ** index_params = new_array(); ExpressionToken * token; int coma_counter = 0;
-    while (token = get_curr_exp_token(exp_tokens)) {
+    Array ** index_params = new_array(); ExpressionToken * token; int coma_counter = 0; int _old_next = _next;
+    Array ** index_body = cut_index_body(exp_tokens);
+    _next = 0;
+    while (token = get_curr_exp_token(index_body)) {
         if (token->type_id == OP_CLOSE_SBRACK) {
-            exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the ]-token
+            exp_token_destructor(pop_next_exp_token(index_body)); // free the ]-token
             break;
         } else if (token->type_id == OP_COMA) {
-            if (coma_counter++ > _get_len(index_params) || is_empty(index_params)) throw_arithmetical_exception(as_string(exp_tokens), EXPRESSION_INVALID_INDEX_DECLARATION);
-            exp_token_destructor(pop_next_exp_token(exp_tokens));
-        } else if (token->type_id != OP_OPEN_SBRACK) index_params = append(index_params, ARRAY, cut_index_el(exp_tokens));
+            if (++coma_counter > _get_len(index_params) || is_empty(index_params))
+                throw_arithmetical_exception(as_string(index_body), EXPRESSION_INVALID_INDEX_DECLARATION);
+            exp_token_destructor(pop_next_exp_token(index_body));
+        } else if (token->type_id != OP_OPEN_SBRACK) {
+            index_params = append(index_params, ARRAY, cut_index_el(index_body));
+            if (_get_len(index_params) > ARITMHETICA_MAX_INDEX_PARAM) throw_arithmetical_exception(as_string(index_body), EXPRESSION_TOO_MUCH_INDEX_PARAMS);
+        }
     }
+    free(index_body); _next = _old_next;
     return index_params;
 }
 

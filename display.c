@@ -186,10 +186,13 @@ void display_index(Index * index, char tabs[255]) {
 
     printf("%s%sSTART:", tabs, tabs); display_array((index->params[0])->element); printf("\n");
 
-    if (index->params_count > 1) {
+    if (index->params_count == 3) {
         printf("%s%sSTOP:", tabs, tabs); display_array((index->params[1])->element); printf("\n");
         printf("%s%sSTEP:", tabs, tabs); display_array((index->params[2])->element); printf("\n");
-    } else {
+    } else if (index->params_count == 2) {
+        printf("%s%sSTOP:", tabs, tabs); display_array((index->params[1])->element); printf("\n");
+        printf("%s%sSTEP:", tabs, tabs); printf("<null>"); printf("\n");
+    } else if (index->params_count == 1) {
         printf("%s%sSTOP:", tabs, tabs); printf("<null>"); printf("\n");
         printf("%s%sSTEP:", tabs, tabs); printf("<null>"); printf("\n");
     }

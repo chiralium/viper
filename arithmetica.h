@@ -34,6 +34,9 @@ typedef struct Index {
     int params_count;
 } Index;
 
+/* Operators parameters */
+#define ARITMHETICA_MAX_INDEX_PARAM 3
+
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
 void * _mul(void * x, void * y);
