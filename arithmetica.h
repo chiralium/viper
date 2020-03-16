@@ -45,6 +45,9 @@ typedef struct FuncCall {
 /* Operators parameters */
 #define ARITMHETICA_MAX_INDEX_PARAM 3
 
+/* Exceptions */
+#define ARITHMETICA_BRACES_NOT_BALANCED "invalid syntax of expression, braces is not balanced"
+
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
 void * _mul(void * x, void * y);
@@ -60,7 +63,7 @@ void * _tmp(void * x, void * y);
 Array ** postfix(Array ** expression_tokens);
 
 /* The function will return the priority of operator */
-int get_priority(char * operator);
+int _get_priority(char * operator);
 
 /* The function will return a pointer to a function which associated with a token literal. Jan Łukasiewicz(c) */
 void * assign_function(char * literal);

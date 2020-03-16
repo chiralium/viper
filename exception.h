@@ -14,9 +14,10 @@
 /* Getting the line and terminate a program with EXCEPTION_CODE_STRUCTURE_ERROR at line */
 void throw_code_structure_exception(int line, char * message);
 
-/* Getting the broken statement and terminate a program with EXCEPTION_STATEMENT_ERROR */
+/* Getting the broken statement and terminate the program with EXCEPTION_STATEMENT_ERROR */
 void throw_statement_exception(char * broken_line, char * message);
 
+/* Getting the broken expression and terminate the program with EXCEPTION_ARITHMETICAL_ERROR */
 void throw_arithmetical_exception(char * broken_line, char * message);
 
 #endif //VIPER_V4_EXCEPTION_H

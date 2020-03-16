@@ -1,1 +1,53 @@
-6 / (5 + 8)
+if (x > 2): {
+  instruction1;
+  if (x * 2): {
+    "hello";
+  }
+} else (x "<" 2): {
+  instruction2;
+} else (x > 10): {
+  instruction3;
+} else: {
+  aaa;
+};
+"hello: {";
+if (x > 2): {
+  instruction1;
+  if (x * 2): {
+    "hello";
+  }
+} else (x "<" 2): {
+  instruction2;
+}
+instruction3;
+if (x): {
+  "hello";
+}
+while (x < 5): {
+  instruction1;
+  instruction2;
+}
+a = {1 + 2, {5 + 7}, {3.14 * 2, {5 / 2}}};
+
+function foo(x, y): {
+  if (x < 2): {
+    function foo2(x): {
+      return x * x;
+    }
+  }
+  return x / y;
+}
+a = {1, {2, 3}};
+([1+2] >= 7);
+"hello} world";
+"hello " + "world " + "!!!";
+as = {"hello",
+      "}world",
+      "123"};
+a = {1,
+           {2,
+            4},
+           3,
+           4};
+"hlelo"[2 + 1, 3[0], 4];
+"Hello"[0, 2, 3][2, ,];

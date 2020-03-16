@@ -2,6 +2,8 @@
 
 static int _next;
 
+//TODO: fix index exceptions
+
 Array ** expression_lexer(Array ** tokens) {
     Array ** expression = new_array(); // expression is a container that store a ExpressionTokens
     int tokens_counter = 0;

@@ -2,6 +2,8 @@
 #include "arithmetica.h"
 
 Array ** postfix(Array ** expression_tokens) {
+    char * expression = as_string(expression_tokens);
+
     Array ** tokens_stack = new_array(); Array ** output = new_array();
     Array * current_token;
     while (current_token = pop_el(expression_tokens)) {
@@ -23,23 +25,27 @@ Array ** postfix(Array ** expression_tokens) {
             Array * stack_el;
             while (stack_el = get_last_el(tokens_stack)) {
                 ExpressionToken * stack_tk = stack_el->element;
-                if (get_priority(stack_tk->literal) >= get_priority(token->literal)) output = append(output, EXP_TK, pop_last_el(tokens_stack)->element);
+                if (_get_priority(stack_tk->literal) >= _get_priority(token->literal)) output = append(output, EXP_TK, pop_last_el(tokens_stack)->element);
                 else break;
             }
             tokens_stack = append(tokens_stack, EXP_TK, token);
         }
     }
     Array * stack_el;
-    while (stack_el = pop_last_el(tokens_stack)) output = append(output, EXP_TK, stack_el->element);
+    while (stack_el = pop_last_el(tokens_stack)) {
+        ExpressionToken * token = stack_el->element;
+        if (token->type_id == OP_OPEN_CBRACK || token->type_id == OP_CLOSE_CBRACK) throw_arithmetical_exception(expression, ARITHMETICA_BRACES_NOT_BALANCED);
+        output = append(output, EXP_TK, stack_el->element);
+    }
     return output;
 }
 
-int get_priority(char * operator) {
+int _get_priority(char * operator) {
     if (strcmp(operator, ARITHMETICA_ASG) == 0) return 0;
     else if (strcmp(operator, ARITHMETICA_LESS) == 0 ||
              strcmp(operator, ARITHMETICA_MORE) == 0 ||
              strcmp(operator, ARITHMETICA_MEQ) ==  0 ||
-             strcmp(operator, ARITHMETICA_LEQ) ==  0    ) return 1;
+             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 1;
     else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 2;
     else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 3;
     return -1;
