@@ -80,8 +80,22 @@ Array * pop_el(Array **X) {
     }
 }
 
+Array * pop_last_el(Array **X) {
+    if (*X) {
+        int length = _get_len(X) - 1;
+        Array *last = X[length]; X[length] = 0;
+        return last;
+    } else return 0;
+}
+
 Array * get_first_el(Array **X) {
     return *X;
+}
+
+Array * get_last_el(Array **X) {
+    int length = _get_len(X);
+    if (length) return X[length - 1];
+    else return 0;
 }
 
 int is_empty(Array **X) {

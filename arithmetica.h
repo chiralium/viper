@@ -3,7 +3,8 @@
 #include "array.h"
 
 /*
- * This header file contained the simple arithmetical functions which assigned with tokens
+ * This header file contained the simple arithmetical functions which assigned with tokens.
+ * Tools for parsing the expression: convert to postfix notation and calculate it
  */
 
 #ifndef VIPER_V4_ARITHMETICA_H
@@ -55,14 +56,20 @@ void * _lesseq(void * x, void * y);
 void * _equal(void * x, void * y);
 void * _tmp(void * x, void * y);
 
+/* The function will convert the infix notation of expression to postfix notation */
+Array ** postfix(Array ** expression_tokens);
+
+/* The function will return the priority of operator */
+int get_priority(char * operator);
+
+/* The function will return a pointer to a function which associated with a token literal. Jan Łukasiewicz(c) */
+void * assign_function(char * literal);
+
 /* The function will compose the Index-structure by input params */
 Index * new_index(void * object, Array ** params, int params_count);
 
 /* The function will compose the FuncCall-structure by input params */
 FuncCall * new_func_call(char * name, Array ** arg_list);
-
-/* The function will return a pointer to a function which associated with a token literal */
-void * assign_function(char * literal);
 
 /* Destructors */
 void index_destructor(Index * index);

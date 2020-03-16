@@ -2,8 +2,6 @@
 
 static int _next;
 
-//TODO: "Hello"[3.14[0,2,6], 10, 11]; exception, memory, another tests
-
 Array ** expression_lexer(Array ** tokens) {
     Array ** expression = new_array(); // expression is a container that store a ExpressionTokens
     int tokens_counter = 0;
@@ -305,8 +303,9 @@ int allocate_token_value(ExpressionToken * exp_token) {
         exp_token->value = value;
         exp_token->vtype_id = FLOAT;
     } else if (function_pointer = assign_function(literal)) {
+        exp_token->type_id = EXPRESSION_OPERATOR_TK;
         exp_token->value = function_pointer;
-        exp_token->vtype_id = FUNCTION;
+        exp_token->vtype_id = OPERATOR;
     } else if (is_name(literal)) {
         exp_token->value = NULL;
         exp_token->vtype_id = UNDEFINED;

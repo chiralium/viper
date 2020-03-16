@@ -8,7 +8,7 @@
 #define STRING       's'
 #define UNDEFINED    'u'
 #define SYS          '-'
-#define FUNCTION     '1'
+#define OPERATOR     '1'
 #define INDEX        '2'
 #define FUNCTION_RES '3'
 

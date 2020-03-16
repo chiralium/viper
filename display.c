@@ -52,7 +52,7 @@ void display_array_beauty(Array ** _array, char * tabs) {
                 case FLOAT:
                     printf("%s%s{`%f`:<%c>(0x%p)}, \n", tabs, tabs, *(float *)token_value, token_value_type_id, token_value);
                     break;
-                case FUNCTION:
+                case OPERATOR:
                     printf("%s%s{`function`:<%s> (0x%p)}, \n", tabs, tabs, token_literal, token_value);
                     break;
                 case FUNCTION_RES:
@@ -110,7 +110,7 @@ void display_array(Array ** _array) {
                 case FLOAT:
                     printf("{`%f`:<%c>(0x%p)}, ", *(float *)token_value, token_value_type_id, token_value);
                     break;
-                case FUNCTION:
+                case OPERATOR:
                     printf("{`function`:<%s> (0x%p)}, ", token_literal, token_value);
                     break;
                 case INDEX:
