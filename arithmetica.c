@@ -14,7 +14,10 @@ Array ** postfix(Array ** expression_tokens) {
             while (stack_el = get_last_el(tokens_stack)) {
                 ExpressionToken * stack_tk = stack_el->element;
                 if (stack_tk->type_id != OP_OPEN_CBRACK) output = append(output, EXP_TK, pop_last_el(tokens_stack)->element);
-                else break;
+                else {
+                    pop_last_el(tokens_stack);
+                    break;
+                }
             }
         } else if (token->type_id == EXPRESSION_OPERATOR_TK) {
             Array * stack_el;

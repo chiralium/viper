@@ -291,7 +291,7 @@ void typecast_function(Array ** exp_tokens) {
 
 int allocate_token_value(ExpressionToken * exp_token) {
     char * literal = exp_token->literal; void * (*function_pointer)(void *, void *) = NULL;
-    if (exp_token->value != NULL) return 0;
+    if (exp_token->value != NULL || exp_token->vtype_id == SYS) return 0;
     if (is_int_number(literal)) {
         int * value = malloc(sizeof(int));
         *value = atoi(literal);

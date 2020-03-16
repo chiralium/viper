@@ -15,7 +15,7 @@
 /* Tokens type */
 #define EXPRESSION_CONSTANT_TK       1
 #define EXPRESSION_OPERATOR_TK       2
-#define EXPRESSION_CONSTANT_FUNC_TK 3
+#define EXPRESSION_CONSTANT_FUNC_TK  3
 
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\\\0"
