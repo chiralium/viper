@@ -37,7 +37,7 @@ Array ** extract_exp_token(char * literal) {
             // this if-statement means the first symbol of literal is not an operator and is not a any kind of bracket
             char * constant_literal = cut_constant(literal);
             ExpressionToken * constant_token = malloc(sizeof(ExpressionToken));
-            constant_token->type_id = EXPRESSION_CONSTANT_TK;
+            constant_token->type_id = (*literal != OP_OPEN_CBRACK) ? EXPRESSION_CONSTANT_TK : EXPRESSION_CONSTANT_FUNC_TK; // if the next symbol is a '(' and current token is a constant, then this token is function call
             constant_token->literal = constant_literal;
             constant_token->vtype_id = UNDEFINED;
             constant_token->value = NULL;
@@ -182,8 +182,7 @@ Array ** cut_index(Array ** exp_tokens) {
             exp_token_destructor(pop_next_exp_token(index_body)); // free the ]-token
             break;
         } else if (token->type_id == OP_COMA) {
-            if (++coma_counter > _get_len(index_params) || is_empty(index_params))
-                throw_arithmetical_exception(as_string(index_body), EXPRESSION_INVALID_INDEX_DECLARATION);
+            if (++coma_counter > _get_len(index_params) || is_empty(index_params)) throw_arithmetical_exception(as_string(index_body), EXPRESSION_INVALID_INDEX_DECLARATION);
             exp_token_destructor(pop_next_exp_token(index_body));
         } else if (token->type_id != OP_OPEN_SBRACK) {
             index_params = append(index_params, ARRAY, cut_index_el(index_body));
@@ -194,10 +193,39 @@ Array ** cut_index(Array ** exp_tokens) {
     return index_params;
 }
 
+Array ** cut_single_arg(Array ** exp_tokens) {
+    Array ** single_arg_tokens = new_array(); ExpressionToken * token; int o = 1; int c = 0;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        (token->type_id == OP_OPEN_CBRACK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
+        if (token->type_id == OP_CLOSE_CBRACK && c == o) break;
+        if (token->type_id != OP_COMA) {
+            token = pop_next_exp_token(exp_tokens);
+            single_arg_tokens = append(single_arg_tokens, EXP_TK, token);
+        } else break;
+    }
+    return single_arg_tokens;
+}
+
+Array ** cut_arglist(Array ** exp_tokens) {
+    Array ** arg_list = new_array(); ExpressionToken * token; _next++;
+    exp_token_destructor(pop_next_exp_token(exp_tokens));
+    while (token = get_curr_exp_token(exp_tokens)) {
+        if (token->type_id == OP_COMA) exp_token_destructor(pop_next_exp_token(exp_tokens));
+        else if (token->type_id != OP_CLOSE_CBRACK) {
+            arg_list = append(arg_list, ARRAY, cut_single_arg(exp_tokens));
+        } else {
+            exp_token_destructor(pop_next_exp_token(exp_tokens));
+            break;
+        }
+    }
+    return arg_list;
+}
+
 void token_typecast(Array ** exp_tokens) {
     typecast_constant(exp_tokens);
     typecast_array(exp_tokens);
     typecast_index(exp_tokens);
+    typecast_function(exp_tokens);
 }
 
 void typecast_constant(Array ** exp_tokens) {
@@ -239,7 +267,26 @@ void typecast_index(Array ** exp_tokens) {
             index_tk->vtype_id = INDEX;
             index_tk->value = index;
             exp_tokens[position]->element = index_tk;
-    } else _next++;
+        } else _next++;
+    }
+    _next = 0;
+}
+
+void typecast_function(Array ** exp_tokens) {
+    ExpressionToken * token;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        if (token->type_id == EXPRESSION_CONSTANT_FUNC_TK) {
+            int position = _next;
+            Array ** arg_list = cut_arglist(exp_tokens);
+            FuncCall * funccall = new_func_call(token->literal, arg_list);
+            ExpressionToken * funccall_tk = malloc(sizeof(ExpressionToken));
+            funccall_tk->type_id = EXPRESSION_CONSTANT_TK;
+            funccall_tk->literal = NULL;
+            funccall_tk->vtype_id = FUNCTION_RES;
+            funccall_tk->value = funccall;
+            exp_token_destructor(exp_tokens[position]->element);
+            exp_tokens[position]->element = funccall_tk;
+        } else _next++;
     }
     _next = 0;
 }
@@ -336,6 +383,9 @@ void exp_token_destructor(ExpressionToken * token) {
         case INDEX:
             index_destructor(token->value);
             break;
+        case FUNCTION_RES:
+            func_call_destructor(token->value);
+            break;
     }
 
     free(token->literal);
@@ -358,6 +408,8 @@ char get_token_type(char symbol) {
         case OP_CLOSE_BBRACK: return OP_CLOSE_BBRACK;
         case OP_OPEN_SBRACK: return OP_OPEN_SBRACK;
         case OP_CLOSE_SBRACK: return OP_CLOSE_SBRACK;
+        case OP_OPEN_CBRACK: return OP_OPEN_CBRACK;
+        case OP_CLOSE_CBRACK: return OP_CLOSE_CBRACK;
         case OP_QUOTE: return OP_QUOTE;
 
         case OP_PLUS: return OP_PLUS;

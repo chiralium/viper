@@ -13,8 +13,9 @@
 #define VIPER_V4_EXPRESSION_H
 
 /* Tokens type */
-#define EXPRESSION_CONSTANT_TK 1
-#define EXPRESSION_OPERATOR_TK 2
+#define EXPRESSION_CONSTANT_TK       1
+#define EXPRESSION_OPERATOR_TK       2
+#define EXPRESSION_CONSTANT_FUNC_TK 3
 
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\\\0"
@@ -71,6 +72,12 @@ Array ** cut_index_el(Array ** exp_tokens);
 /* The function will store the tokens between [] and return it as array of tokens */
 Array ** cut_index(Array ** exp_tokens);
 
+/* The function will store the tokens between () while not meet the coma */
+Array ** cut_single_arg(Array ** exp_tokens);
+
+/* The function will store the tokens between () like array of array */
+Array ** cut_arglist(Array ** exp_tokens);
+
 /* The function will create real value of token in a heap just for simple data*/
 void typecast_constant(Array ** exp_tokens);
 
@@ -79,6 +86,9 @@ void typecast_array(Array ** exp_tokens);
 
 /* The function will compose the index from tokens stream */
 void typecast_index(Array ** exp_tokens);
+
+/* The function will compose the function call structure */
+void typecast_function(Array ** exp_tokens);
 
 /* The function will compose and typecasting all tokens */
 void token_typecast(Array ** exp_tokens);

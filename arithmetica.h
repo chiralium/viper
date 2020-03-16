@@ -34,6 +34,13 @@ typedef struct Index {
     int params_count;
 } Index;
 
+/* The struct of call of function */
+/* The tokens sequence like CONSTANT(...) -- is a function call */
+typedef struct FuncCall {
+    char * name;
+    Array ** arg_list;
+} FuncCall;
+
 /* Operators parameters */
 #define ARITMHETICA_MAX_INDEX_PARAM 3
 
@@ -51,10 +58,14 @@ void * _tmp(void * x, void * y);
 /* The function will compose the Index-structure by input params */
 Index * new_index(void * object, Array ** params, int params_count);
 
+/* The function will compose the FuncCall-structure by input params */
+FuncCall * new_func_call(char * name, Array ** arg_list);
+
 /* The function will return a pointer to a function which associated with a token literal */
 void * assign_function(char * literal);
 
 /* Destructors */
 void index_destructor(Index * index);
+void func_call_destructor(FuncCall * funccall);
 
 #endif //VIPER_V4_ARITHMETICA_H

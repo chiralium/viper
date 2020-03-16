@@ -55,6 +55,11 @@ void display_array_beauty(Array ** _array, char * tabs) {
                 case FUNCTION:
                     printf("%s%s{`function`:<%s> (0x%p)}, \n", tabs, tabs, token_literal, token_value);
                     break;
+                case FUNCTION_RES:
+                    printf("%s%s{`function_call`:<%s>}: arg_list: \n", tabs, tabs, ((FuncCall *)token_value)->name);
+                    char child_tabs_function_call[255]; strcpy(child_tabs_function_call, tabs); strcat(child_tabs_function_call, tabs);
+                    display_array_beauty(((FuncCall *)token_value)->arg_list, child_tabs_function_call);
+                    break;
                 default:
                     printf("%s%s{`%s`:<%c>(0x%p)}, \n", tabs, tabs, token_literal, token_value_type_id, token_value);
             }
@@ -110,6 +115,9 @@ void display_array(Array ** _array) {
                     break;
                 case INDEX:
                     printf("{`index`}, ");
+                    break;
+                case FUNCTION_RES:
+                    printf("{`function_call`}");
                     break;
                 default:
                     printf("{`%s`:<%c>(0x%p)}, ", token_literal, token_value_type_id, token_value);

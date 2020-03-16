@@ -15,6 +15,20 @@ void index_destructor(Index * index) {
     free(index);
 }
 
+FuncCall * new_func_call(char * name, Array ** arg_list) {
+    FuncCall * funccall = malloc(sizeof(FuncCall));
+    char * function_name = alloc_string(name);
+    funccall->name = function_name;
+    funccall->arg_list = arg_list;
+    return funccall;
+}
+
+void func_call_destructor(FuncCall * funccall) {
+    array_destructor(funccall->arg_list);
+    free(funccall->name);
+    free(funccall);
+}
+
 void * assign_function(char * literal) {
     void * (*function_pointer)(void *, void *) = NULL;
     if (strcmp(literal, ARITHMETICA_PLUS) == 0) function_pointer = _add;

@@ -2,14 +2,15 @@
 #define VIPER_V4_TYPES_H
 
 /* Basic information types */
-#define INTEGER   'i'
-#define FLOAT     'f'
-#define ARRAY     'a'
-#define STRING    's'
-#define UNDEFINED 'u'
-#define SYS       '-'
-#define FUNCTION  '1'
-#define INDEX     '2'
+#define INTEGER      'i'
+#define FLOAT        'f'
+#define ARRAY        'a'
+#define STRING       's'
+#define UNDEFINED    'u'
+#define SYS          '-'
+#define FUNCTION     '1'
+#define INDEX        '2'
+#define FUNCTION_RES '3'
 
 /* Entire system types */
 #define TOKEN         't'
