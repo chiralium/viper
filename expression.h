@@ -18,8 +18,8 @@
 #define EXPRESSION_CONSTANT_FUNC_TK  3
 
 /* Terminate symbols */
-#define EXPRESSION_TERMINATE_OPERATORS ",+-*/=<>\\\0"
-#define EXPRESSION_TERMINATE_BRACKETS  "|{}()[]\0"
+#define EXPRESSION_TERMINATE_OPERATORS "+-*/=<>\\\0"
+#define EXPRESSION_TERMINATE_BRACKETS  ",{}()[]\0"
 
 /* Module parameters */
 #define EXPRESSION_MAX_LEN 255

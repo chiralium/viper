@@ -2,8 +2,6 @@
 
 static int _next;
 
-//TODO: fix index exceptions
-
 Array ** expression_lexer(Array ** tokens) {
     Array ** expression = new_array(); // expression is a container that store a ExpressionTokens
     int tokens_counter = 0;
@@ -174,6 +172,7 @@ Array ** cut_index_el(Array ** exp_tokens) {
 }
 
 Array ** cut_index(Array ** exp_tokens) {
+    char * tokens_as_string = as_string(exp_tokens);
     Array ** index_params = new_array(); ExpressionToken * token; int coma_counter = 0; int _old_next = _next;
     Array ** index_body = cut_index_body(exp_tokens);
     _next = 0;
@@ -182,7 +181,7 @@ Array ** cut_index(Array ** exp_tokens) {
             exp_token_destructor(pop_next_exp_token(index_body)); // free the ]-token
             break;
         } else if (token->type_id == OP_COMA) {
-            if (++coma_counter > _get_len(index_params) || is_empty(index_params)) throw_arithmetical_exception(as_string(index_body), EXPRESSION_INVALID_INDEX_DECLARATION);
+            if (++coma_counter > _get_len(index_params) || is_empty(index_params)) throw_arithmetical_exception(tokens_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
             exp_token_destructor(pop_next_exp_token(index_body));
         } else if (token->type_id != OP_OPEN_SBRACK) {
             index_params = append(index_params, ARRAY, cut_index_el(index_body));
@@ -438,7 +437,7 @@ char * as_string(Array ** exp_tokens) {
     ExpressionToken * token;
     while (exp_tokens[token_counter]) {
         token = exp_tokens[token_counter++]->element;
-        strcat(stack_tmp, token->literal);
+        if (token->literal != NULL) strcat(stack_tmp, token->literal);
     }
     char * string = alloc_string(stack_tmp);
     return string;

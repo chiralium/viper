@@ -25,9 +25,9 @@ void run(void) {
     display_array_beauty(expression_tokens, tabs);
     tabs[0] = '\0';
 
-//    printf("\n\nPOSTFIX:\n");
-//    Array ** postfix_expression = postfix(expression_tokens[0]->element);
-//    display_array_beauty(postfix_expression, tabs);
+    printf("\n\nPOSTFIX:\n");
+    Array ** postfix_expression = postfix(expression_tokens[0]->element);
+    display_array_beauty(postfix_expression, tabs);
 
     array_destructor(literals);
     array_destructor(tokens);
