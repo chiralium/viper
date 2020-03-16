@@ -30,6 +30,7 @@
 #define EXPRESSION_TOO_MUCH_INDEX_PARAMS      "too much index parameters"
 #define EXPRESSION_INVALID_ARRAY_DECLARATION  "invalid array declaration"
 #define EXPRESSION_INVALID_ESCAPE_CHAR        "invalid escape character"
+#define EXPRESSION_INVALID_FUNCTION_CALL      "invalid arguments definition (braces is not balanced)"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {

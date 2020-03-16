@@ -193,6 +193,7 @@ Array ** cut_index(Array ** exp_tokens) {
 }
 
 Array ** cut_single_arg(Array ** exp_tokens) {
+    char * tokens_as_string = as_string(exp_tokens);
     Array ** single_arg_tokens = new_array(); ExpressionToken * token; int o = 1; int c = 0;
     while (token = get_curr_exp_token(exp_tokens)) {
         (token->type_id == OP_OPEN_CBRACK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
@@ -202,6 +203,7 @@ Array ** cut_single_arg(Array ** exp_tokens) {
             single_arg_tokens = append(single_arg_tokens, EXP_TK, token);
         } else break;
     }
+    if (o != c) throw_arithmetical_exception(tokens_as_string, EXPRESSION_INVALID_FUNCTION_CALL);
     return single_arg_tokens;
 }
 
