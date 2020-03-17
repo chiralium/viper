@@ -5,6 +5,7 @@ Array ** postfix(Array ** expression_tokens) {
     char * expression = as_string(expression_tokens);
 
     expression_tokens = fixing_unary_operators(expression_tokens);
+
     Array ** tokens_stack = new_array(); Array ** output = new_array();
     Array * current_token;
     while (current_token = pop_el(expression_tokens)) {
@@ -54,7 +55,7 @@ Array ** fixing_unary_operators(Array ** expression_tokens) {
         ExpressionToken * token = expression_tokens[token_counter]->element;
         if (token->vtype_id == OPERATOR_PLUS || token->vtype_id == OPERATOR_MINUS) {
             if (!token_counter) expression_tokens = insert(expression_tokens, EXP_TK, zero_token, token_counter++);
-            else if (token->type_id == OP_OPEN_CBRACK) expression_tokens = insert(expression_tokens, EXP_TK, zero_token, token_counter++);
+            else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == OP_OPEN_CBRACK) expression_tokens = insert(expression_tokens, EXP_TK, zero_token, token_counter++);
         }
         token_counter++;
     }

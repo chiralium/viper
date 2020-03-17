@@ -3,7 +3,7 @@
 void run(void) {
     char *filename = "C:\\viper\\viper-v4\\cmake-build-debug\\test.vi";
     char *input_stream; input_stream = readfile(filename);
-    char tabs[255];
+    char tabs[255] = "\0";
 
     Array ** literals = recursive_descent(input_stream); free(input_stream);
     printf("\n\nCode structure: \n");
