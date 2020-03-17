@@ -22,6 +22,9 @@ Array ** realloc_array(Array **_array, unsigned long length);
 /* Insert into the end new element into array */
 Array ** append(Array **_array, char type_id, void *value);
 
+/* Insert into new element of array*/
+Array ** insert(Array **_array, char type_id, void *value, unsigned long position);
+
 /* Get length of array */
 unsigned long _get_len(Array **_array);
 

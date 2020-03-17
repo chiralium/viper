@@ -4,6 +4,7 @@
 Array ** postfix(Array ** expression_tokens) {
     char * expression = as_string(expression_tokens);
 
+    expression_tokens = fixing_unary_operators(expression_tokens);
     Array ** tokens_stack = new_array(); Array ** output = new_array();
     Array * current_token;
     while (current_token = pop_el(expression_tokens)) {
@@ -37,7 +38,27 @@ Array ** postfix(Array ** expression_tokens) {
         if (token->type_id == OP_OPEN_CBRACK || token->type_id == OP_CLOSE_CBRACK) throw_arithmetical_exception(expression, ARITHMETICA_BRACES_NOT_BALANCED);
         output = append(output, EXP_TK, stack_el->element);
     }
+    free(expression);
     return output;
+}
+
+Array ** fixing_unary_operators(Array ** expression_tokens) {
+    ExpressionToken * zero_token = malloc(sizeof(ExpressionToken));
+    zero_token->type_id = EXPRESSION_CONSTANT_TK;
+    zero_token->literal = "0";
+    zero_token->value = NULL;
+    allocate_token_value(zero_token);
+
+    int token_counter = 0;
+    while (expression_tokens[token_counter]) {
+        ExpressionToken * token = expression_tokens[token_counter]->element;
+        if (token->vtype_id == OPERATOR_PLUS || token->vtype_id == OPERATOR_MINUS) {
+            if (!token_counter) expression_tokens = insert(expression_tokens, EXP_TK, zero_token, token_counter++);
+            else if (token->type_id == OP_OPEN_CBRACK) expression_tokens = insert(expression_tokens, EXP_TK, zero_token, token_counter++);
+        }
+        token_counter++;
+    }
+    return expression_tokens;
 }
 
 int _get_priority(char * operator) {
@@ -115,6 +136,14 @@ void * _mul(void * x, void * y) {
 }
 
 void * _div(void * x, void * y) {
+    return NULL;
+}
+
+void * _pow(void * x, void * y){
+    return NULL;
+}
+
+void * _not(void * x, void * y) {
     return NULL;
 }
 

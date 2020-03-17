@@ -62,6 +62,17 @@ Array ** append(Array **_array, char type_id, void *value) {
     return _array;
 }
 
+Array ** insert(Array **_array, char type_id, void *value, unsigned long position) {
+    unsigned long len = _get_len(_array);
+    if (len) _array = realloc_array(_array, len + 2);
+    Array *el; el = malloc(sizeof(Array));
+    el -> type_id = type_id; el -> element = value;
+    // shift array to the left by one element
+    memmove(_array + position + 1, _array + position, sizeof(Array *) * (len - position));
+    _array[position] = el;
+    return _array;
+}
+
 unsigned long _get_len(Array **_array) {
     unsigned long l = 0;
     while (_array[l]) l++;

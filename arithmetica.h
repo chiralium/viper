@@ -54,6 +54,8 @@ void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
 void * _mul(void * x, void * y);
 void * _div(void * x, void * y);
+void * _pow(void * x, void * y);
+void * _not(void * x, void * y);
 void * _more(void * x, void * y);
 void * _less(void * x, void * y);
 void * _moreeq(void * x, void * y);
@@ -63,6 +65,9 @@ void * _tmp(void * x, void * y);
 
 /* The function will convert the infix notation of expression to postfix notation */
 Array ** postfix(Array ** expression_tokens);
+
+/* The function will insert zero-token-value before unary plus or minus */
+Array ** fixing_unary_operators(Array ** expression_tokens);
 
 /* The function will return the priority of operator */
 int _get_priority(char * operator);
