@@ -188,7 +188,8 @@ Array ** cut_index(Array ** exp_tokens) {
             if (_get_len(index_params) > ARITMHETICA_MAX_INDEX_PARAM) throw_arithmetical_exception(as_string(index_body), EXPRESSION_TOO_MUCH_INDEX_PARAMS);
         }
     }
-    free(index_body); _next = _old_next;
+    free(index_body); free(tokens_as_string);
+    _next = _old_next;
     return index_params;
 }
 
@@ -204,6 +205,7 @@ Array ** cut_single_arg(Array ** exp_tokens) {
         } else break;
     }
     if (o != c) throw_arithmetical_exception(tokens_as_string, EXPRESSION_INVALID_FUNCTION_CALL);
+    free(tokens_as_string);
     return single_arg_tokens;
 }
 
@@ -308,15 +310,11 @@ int allocate_token_value(ExpressionToken * exp_token) {
     } else if (function_pointer = assign_function(literal)) {
         exp_token->type_id = EXPRESSION_OPERATOR_TK;
         exp_token->value = function_pointer;
-        exp_token->vtype_id = OPERATOR;
+        exp_token->vtype_id = get_operator_type(literal);
     } else if (is_name(literal)) {
         exp_token->value = NULL;
         exp_token->vtype_id = UNDEFINED;
-    } else {
-        throw_arithmetical_exception(literal, EXPRESSION_UNDEFINED_OPERATOR);
-        exp_token->value = NULL;
-        exp_token->vtype_id = UNDEFINED;
-    }
+    } else throw_arithmetical_exception(literal, EXPRESSION_UNDEFINED_OPERATOR);
 }
 
 int is_in(char symbol, char * stop_symbols) {
@@ -422,6 +420,22 @@ char get_token_type(char symbol) {
         case OP_COMA: return OP_COMA;
         default: return EXPRESSION_OPERATOR_TK;
     }
+}
+
+char get_operator_type(char * operator) {
+    if (strcmp(operator, ARITHMETICA_PLUS) == 0) return OPERATOR_PLUS;
+    else if (strcmp(operator, ARITHMETICA_SUB) == 0) return OPERATOR_MINUS;
+    else if (strcmp(operator, ARITHMETICA_MUL) == 0) return OPERATOR_MUL;
+    else if (strcmp(operator, ARITHMETICA_DIV) == 0) return OPERATOR_DIV;
+    else if (strcmp(operator, ARITHMETICA_POW) == 0) return OPERATOR_POW;
+    else if (strcmp(operator, ARITHMETICA_NOT) == 0) return OPERATOR_NOT;
+    else if (strcmp(operator, ARITHMETICA_MORE) == 0) return OPERATOR_MORE;
+    else if (strcmp(operator, ARITHMETICA_LESS) == 0) return OPERATOR_LESS;
+    else if (strcmp(operator, ARITHMETICA_MEQ) == 0) return OPERATOR_MEQ;
+    else if (strcmp(operator, ARITHMETICA_LEQ) == 0) return OPERATOR_LEQ;
+    else if (strcmp(operator, ARITHMETICA_EQ) == 0) return OPERATOR_EQ;
+    else if (strcmp(operator, ARITHMETICA_ASG) == 0) return OPERATOR_ASG;
+    return 0;
 }
 
 char escape2real(char symbol) {

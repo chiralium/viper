@@ -33,6 +33,9 @@ void display_array_beauty(Array ** _array, char * tabs) {
 
 
             switch(token_value_type_id) {
+                case UNDEFINED:
+                    printf("%s%s{`%s`:<u>} \n", tabs, tabs, token_literal);
+                    break;
                 case INDEX:
                     printf("%s%s{`<index>`}:\n", tabs, tabs, token_type_id);
                     char child_tabs_index[255]; strcpy(child_tabs_index, tabs);  strcat(child_tabs_index, tabs); strcat(child_tabs_index, tabs);
@@ -52,16 +55,14 @@ void display_array_beauty(Array ** _array, char * tabs) {
                 case FLOAT:
                     printf("%s%s{`%f`:<%c>(0x%p)}, \n", tabs, tabs, *(float *)token_value, token_value_type_id, token_value);
                     break;
-                case OPERATOR:
-                    printf("%s%s{`function`:<%s> (0x%p)}, \n", tabs, tabs, token_literal, token_value);
-                    break;
                 case FUNCTION_RES:
                     printf("%s%s{`function_call`:<%s>}: arg_list: \n", tabs, tabs, ((FuncCall *)token_value)->name);
                     char child_tabs_function_call[255]; strcpy(child_tabs_function_call, tabs); strcat(child_tabs_function_call, tabs);
                     display_array_beauty(((FuncCall *)token_value)->arg_list, child_tabs_function_call);
                     break;
                 default:
-                    printf("%s%s{`%s`:<%c>(0x%p)}, \n", tabs, tabs, token_literal, token_value_type_id, token_value);
+                    printf("%s%s{`function`:<%s> (0x%p)}, \n", tabs, tabs, token_literal, token_value);
+                    break;
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("%s%s{TK:%d; `<complex>`}, \n", tabs, tabs, ((Token *)(_array[array_counter] -> element)) -> type_id);
         else if (_array[array_counter] -> type_id == ARRAY) {

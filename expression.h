@@ -18,7 +18,7 @@
 #define EXPRESSION_CONSTANT_FUNC_TK  3
 
 /* Terminate symbols */
-#define EXPRESSION_TERMINATE_OPERATORS "+-*/=<>\\\0"
+#define EXPRESSION_TERMINATE_OPERATORS "!^+-*/=<>\\\0"
 #define EXPRESSION_TERMINATE_BRACKETS  ",{}()[]\0"
 
 /* Module parameters */
@@ -111,6 +111,9 @@ int is_name(char * literal);
 
 /* Function will return the type of non-symbolic and non-numeric literal */
 char get_token_type(char symbol);
+
+/* Function will return the operator type */
+char get_operator_type(char * operator);
 
 /* Function will convert the token array to string */
 char * as_string(Array ** exp_token);

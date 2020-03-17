@@ -14,6 +14,8 @@
 #define ARITHMETICA_SUB  "-"
 #define ARITHMETICA_MUL  "*"
 #define ARITHMETICA_DIV  "/"
+#define ARITHMETICA_POW  "^"
+#define ARITHMETICA_NOT  "!"
 #define ARITHMETICA_MORE ">"
 #define ARITHMETICA_LESS "<"
 #define ARITHMETICA_MEQ  ">="
