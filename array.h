@@ -48,5 +48,6 @@ int is_empty(Array **X);
 
 /* Freed memory from heap */
 void array_destructor(Array **_array);
-
+void array_el_destructor(Array *_el);
+void array_destructor_only_pointers(Array **_array);
 #endif //VIPER_V4_ARRAY_H

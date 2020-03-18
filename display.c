@@ -206,3 +206,23 @@ void display_index(Index * index, char tabs[255]) {
         printf("%s%sSTEP:", tabs, tabs); printf("<null>"); printf("\n");
     }
 }
+
+void display_constant(Constant * constant) {
+    switch (constant->type_id) {
+        case INTEGER:
+            printf("\n%d\n", *(int *)constant->value);
+            break;
+        case FLOAT:
+            printf("\n%f\n", *(float *)constant->value);
+            break;
+        case STRING:
+            printf("\n%s\n", (char *)constant->value);
+            break;
+        case ARRAY:
+            printf("\n<array>: "); display_array(constant->value); printf("\n");
+            break;
+        case INDEX:
+            printf("\n<index>: "); display_index(constant->value, " "); printf("\n");
+            break;
+    }
+}

@@ -125,3 +125,15 @@ void array_destructor(Array **_array) {
     }
     free(_array);
 }
+
+void array_el_destructor(Array *_el) {
+    if (_el->type_id == ARRAY) array_destructor(_el->element);
+    else if (_el->type_id == INDEX) index_destructor(_el->element);
+    else free(_el->element);
+}
+
+void array_destructor_only_pointers(Array **_array) {
+    int i = 0;
+    while(_array[i]) free(_array[i++]);
+    free(_array);
+}

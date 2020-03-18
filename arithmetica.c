@@ -1,6 +1,36 @@
 #include "expression.h"
 #include "arithmetica.h"
 
+Constant * arithmetica(Array ** expression_tokens) {
+    char * expression = as_string(expression_tokens);
+
+    Array ** postfixed_expression = postfix(expression_tokens);
+
+    /*
+     * Calculate the value:
+     * 1. if current token is a complex value like array or index:
+     *    - for array necessary precalculate each elements of array;
+     *    - for index necessary precalculate index value;
+     *    - save the precalculated value into value of ExpressionTokens
+     *
+     * 2. if current value is a variable:
+     *    - get real value from namespace
+     *    - save this value into value of ExpressionTokens
+     *
+     * 3. Calculate value and return as Constant-structure
+     */
+
+    int * v = malloc(sizeof(int)); *v = 123;
+    Constant * value = malloc(sizeof(Constant));
+    value->type_id = INTEGER;
+    value->value = v;
+
+    array_destructor(postfixed_expression);
+    free(expression);
+
+    return value;
+}
+
 Array ** postfix(Array ** expression_tokens) {
     char * expression = as_string(expression_tokens);
 
@@ -10,52 +40,65 @@ Array ** postfix(Array ** expression_tokens) {
     Array * current_token;
     while (current_token = pop_el(expression_tokens)) {
         ExpressionToken * token = current_token->element;
-        if (token->type_id == EXPRESSION_CONSTANT_TK) output = append(output, EXP_TK, token);
-        else if (token->type_id == EXPRESSION_CONSTANT_FUNC_TK) tokens_stack = append(tokens_stack, EXP_TK, token);
-        else if (token->type_id == OP_OPEN_CBRACK) tokens_stack = append(tokens_stack, EXP_TK, token);
-        else if (token->type_id == OP_CLOSE_CBRACK) {
+        if (token->type_id == EXPRESSION_CONSTANT_TK) {
+            output = append(output, EXP_TK, token);
+            free(current_token);
+        } else if (token->type_id == EXPRESSION_CONSTANT_FUNC_TK) {
+            tokens_stack = append(tokens_stack, EXP_TK, token);
+            free(current_token);
+        } else if (token->type_id == OP_OPEN_CBRACK) {
+            tokens_stack = append(tokens_stack, EXP_TK, token);
+            free(current_token);
+        } else if (token->type_id == OP_CLOSE_CBRACK) {
             Array * stack_el;
             while (stack_el = get_last_el(tokens_stack)) {
                 ExpressionToken * stack_tk = stack_el->element;
-                if (stack_tk->type_id != OP_OPEN_CBRACK) output = append(output, EXP_TK, pop_last_el(tokens_stack)->element);
-                else {
-                    pop_last_el(tokens_stack);
+                if (stack_tk->type_id != OP_OPEN_CBRACK) {
+                    output = append(output, EXP_TK, pop_last_el(tokens_stack)->element);
+                    free(stack_el);
+                } else {
+                    Array * stack_el = pop_last_el(tokens_stack);
+                    exp_token_destructor(stack_el->element);
+                    free(stack_el);
                     break;
                 }
             }
+            exp_token_destructor(current_token->element);
+            free(current_token);
         } else if (token->type_id == EXPRESSION_OPERATOR_TK) {
             Array * stack_el;
             while (stack_el = get_last_el(tokens_stack)) {
                 ExpressionToken * stack_tk = stack_el->element;
-                if (_get_priority(stack_tk->literal) >= _get_priority(token->literal)) output = append(output, EXP_TK, pop_last_el(tokens_stack)->element);
-                else break;
+                if (_get_priority(stack_tk->literal) >= _get_priority(token->literal)) {
+                    output = append(output, EXP_TK, pop_last_el(tokens_stack)->element);
+                    free(stack_el);
+                } else break;
             }
-            tokens_stack = append(tokens_stack, EXP_TK, token);
+            tokens_stack = append(tokens_stack, EXP_TK, token); free(current_token);
         }
     }
     Array * stack_el;
     while (stack_el = pop_last_el(tokens_stack)) {
         ExpressionToken * token = stack_el->element;
         if (token->type_id == OP_OPEN_CBRACK || token->type_id == OP_CLOSE_CBRACK) throw_arithmetical_exception(expression, ARITHMETICA_BRACES_NOT_BALANCED);
-        output = append(output, EXP_TK, stack_el->element);
+        output = append(output, EXP_TK, token); free(stack_el);
     }
-    free(expression);
+
+    free(expression); free(tokens_stack); free(expression_tokens);
+
     return output;
 }
 
 Array ** fixing_unary_operators(Array ** expression_tokens) {
-    ExpressionToken * zero_token = malloc(sizeof(ExpressionToken));
-    zero_token->type_id = EXPRESSION_CONSTANT_TK;
-    zero_token->literal = "0";
-    zero_token->value = NULL;
-    allocate_token_value(zero_token);
-
     int token_counter = 0;
     while (expression_tokens[token_counter]) {
         ExpressionToken * token = expression_tokens[token_counter]->element;
         if (token->vtype_id == OPERATOR_PLUS || token->vtype_id == OPERATOR_MINUS) {
-            if (!token_counter) expression_tokens = insert(expression_tokens, EXP_TK, zero_token, token_counter++);
-            else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == OP_OPEN_CBRACK) expression_tokens = insert(expression_tokens, EXP_TK, zero_token, token_counter++);
+            if (!token_counter) expression_tokens = insert(expression_tokens, EXP_TK, make_zero_tk(), token_counter++);
+            else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == OP_OPEN_CBRACK) expression_tokens = insert(expression_tokens,
+                                                                                                                                                  EXP_TK,
+                                                                                                                                                  make_zero_tk(),
+                                                                                                                                                  token_counter++);
         }
         token_counter++;
     }
@@ -122,6 +165,33 @@ void func_call_destructor(FuncCall * funccall) {
     array_destructor(funccall->arg_list);
     free(funccall->name);
     free(funccall);
+}
+
+void constant_destructor(Constant * constant) {
+    switch (constant->type_id) {
+        case INTEGER: case FLOAT: case STRING:
+            free(constant->value);
+            break;
+        case ARRAY:
+            array_destructor(constant->value);
+            break;
+        case INDEX:
+            index_destructor(constant->value);
+            break;
+    }
+    free(constant);
+}
+
+void * make_zero_tk() {
+    /* Create the zero token for fixing unary plus or minus */
+    ExpressionToken * zero_token = malloc(sizeof(ExpressionToken));
+    int * zero = malloc(sizeof(int)); *zero = 0;
+    char * zero_literal = calloc(sizeof(char), 2); strcpy(zero_literal, "0");
+    zero_token->type_id = EXPRESSION_CONSTANT_TK;
+    zero_token->literal = zero_literal;
+    zero_token->value = zero;
+    zero_token->vtype_id = INTEGER;
+    return zero_token;
 }
 
 void * _add(void * x, void * y) {

@@ -44,6 +44,12 @@ typedef struct FuncCall {
     Array ** arg_list;
 } FuncCall;
 
+/* The data-structure that used for store result of calculate expression */
+typedef struct Constant {
+    char type_id;
+    void * value;
+} Constant;
+
 /* Operators parameters */
 #define ARITMHETICA_MAX_INDEX_PARAM 3
 
@@ -63,11 +69,19 @@ void * _lesseq(void * x, void * y);
 void * _equal(void * x, void * y);
 void * _tmp(void * x, void * y);
 
+/* The main entry point of module
+ * This function will calculate expression and return the value as data-structure
+ */
+Constant * arithmetica(Array ** expression_tokens);
+
 /* The function will convert the infix notation of expression to postfix notation */
 Array ** postfix(Array ** expression_tokens);
 
 /* The function will insert zero-token-value before unary plus or minus */
 Array ** fixing_unary_operators(Array ** expression_tokens);
+
+/* The function will crate the zero-token */
+void * make_zero_tk();
 
 /* The function will return the priority of operator */
 int _get_priority(char * operator);
@@ -84,5 +98,6 @@ FuncCall * new_func_call(char * name, Array ** arg_list);
 /* Destructors */
 void index_destructor(Index * index);
 void func_call_destructor(FuncCall * funccall);
+void constant_destructor(Constant * constant);
 
 #endif //VIPER_V4_ARITHMETICA_H

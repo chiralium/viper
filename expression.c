@@ -374,7 +374,7 @@ ExpressionToken * pop_next_exp_token(Array ** exp_tokens) {
 
 void exp_token_destructor(ExpressionToken * token) {
     switch (token->vtype_id) {
-        case INTEGER: case FLOAT: case STRING:
+    case INTEGER: case FLOAT: case STRING: case UNDEFINED:
             free(token->value);
             break;
         case ARRAY:
@@ -388,7 +388,7 @@ void exp_token_destructor(ExpressionToken * token) {
             break;
     }
 
-    free(token->literal);
+    if (token->literal != NULL) free(token->literal);
     free(token);
 }
 
