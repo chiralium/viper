@@ -3,7 +3,7 @@
 
 Constant * arithmetica(Array ** expression_tokens) {
     char * expression = as_string(expression_tokens);
-
+    printf("%s", expression);
     Array ** postfixed_expression = postfix(expression_tokens);
 
     /*
@@ -19,14 +19,15 @@ Constant * arithmetica(Array ** expression_tokens) {
      *
      * 3. Calculate value and return as Constant-structure
      */
-
+    char * postfix_expression = as_string(postfixed_expression);
+    printf("\n%s\n", postfix_expression);
     int * v = malloc(sizeof(int)); *v = 123;
     Constant * value = malloc(sizeof(Constant));
     value->type_id = INTEGER;
     value->value = v;
 
     array_destructor(postfixed_expression);
-    free(expression);
+    free(expression); free(postfix_expression);
 
     return value;
 }
@@ -95,7 +96,8 @@ Array ** fixing_unary_operators(Array ** expression_tokens) {
         ExpressionToken * token = expression_tokens[token_counter]->element;
         if (token->vtype_id == OPERATOR_PLUS || token->vtype_id == OPERATOR_MINUS) {
             if (!token_counter) expression_tokens = insert(expression_tokens, EXP_TK, make_zero_tk(), token_counter++);
-            else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == EXPRESSION_OPERATOR_TK) expression_tokens = insert(expression_tokens,
+            else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == OP_OPEN_CBRACK ||
+                      ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == EXPRESSION_OPERATOR_TK) expression_tokens = insert(expression_tokens,
                                                                                                                                                           EXP_TK,
                                                                                                                                                           make_zero_tk(),
                                                                                                                                                           token_counter++);
