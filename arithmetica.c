@@ -95,10 +95,10 @@ Array ** fixing_unary_operators(Array ** expression_tokens) {
         ExpressionToken * token = expression_tokens[token_counter]->element;
         if (token->vtype_id == OPERATOR_PLUS || token->vtype_id == OPERATOR_MINUS) {
             if (!token_counter) expression_tokens = insert(expression_tokens, EXP_TK, make_zero_tk(), token_counter++);
-            else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == OP_OPEN_CBRACK) expression_tokens = insert(expression_tokens,
-                                                                                                                                                  EXP_TK,
-                                                                                                                                                  make_zero_tk(),
-                                                                                                                                                  token_counter++);
+            else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == EXPRESSION_OPERATOR_TK) expression_tokens = insert(expression_tokens,
+                                                                                                                                                          EXP_TK,
+                                                                                                                                                          make_zero_tk(),
+                                                                                                                                                          token_counter++);
         }
         token_counter++;
     }
