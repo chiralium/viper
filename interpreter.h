@@ -1,5 +1,6 @@
 #include "arithmetica.h"
 #include "expression.h"
+#include "namespace.h"
 
 /*
  * This module will interpretate the language constructions.
