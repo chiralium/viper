@@ -9,6 +9,15 @@ void interpreter(Array ** code) {
             display_constant(value);
             constant_destructor(value);
             free(code[code_counter]);
+        } else if (code[code_counter]->type_id == STMT_IF) {
+            if_destructor(code[code_counter]->element);
+            free(code[code_counter]);
+        } else if (code[code_counter]->type_id == STMT_WHILE) {
+            free(code[code_counter]->element);
+            free(code[code_counter]);
+        } else if (code[code_counter]->type_id == STMT_FUNC) {
+            function_destructor(code[code_counter]->element);
+            free(code[code_counter]);
         }
         code_counter++;
     }

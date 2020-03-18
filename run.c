@@ -27,5 +27,5 @@ void run(void) {
 
     interpreter(expression_tokens);
 
-    array_destructor(literals); array_destructor(tokens); parsed_token_destructor(parsed_tokens);
+    array_destructor(literals); array_destructor(tokens);
 }

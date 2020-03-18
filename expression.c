@@ -12,9 +12,14 @@ Array ** expression_lexer(Array ** tokens) {
             Array ** expression_tokens = extract_exp_token(token_literal);
             token_typecast(expression_tokens);
             expression = append(expression, ARRAY, expression_tokens);
-        } else expression = append(expression, tokens[tokens_counter]->type_id, tokens[tokens_counter]->element);
+            free(tokens[tokens_counter]);
+        } else {
+            expression = append(expression, tokens[tokens_counter]->type_id, tokens[tokens_counter]->element);
+            free(tokens[tokens_counter]);
+        }
         tokens_counter++;
     }
+    free(tokens);
     return expression;
 }
 
