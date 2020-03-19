@@ -14,9 +14,6 @@ typedef struct Node {
     void * right;
 } Node;
 
-/* The function will allocate tree into memory */
-Node * new_space(void);
-
 /* The function will create the new node of tree */
 Node * new_node(int key, void * value);
 
