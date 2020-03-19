@@ -1,12 +1,5 @@
 #include "namespace.h"
 
-Node * new_space(void) {
-    Node * root = malloc(sizeof(Node));
-    root->key = NULL;
-    root->value = NULL;
-    return root;
-}
-
 Node * new_node(int key, void * value) {
     Node * node = malloc(sizeof(Node));
     node->key = key;
@@ -15,21 +8,16 @@ Node * new_node(int key, void * value) {
     node->right = NULL;
 }
 
-Node * insert_node(Node * root, Node * node) {
-    if (root == NULL) {
-        root = node;
-        return root;
-    } else {
+void insert_node(Node * root, Node * node) {
+    if (root == NULL) root = node;
+    else {
         if (root->key > node->key) {
             if (root->left == NULL) root->left = node;
             else insert_node(root->left, node);
         } else if (root->key < node->key) {
             if (root->right == NULL) root->right = node;
             else insert_node(root->right, node);
-        } else if (root->key == node->key) {
-            root = node;
-            return root;
-        }
+        } else if (root->key == node->key) root = node;
     }
 }
 
