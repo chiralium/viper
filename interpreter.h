@@ -16,7 +16,4 @@ void interpreter(Array ** code);
 /* The function will be send expression to arithmetica-module */
 Constant * calculate_expression(Array ** expression);
 
-/* The function will destruct the array of code */
-void code_destructor(Array ** code);
-
 #endif //VIPER_V4_INTERPRETER_H
