@@ -2,8 +2,7 @@
 #include "arithmetica.h"
 
 Constant * arithmetica(Array ** expression_tokens) {
-    char * expression = as_string(expression_tokens);
-    printf("%s", expression);
+    char * expression_as_string = as_string(expression_tokens);
     Array ** postfixed_expression = postfix(expression_tokens);
 
     /*
@@ -19,16 +18,38 @@ Constant * arithmetica(Array ** expression_tokens) {
      *
      * 3. Calculate value and return as Constant-structure
      */
-    char * postfix_expression = as_string(postfixed_expression);
-    printf("\n%s\n", postfix_expression);
-    int * v = malloc(sizeof(int)); *v = 123;
+
+    Array ** constant_stack = new_array();
+    int counter = 0;
+    while (postfixed_expression[counter]) {
+        ExpressionToken * token = postfixed_expression[counter]->element;
+        if (token->type_id == EXPRESSION_CONSTANT_TK) constant_stack = append(constant_stack, EXP_TK, token);
+        else {
+            Array * stack_el_x = pop_last_el(constant_stack); Array * stack_el_y = pop_last_el(constant_stack);
+            if (!stack_el_x || !stack_el_y) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_EXPRESSION_SYNTAX);
+
+            ExpressionToken * x_tk = stack_el_x->element; free(stack_el_x);
+            ExpressionToken * y_tk = stack_el_y->element; free(stack_el_y);
+            if (x_tk->type_id != EXPRESSION_CONSTANT_TK || y_tk->type_id != EXPRESSION_CONSTANT_TK) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+
+            void * (*function_pointer)(void *, void *) = token->value;
+            ExpressionToken * result_tk = function_pointer(x_tk, y_tk);
+            constant_stack = append(constant_stack, EXP_TK, result_tk);
+        }
+        counter++;
+    }
+
+    Array * last = pop_last_el(constant_stack);
+    ExpressionToken * result_tk = last->element;
+
     Constant * value = malloc(sizeof(Constant));
-    value->type_id = INTEGER;
-    value->value = v;
+    value->type_id = result_tk->vtype_id;
+    value->value = copy_data(result_tk->value, result_tk->vtype_id); // copy data from to token, cause all token-list must be destroyed
 
+    free(last);
+    free(constant_stack);
+    free(expression_as_string);
     array_destructor(postfixed_expression);
-    free(expression); free(postfix_expression);
-
     return value;
 }
 
@@ -129,6 +150,9 @@ void * assign_function(char * literal) {
     else if (strcmp(literal, ARITHMETICA_MEQ) == 0) function_pointer = _moreeq;
     else if (strcmp(literal, ARITHMETICA_LEQ) == 0) function_pointer = _lesseq;
     else if (strcmp(literal, ARITHMETICA_EQ) == 0) function_pointer = _equal;
+    else if (strcmp(literal, ARITHMETICA_NOT) == 0) function_pointer = _not;
+    else if (strcmp(literal, ARITHMETICA_POW) == 0) function_pointer = _pow;
+    else if (strcmp(literal, ARITHMETICA_ASG) == 0) function_pointer = _asg;
     else if (strcmp(literal, ARITHMETICA_OCB) == 0 ||
              strcmp(literal, ARITHMETICA_CCB) == 0 ||
              strcmp(literal, ARITHMETICA_OBB) == 0 ||
@@ -196,6 +220,25 @@ void * make_zero_tk() {
     return zero_token;
 }
 
+void * copy_data(void * src, char type_id) {
+    if (type_id == INTEGER) {
+        int *tmp = malloc(sizeof(int));
+        *tmp = *(int *)src;
+        return tmp;
+    } else if (type_id == FLOAT) {
+        float *tmp = malloc(sizeof(float));
+        *tmp = *(float *)src;
+        return tmp;
+    } else if (type_id == STRING) {
+        char *tmp = alloc_string(src);
+        return tmp;
+    } else if (type_id == ARRAY) {
+        Array **tmp = new_array();
+        tmp = copy_array(tmp, src);
+        return tmp;
+    }
+}
+
 void * _add(void * x, void * y) {
     return NULL;
 }
@@ -238,6 +281,12 @@ void * _lesseq(void * x, void * y) {
 
 void * _equal(void * x, void * y) {
     return NULL;
+}
+
+void * _asg(void * x, void * y) {
+    // Y = X, return X
+    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
+    return x_tk;
 }
 
 void * _tmp(void * x, void * y) {

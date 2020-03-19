@@ -54,7 +54,9 @@ typedef struct Constant {
 #define ARITMHETICA_MAX_INDEX_PARAM 3
 
 /* Exceptions */
-#define ARITHMETICA_BRACES_NOT_BALANCED "invalid syntax of expression, braces is not balanced"
+#define ARITHMETICA_BRACES_NOT_BALANCED       "invalid syntax of expression, braces is not balanced"
+#define ARITHMETICA_INVALID_EXPRESSION_SYNTAX "invalid syntax of expression"
+#define ARITHMETICA_INVALID_OPERAND           "invalid type of operand"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -67,6 +69,7 @@ void * _less(void * x, void * y);
 void * _moreeq(void * x, void * y);
 void * _lesseq(void * x, void * y);
 void * _equal(void * x, void * y);
+void * _asg(void * x, void * y);
 void * _tmp(void * x, void * y);
 
 /* The main entry point of module
@@ -94,6 +97,9 @@ Index * new_index(void * object, Array ** params, int params_count);
 
 /* The function will compose the FuncCall-structure by input params */
 FuncCall * new_func_call(char * name, Array ** arg_list);
+
+/* The function will copy data into heap */
+void * copy_data(void * src, char type_id);
 
 /* Destructors */
 void index_destructor(Index * index);
