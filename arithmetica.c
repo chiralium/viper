@@ -1,7 +1,10 @@
 #include "expression.h"
 #include "arithmetica.h"
 
-Constant * arithmetica(Array ** expression_tokens) {
+Node * namespace;
+
+Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
+    namespace = current_namespace;
     char * expression_as_string = as_string(expression_tokens);
     Array ** postfixed_expression = postfix(expression_tokens);
 
@@ -290,8 +293,15 @@ void * _equal(void * x, void * y) {
 }
 
 void * _asg(void * x, void * y) {
+    /* Assign the literal of y-token with value of x-token into namespace */
     // Y = X, return X
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
+    char type_id = x_tk->vtype_id; // type of value
+    void * value; value = copy_data(x_tk->value, type_id);
+
+    Constant * copied_value = new_constant(type_id, value); // create the new constant structure with copied value from token
+    Node * namespace_object = new_node(faq6(y_tk->literal), copied_value); // create node of namespace binary tree with created constant
+    insert_node(namespace, namespace_object); // save it into namespace
     return x_tk;
 }
 

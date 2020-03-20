@@ -14,7 +14,7 @@
 void interpreter(Array ** code);
 
 /* The function will be send expression to arithmetica-module */
-Constant * calculate_expression(Array ** expression);
+Constant * calculate_expression(Array ** expression, Node * current_namespace);
 
 /* The function will be create the meta-data in namespace */
 Node * meta_data();

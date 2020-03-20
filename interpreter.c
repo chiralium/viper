@@ -6,7 +6,7 @@ void interpreter(Array ** code) {
     while (code[code_counter]) {
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
-            Constant * value = calculate_expression(code[code_counter]->element);
+            Constant * value = calculate_expression(code[code_counter]->element, root);
             display_constant(value);
             constant_destructor(value);
             free(code[code_counter]);
@@ -26,8 +26,8 @@ void interpreter(Array ** code) {
     namespace_destructor(root);
 }
 
-Constant * calculate_expression(Array ** expression) {
-    Constant * value = arithmetica(expression);
+Constant * calculate_expression(Array ** expression, Node * current_namespace) {
+    Constant * value = arithmetica(expression, current_namespace);
     return value;
 }
 

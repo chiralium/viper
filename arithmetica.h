@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "array.h"
+#include "namespace.h"
 
 /*
  * This header file contained the simple arithmetical functions which assigned with tokens.
@@ -75,7 +76,7 @@ void * _tmp(void * x, void * y);
 /* The main entry point of module
  * This function will calculate expression and return the value as data-structure
  */
-Constant * arithmetica(Array ** expression_tokens);
+Constant * arithmetica(Array ** expression_tokens, Node * current_namespace);
 
 /* The function will convert the infix notation of expression to postfix notation */
 Array ** postfix(Array ** expression_tokens);
