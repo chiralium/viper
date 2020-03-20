@@ -25,7 +25,7 @@
 #define EXPRESSION_MAX_LEN 255
 
 /* Expression exception messages */
-#define EXPRESSION_UNDEFINED_OPERATOR         "undefined operator"
+#define EXPRESSION_UNDEFINED_TOKEN             "undefined token"
 #define EXPRESSION_INVALID_INDEX_DECLARATION  "invalid index declaration"
 #define EXPRESSION_TOO_MUCH_INDEX_PARAMS      "too much index parameters"
 #define EXPRESSION_INVALID_ARRAY_DECLARATION  "invalid array declaration"

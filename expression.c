@@ -319,7 +319,7 @@ int allocate_token_value(ExpressionToken * exp_token) {
     } else if (is_name(literal)) {
         exp_token->value = NULL;
         exp_token->vtype_id = UNDEFINED;
-    } else throw_arithmetical_exception(literal, EXPRESSION_UNDEFINED_OPERATOR);
+    } else throw_arithmetical_exception(literal, EXPRESSION_UNDEFINED_TOKEN);
 }
 
 int is_in(char symbol, char * stop_symbols) {
