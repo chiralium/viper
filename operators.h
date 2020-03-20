@@ -33,8 +33,6 @@
 #define OPERATOR_MEQ     7
 #define OPERATOR_LEQ     8
 #define OPERATOR_EQ      9
-#define OPERATOR_MEQ     10
-#define OPERATOR_LEQ     11
 #define OPERATOR_NOT     12
 #define OPERATOR_ASG     13
 

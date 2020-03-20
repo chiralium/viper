@@ -101,6 +101,9 @@ FuncCall * new_func_call(char * name, Array ** arg_list);
 /* The function will copy data into heap */
 void * copy_data(void * src, char type_id);
 
+/* The function will make constant by input params */
+Constant * new_constant(char type_id, void * value);
+
 /* Destructors */
 void index_destructor(Index * index);
 void func_call_destructor(FuncCall * funccall);

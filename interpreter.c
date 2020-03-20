@@ -1,6 +1,7 @@
 #include "interpreter.h"
 
 void interpreter(Array ** code) {
+    Node * root = meta_data(); // init.  the namespace by insert some meta-info into it
     int code_counter = 0;
     while (code[code_counter]) {
         if (code[code_counter]->type_id == ARRAY) {
@@ -22,9 +23,25 @@ void interpreter(Array ** code) {
         code_counter++;
     }
     free(code);
+    namespace_destructor(root);
 }
 
 Constant * calculate_expression(Array ** expression) {
     Constant * value = arithmetica(expression);
     return value;
+}
+
+Node * meta_data() {
+    char * ver = calloc(sizeof(char), 10); strcpy(ver, "VIPER.v4");
+    Constant * version = new_constant(STRING, ver);
+
+    float * pi = malloc(sizeof(float)); *pi = 3.14;
+    Constant * pi_number = new_constant(FLOAT, pi);
+
+    Node * root = new_node(faq6("pi"), pi_number);
+    Node * ver_node = new_node(faq6("version"), version);
+
+    insert_node(root, ver_node);
+
+    return root;
 }

@@ -29,6 +29,9 @@ void remove_node(Node * root, int key);
 /* The hash-function FAQ6 */
 int faq6(const char * str);
 
+/* Destructor */
+int namespace_destructor(Node * root);
+
 
 /* USAGE
     int * hello = malloc(sizeof(int)); *hello = 6996;

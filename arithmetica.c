@@ -220,6 +220,12 @@ void * make_zero_tk() {
     return zero_token;
 }
 
+Constant * new_constant(char type_id, void * value) {
+    Constant * new_constant = malloc(sizeof(Constant));
+    new_constant->type_id = type_id; new_constant->value = value;
+    return new_constant;
+}
+
 void * copy_data(void * src, char type_id) {
     if (type_id == INTEGER) {
         int *tmp = malloc(sizeof(int));

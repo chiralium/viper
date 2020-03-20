@@ -1,4 +1,5 @@
 #include "namespace.h"
+#include "arithmetica.h"
 
 Node * new_node(int key, void * value) {
     Node * node = malloc(sizeof(Node));
@@ -42,4 +43,14 @@ int faq6(const char * str) {
     hash ^= (hash >> 11);
     hash += (hash << 15);
     return hash;
+}
+
+int namespace_destructor(Node * root) {
+    if (root == NULL) return 0;
+    else {
+        constant_destructor(root->value);
+        if (root->left != NULL) namespace_destructor(root->left);
+        if (root->right != NULL) namespace_destructor(root->right);
+        free(root);
+    }
 }

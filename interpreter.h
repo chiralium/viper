@@ -16,4 +16,7 @@ void interpreter(Array ** code);
 /* The function will be send expression to arithmetica-module */
 Constant * calculate_expression(Array ** expression);
 
+/* The function will be create the meta-data in namespace */
+Node * meta_data();
+
 #endif //VIPER_V4_INTERPRETER_H
