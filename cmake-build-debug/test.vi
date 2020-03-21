@@ -3,4 +3,4 @@ formula = (3 + pi + formula) + formula;
 string = "hello " + "world";
 string + "!!!\n";
 formula;
-pi;
+(-pi) + 3.14;
