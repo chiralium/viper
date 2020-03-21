@@ -18,7 +18,11 @@ void insert_node(Node * root, Node * node) {
         } else if (root->key < node->key) {
             if (root->right == NULL) root->right = node;
             else insert_node(root->right, node);
-        } else if (root->key == node->key) root = node;
+        } else if (root->key == node->key) {
+            constant_destructor(root->value);
+            root->value = node->value;
+            free(node);
+        }
     }
 }
 

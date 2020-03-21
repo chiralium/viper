@@ -1,1 +1,2 @@
-variable = 2;
+formula = 2.0 + pi;
+formula = (3 + pi + formula) + formula;

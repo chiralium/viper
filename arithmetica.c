@@ -271,9 +271,19 @@ float get_float_value(void * token) {
     }
 }
 
+int get_from_namepsace(void * token) {
+    ExpressionToken * tk = token;
+    if (tk->vtype_id != UNDEFINED) return 0;
+    Constant * value = find_node(namespace, faq6(tk->literal));
+    if (value == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
+    tk->value = copy_data(value->value, value->type_id); tk->vtype_id = value->type_id;
+}
+
 void * _add(void * x, void * y) {
     // y + x
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
+    get_from_namepsace(x_tk); get_from_namepsace(y_tk);
+
     if (y_tk->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) + get_int_value(x_tk);
         free(x_tk->value);

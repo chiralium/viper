@@ -59,6 +59,7 @@ typedef struct Constant {
 #define ARITHMETICA_INVALID_EXPRESSION_SYNTAX "invalid syntax of expression"
 #define ARITHMETICA_INVALID_OPERAND           "invalid type of operand"
 #define ARITHMETICA_TYPECASTING_ERROR         "converting from <%c>-type to <%c>-type"
+#define ARITHMETICA_UNDEFINED_NAME            "undefined name of variable"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -109,6 +110,9 @@ Constant * new_constant(char type_id, void * value);
 /* The function will return typecasted value */
 int get_int_value(void * token);
 float get_float_value(void * toke);
+
+/* The function will getting value from namespace */
+int get_from_namespace(void * token);
 
 /* Destructors */
 void index_destructor(Index * index);
