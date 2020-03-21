@@ -2,10 +2,13 @@
 #include "arithmetica.h"
 
 Node * namespace;
+char * expression_as_string;
 
 Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
+    /* Init global variable of module */
     namespace = current_namespace;
-    char * expression_as_string = as_string(expression_tokens);
+    expression_as_string = as_string(expression_tokens);
+
     Array ** postfixed_expression = postfix(expression_tokens);
 
     /*
@@ -248,8 +251,39 @@ void * copy_data(void * src, char type_id) {
     }
 }
 
+int get_int_value(void * token) {
+    ExpressionToken * tk = token;
+    if (tk->vtype_id == INTEGER) return *(int *)(tk->value);
+    else if (tk->vtype_id == FLOAT) return (int)(*(float *)(tk->value));
+    else {
+        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, tk->vtype_id, 'i');
+        throw_typecasting_exception(expression_as_string, message);
+    }
+}
+
+float get_float_value(void * token) {
+    ExpressionToken * tk = token;
+    if (tk->vtype_id == INTEGER) return (float)(*(int *)(tk->value));
+    else if (tk->vtype_id == FLOAT) return *(float *)(tk->value);
+    else {
+        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, tk->vtype_id, 'f');
+        throw_typecasting_exception(expression_as_string, message);
+    }
+}
+
 void * _add(void * x, void * y) {
-    return NULL;
+    // y + x
+    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
+    if (y_tk->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) + get_int_value(x_tk);
+        free(x_tk->value);
+        x_tk->value = result; x_tk->vtype_id = INTEGER;
+    } else if(y_tk->vtype_id == FLOAT) {
+        float * result = malloc(sizeof(float)); *result = get_float_value(y_tk) + get_float_value(x_tk);
+        free(x_tk->value);
+        x_tk->value = result; x_tk->vtype_id = FLOAT;
+    }
+    return x_tk;
 }
 
 void * _sub(void * x, void * y) {
