@@ -1,2 +1,4 @@
 formula = 2.0 + pi;
 formula = (3 + pi + formula) + formula;
+string = "hello " + "world";
+string + "!!!\n";

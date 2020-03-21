@@ -292,6 +292,14 @@ void * _add(void * x, void * y) {
         float * result = malloc(sizeof(float)); *result = get_float_value(y_tk) + get_float_value(x_tk);
         free(x_tk->value);
         x_tk->value = result; x_tk->vtype_id = FLOAT;
+    } else if (y_tk->vtype_id == STRING) {
+        if (x_tk->vtype_id != STRING) throw_typecasting_exception(expression_as_string,  ARITHMETICA_STRING_CONCATE_EXCEPTION);
+        char stack_tmp_result[ARITHMETICA_MAX_STRING_LEN + 1];
+        strcpy(stack_tmp_result, (char *)y_tk->value);
+        strcat(stack_tmp_result, (char *)x_tk->value);
+        char * result = alloc_string(stack_tmp_result);
+        free(x_tk->value);
+        x_tk->value = result; x_tk->vtype_id = STRING;
     }
     return x_tk;
 }

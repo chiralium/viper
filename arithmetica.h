@@ -51,6 +51,9 @@ typedef struct Constant {
     void * value;
 } Constant;
 
+/* Types parameters */
+#define ARITHMETICA_MAX_STRING_LEN 255
+
 /* Operators parameters */
 #define ARITMHETICA_MAX_INDEX_PARAM 3
 
@@ -60,6 +63,7 @@ typedef struct Constant {
 #define ARITHMETICA_INVALID_OPERAND           "invalid type of operand"
 #define ARITHMETICA_TYPECASTING_ERROR         "converting from <%c>-type to <%c>-type"
 #define ARITHMETICA_UNDEFINED_NAME            "undefined name of variable"
+#define ARITHMETICA_STRING_CONCATE_EXCEPTION  "invalid concating operand"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
