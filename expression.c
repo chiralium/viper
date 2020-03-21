@@ -350,7 +350,7 @@ int is_name(char * literal) {
     int is_name = 0;
     if (isdigit(*literal)) return 0;
     while (*literal) {
-        if (is_name = isdigit(*literal) || isalpha(*literal)) break;
+        if (!(is_name = isdigit(*literal) || isalpha(*literal))) break;
         literal++;
     }
     return is_name;
