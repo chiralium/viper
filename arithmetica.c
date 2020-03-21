@@ -46,7 +46,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     }
 
     Array * last = pop_last_el(constant_stack);
-    ExpressionToken * result_tk = last->element;
+    ExpressionToken * result_tk = last->element; get_from_namespace(result_tk);
 
     Constant * value = malloc(sizeof(Constant));
     value->type_id = result_tk->vtype_id;
@@ -271,7 +271,7 @@ float get_float_value(void * token) {
     }
 }
 
-int get_from_namepsace(void * token) {
+int get_from_namespace(void * token) {
     ExpressionToken * tk = token;
     if (tk->vtype_id != UNDEFINED) return 0;
     Constant * value = find_node(namespace, faq6(tk->literal));
@@ -282,7 +282,7 @@ int get_from_namepsace(void * token) {
 void * _add(void * x, void * y) {
     // y + x
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
-    get_from_namepsace(x_tk); get_from_namepsace(y_tk);
+    get_from_namespace(x_tk); get_from_namespace(y_tk);
 
     if (y_tk->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) + get_int_value(x_tk);
