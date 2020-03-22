@@ -142,6 +142,7 @@ int _get_priority(char * operator) {
              strcmp(operator, ARITHMETICA_LEQ) ==  0) return 1;
     else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 2;
     else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 3;
+    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 4;
     return -1;
 }
 
@@ -324,15 +325,60 @@ void * _sub(void * x, void * y) {
 }
 
 void * _mul(void * x, void * y) {
-    return NULL;
+    // y * x
+    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
+    get_from_namespace(x_tk); get_from_namespace(y_tk);
+    if (y_tk->vtype_id == STRING || x_tk->vtype_id == STRING) throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
+        float *result = malloc(sizeof(float));
+        *result = get_float_value(y_tk) * get_float_value(x_tk);
+        free(x_tk->value);
+        x_tk->value = result;
+        x_tk->vtype_id = FLOAT;
+    } else if (y_tk->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) * get_int_value(x_tk);
+        free(x_tk->value);
+        x_tk->value = result; x_tk->vtype_id = INTEGER;
+    }
+    return x_tk;
 }
 
 void * _div(void * x, void * y) {
-    return NULL;
+    // y / x
+    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
+    get_from_namespace(x_tk); get_from_namespace(y_tk);
+    if (y_tk->vtype_id == STRING || x_tk->vtype_id == STRING) throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
+        float *result = malloc(sizeof(float));
+        *result = get_float_value(y_tk) / get_float_value(x_tk);
+        free(x_tk->value);
+        x_tk->value = result;
+        x_tk->vtype_id = FLOAT;
+    } else if (y_tk->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) / get_int_value(x_tk);
+        free(x_tk->value);
+        x_tk->value = result; x_tk->vtype_id = INTEGER;
+    }
+    return x_tk;
 }
 
 void * _pow(void * x, void * y){
-    return NULL;
+    // y ^ x
+    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
+    get_from_namespace(x_tk); get_from_namespace(y_tk);
+    if (y_tk->vtype_id == STRING || x_tk->vtype_id == STRING) throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
+        float *result = malloc(sizeof(float));
+        *result = pow(get_float_value(y_tk), get_float_value(x_tk));
+        free(x_tk->value);
+        x_tk->value = result;
+        x_tk->vtype_id = FLOAT;
+    } else if (y_tk->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = pow(get_int_value(y_tk), get_int_value(x_tk));
+        free(x_tk->value);
+        x_tk->value = result; x_tk->vtype_id = INTEGER;
+    }
+    return x_tk;
 }
 
 void * _not(void * x, void * y) {
