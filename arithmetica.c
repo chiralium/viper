@@ -284,14 +284,14 @@ void * _add(void * x, void * y) {
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
     get_from_namespace(x_tk); get_from_namespace(y_tk);
 
-    if (y_tk->vtype_id == INTEGER) {
-        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) + get_int_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = INTEGER;
-    } else if(y_tk->vtype_id == FLOAT) {
+    if (y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
         float * result = malloc(sizeof(float)); *result = get_float_value(y_tk) + get_float_value(x_tk);
         free(x_tk->value);
         x_tk->value = result; x_tk->vtype_id = FLOAT;
+    } else if (y_tk->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) + get_int_value(x_tk);
+        free(x_tk->value);
+        x_tk->value = result; x_tk->vtype_id = INTEGER;
     } else if (y_tk->vtype_id == STRING) {
         if (x_tk->vtype_id != STRING) throw_typecasting_exception(expression_as_string,  ARITHMETICA_STRING_CONCATE_EXCEPTION);
         char stack_tmp_result[ARITHMETICA_MAX_STRING_LEN + 1];
@@ -308,15 +308,16 @@ void * _sub(void * x, void * y) {
     // y - x
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
     get_from_namespace(x_tk); get_from_namespace(y_tk);
-
-    if (y_tk->vtype_id == INTEGER) {
+    if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
+        float *result = malloc(sizeof(float));
+        *result = get_float_value(y_tk) - get_float_value(x_tk);
+        free(x_tk->value);
+        x_tk->value = result;
+        x_tk->vtype_id = FLOAT;
+    } else if (y_tk->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) - get_int_value(x_tk);
         free(x_tk->value);
         x_tk->value = result; x_tk->vtype_id = INTEGER;
-    } else if(y_tk->vtype_id == FLOAT) {
-        float *result = malloc(sizeof(float)); *result = get_float_value(y_tk) - get_float_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = FLOAT;
     }
     return x_tk;
 }

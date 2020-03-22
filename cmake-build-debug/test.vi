@@ -4,3 +4,6 @@ string = "hello " + "world";
 string + "!!!\n";
 formula;
 (-pi) + 3.14;
+formula = formula - 1;
+formula = formula - 1;
+formula = formula - 1;
