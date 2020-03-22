@@ -7,3 +7,4 @@ formula;
 formula = formula - 1;
 formula = formula - 1;
 formula = formula - 1;
+"hello"+"world";
