@@ -44,7 +44,7 @@ void display_array_beauty(Array ** _array, char * tabs) {
                 case STRING:
                     printf("%s%s{`%s`:<%c>(0x%p)}, \n", tabs, tabs, (char *)token_value, token_value_type_id, token_value);
                     break;
-                case ARRAY:
+                case ARRAY_EL: case ARRAY:
                     printf("%s%s{`<array>`}:\n", tabs, tabs, token_type_id);
                     char child_tabs[255]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs);
                     display_array_beauty(token_value, child_tabs);
@@ -65,7 +65,7 @@ void display_array_beauty(Array ** _array, char * tabs) {
                     break;
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("%s%s{TK:%d; `<complex>`}, \n", tabs, tabs, ((Token *)(_array[array_counter] -> element)) -> type_id);
-        else if (_array[array_counter] -> type_id == ARRAY) {
+        else if (_array[array_counter] -> type_id == ARRAY || _array[array_counter] -> type_id == ARRAY_EL) {
             char child_tabs[255]; strcpy(child_tabs, tabs);
             display_array_beauty((Array **)(_array[array_counter] -> element), child_tabs);
         }

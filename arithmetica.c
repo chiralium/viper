@@ -4,6 +4,22 @@
 Node * namespace;
 char * expression_as_string;
 
+Array ** array_precalc(Array ** array) {
+    /* The single element of array is a array of expression tokens */
+    int element_counter = 0;
+    while (array[element_counter]) {
+        if (array[element_counter]->type_id == ARRAY_EL) {
+            Array **element = array[element_counter]->element;
+            Constant *element_value = arithmetica(element, namespace);
+            array[element_counter]->element = element_value->value;
+            array[element_counter]->type_id = element_value->type_id;
+            free(element_value);
+        } else if (array[element_counter]->type_id == ARRAY) array[element_counter]->element = array_precalc(array[element_counter]->element);
+        element_counter++;
+    }
+    return array;
+}
+
 Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     /* Init global variable of module */
     namespace = current_namespace;
@@ -29,8 +45,10 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     int counter = 0;
     while (postfixed_expression[counter]) {
         ExpressionToken * token = postfixed_expression[counter]->element;
-        if (token->type_id == EXPRESSION_CONSTANT_TK) constant_stack = append(constant_stack, EXP_TK, token);
-        else {
+        if (token->type_id == EXPRESSION_CONSTANT_TK) {
+            if (token->vtype_id == ARRAY) token->value = array_precalc(token->value);
+            constant_stack = append(constant_stack, EXP_TK, token);
+        } else {
             Array * stack_el_x = pop_last_el(constant_stack); Array * stack_el_y = pop_last_el(constant_stack);
             if (!stack_el_x || !stack_el_y) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_EXPRESSION_SYNTAX);
 
@@ -205,7 +223,7 @@ void constant_destructor(Constant * constant) {
         case INTEGER: case FLOAT: case STRING:
             free(constant->value);
             break;
-        case ARRAY:
+        case ARRAY: case ARRAY_EL:
             array_destructor(constant->value);
             break;
         case INDEX:
@@ -245,7 +263,7 @@ void * copy_data(void * src, char type_id) {
     } else if (type_id == STRING) {
         char *tmp = alloc_string(src);
         return tmp;
-    } else if (type_id == ARRAY) {
+    } else if (type_id == ARRAY || type_id == ARRAY_EL) {
         Array **tmp = new_array();
         tmp = copy_array(tmp, src);
         return tmp;

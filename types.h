@@ -20,5 +20,6 @@
 #define STMT_IF        1
 #define STMT_FUNC      2
 #define STMT_WHILE     3
+#define ARRAY_EL       4
 
 #endif //VIPER_V4_TYPES_H

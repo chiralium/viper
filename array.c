@@ -27,7 +27,7 @@ Array ** copy_array(Array **Y, Array **X) {
             char *value; value = calloc(strlen((char *)X[i] -> element) + 1, sizeof(char));
             strcpy(value, (char *)X[i] -> element);
             el -> element = value;
-        } else if (X[i] -> type_id == ARRAY) {
+        } else if (X[i] -> type_id == ARRAY || X[i] -> type_id == ARRAY_EL) {
             Array **sub_array;
             sub_array = copy_array(sub_array, X[i] -> element);
             el -> element = sub_array;
@@ -116,24 +116,12 @@ int is_empty(Array **X) {
 void array_destructor(Array **_array) {
     int i = 0;
     while (_array[i]) {
-        if (_array[i] -> type_id == ARRAY) array_destructor(_array[i] -> element);
+        if (_array[i] -> type_id == ARRAY || _array[i] -> type_id == ARRAY_EL) array_destructor(_array[i] -> element);
         else if (_array[i] -> type_id == TOKEN) token_destructor(_array[i] -> element);
         else if (_array[i] -> type_id == EXP_TK) exp_token_destructor(_array[i]->element);
         else free(_array[i] -> element);
         free(_array[i]);
         i++;
     }
-    free(_array);
-}
-
-void array_el_destructor(Array *_el) {
-    if (_el->type_id == ARRAY) array_destructor(_el->element);
-    else if (_el->type_id == INDEX) index_destructor(_el->element);
-    else free(_el->element);
-}
-
-void array_destructor_only_pointers(Array **_array) {
-    int i = 0;
-    while(_array[i]) free(_array[i++]);
     free(_array);
 }

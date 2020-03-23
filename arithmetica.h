@@ -91,6 +91,9 @@ Array ** postfix(Array ** expression_tokens);
 /* The function will insert zero-token-value before unary plus or minus */
 Array ** fixing_unary_operators(Array ** expression_tokens);
 
+/* The function will calculated the arrays element */
+Array ** array_precalc(Array ** array);
+
 /* The function will crate the zero-token */
 void * make_zero_tk();
 

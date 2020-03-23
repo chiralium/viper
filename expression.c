@@ -139,7 +139,7 @@ Array ** cut_array(Array ** exp_tokens) {
         } else if (token->type_id == OP_OPEN_BBRACK) {
               exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the {-token
               array = append(array, ARRAY, cut_array(exp_tokens));
-        } else if (token->type_id != OP_OPEN_BBRACK) array = append(array, ARRAY, cut_array_el(exp_tokens));
+        } else if (token->type_id != OP_OPEN_BBRACK) array = append(array, ARRAY_EL, cut_array_el(exp_tokens));
     }
     return array;
 }
@@ -235,6 +235,7 @@ void token_typecast(Array ** exp_tokens) {
     typecast_array(exp_tokens);
     typecast_index(exp_tokens);
     typecast_function(exp_tokens);
+    free(expression_as_string);
 }
 
 void typecast_constant(Array ** exp_tokens) {
@@ -383,7 +384,7 @@ void exp_token_destructor(ExpressionToken * token) {
     case INTEGER: case FLOAT: case STRING: case UNDEFINED:
             free(token->value);
             break;
-        case ARRAY:
+        case ARRAY: case ARRAY_EL:
             array_destructor(token->value);
             break;
         case INDEX:
