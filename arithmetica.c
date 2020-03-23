@@ -4,6 +4,13 @@
 Node * namespace;
 char * expression_as_string;
 
+Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namespace) {
+    expression_as_string = as_string(expression_tokens);
+    Constant * result = arithmetica(expression_tokens, current_namespace);
+    free(expression_as_string);
+    return result;
+}
+
 Array ** array_precalc(Array ** array) {
     /* The single element of array is a array of expression tokens */
     int element_counter = 0;
@@ -23,7 +30,6 @@ Array ** array_precalc(Array ** array) {
 Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     /* Init global variable of module */
     namespace = current_namespace;
-    expression_as_string = as_string(expression_tokens);
 
     Array ** postfixed_expression = postfix(expression_tokens);
 
@@ -72,7 +78,6 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
 
     free(last);
     free(constant_stack);
-    free(expression_as_string);
     array_destructor(postfixed_expression);
     return value;
 }
@@ -264,7 +269,7 @@ void * copy_data(void * src, char type_id) {
         char *tmp = alloc_string(src);
         return tmp;
     } else if (type_id == ARRAY || type_id == ARRAY_EL) {
-        Array **tmp = new_array();
+        void * tmp;
         tmp = copy_array(tmp, src);
         return tmp;
     }

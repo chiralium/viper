@@ -27,7 +27,7 @@ void interpreter(Array ** code) {
 }
 
 Constant * calculate_expression(Array ** expression, Node * current_namespace) {
-    Constant * value = arithmetica(expression, current_namespace);
+    Constant * value = arithmetica_wrapper(expression, current_namespace);
     return value;
 }
 

@@ -80,7 +80,11 @@ void * _equal(void * x, void * y);
 void * _asg(void * x, void * y);
 void * _tmp(void * x, void * y);
 
-/* The main entry point of module
+
+/* Main entry point to the module */
+Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namespace);
+
+/*
  * This function will calculate expression and return the value as data-structure
  */
 Constant * arithmetica(Array ** expression_tokens, Node * current_namespace);
