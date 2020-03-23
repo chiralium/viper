@@ -1,0 +1,2 @@
+pi;
+a = {1, 2, 3, "hello" + "{ World", {pi, version}};
