@@ -1,6 +1,7 @@
 #include "expression.h"
 
 static int _next;
+char * expression_as_string;
 
 Array ** expression_lexer(Array ** tokens) {
     Array ** expression = new_array(); // expression is a container that store a ExpressionTokens
@@ -133,7 +134,7 @@ Array ** cut_array(Array ** exp_tokens) {
             exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the }-token
             break;
         } else if (token->type_id == OP_COMA) {
-            if (++coma_counter > _get_len(array) || is_empty(array)) throw_arithmetical_exception(as_string(exp_tokens), EXPRESSION_INVALID_ARRAY_DECLARATION);
+            if (++coma_counter > _get_len(array) || is_empty(array)) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_ARRAY_DECLARATION);
             exp_token_destructor(pop_next_exp_token(exp_tokens));
         } else if (token->type_id == OP_OPEN_BBRACK) {
               exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the {-token
@@ -177,7 +178,6 @@ Array ** cut_index_el(Array ** exp_tokens) {
 }
 
 Array ** cut_index(Array ** exp_tokens) {
-    char * tokens_as_string = as_string(exp_tokens);
     Array ** index_params = new_array(); ExpressionToken * token; int coma_counter = 0; int _old_next = _next;
     Array ** index_body = cut_index_body(exp_tokens);
     _next = 0;
@@ -186,14 +186,14 @@ Array ** cut_index(Array ** exp_tokens) {
             exp_token_destructor(pop_next_exp_token(index_body)); // free the ]-token
             break;
         } else if (token->type_id == OP_COMA) {
-            if (++coma_counter > _get_len(index_params) || is_empty(index_params)) throw_arithmetical_exception(tokens_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
+            if (++coma_counter > _get_len(index_params) || is_empty(index_params)) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
             exp_token_destructor(pop_next_exp_token(index_body));
         } else if (token->type_id != OP_OPEN_SBRACK) {
             index_params = append(index_params, ARRAY, cut_index_el(index_body));
-            if (_get_len(index_params) > ARITMHETICA_MAX_INDEX_PARAM) throw_arithmetical_exception(as_string(index_body), EXPRESSION_TOO_MUCH_INDEX_PARAMS);
+            if (_get_len(index_params) > ARITMHETICA_MAX_INDEX_PARAM) throw_arithmetical_exception(expression_as_string, EXPRESSION_TOO_MUCH_INDEX_PARAMS);
         }
     }
-    free(index_body); free(tokens_as_string);
+    free(index_body);
     _next = _old_next;
     return index_params;
 }
@@ -230,6 +230,7 @@ Array ** cut_arglist(Array ** exp_tokens) {
 }
 
 void token_typecast(Array ** exp_tokens) {
+    expression_as_string = as_string(exp_tokens);
     typecast_constant(exp_tokens);
     typecast_array(exp_tokens);
     typecast_index(exp_tokens);
