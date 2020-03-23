@@ -307,7 +307,6 @@ void * _add(void * x, void * y) {
     // y + x
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
     get_from_namespace(x_tk); get_from_namespace(y_tk);
-
     if (y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
         float * result = malloc(sizeof(float)); *result = get_float_value(y_tk) + get_float_value(x_tk);
         free(x_tk->value);
@@ -324,7 +323,7 @@ void * _add(void * x, void * y) {
         char * result = alloc_string(stack_tmp_result);
         free(x_tk->value);
         x_tk->value = result; x_tk->vtype_id = STRING;
-    }
+    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return x_tk;
 }
 
@@ -332,7 +331,6 @@ void * _sub(void * x, void * y) {
     // y - x
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
     get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if (y_tk->vtype_id == STRING || x_tk->vtype_id == STRING) throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = get_float_value(y_tk) - get_float_value(x_tk);
@@ -343,7 +341,7 @@ void * _sub(void * x, void * y) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) - get_int_value(x_tk);
         free(x_tk->value);
         x_tk->value = result; x_tk->vtype_id = INTEGER;
-    }
+    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return x_tk;
 }
 
@@ -351,7 +349,6 @@ void * _mul(void * x, void * y) {
     // y * x
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
     get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if (y_tk->vtype_id == STRING || x_tk->vtype_id == STRING) throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = get_float_value(y_tk) * get_float_value(x_tk);
@@ -362,7 +359,7 @@ void * _mul(void * x, void * y) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) * get_int_value(x_tk);
         free(x_tk->value);
         x_tk->value = result; x_tk->vtype_id = INTEGER;
-    }
+    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return x_tk;
 }
 
@@ -370,7 +367,6 @@ void * _div(void * x, void * y) {
     // y / x
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
     get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if (y_tk->vtype_id == STRING || x_tk->vtype_id == STRING) throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = get_float_value(y_tk) / get_float_value(x_tk);
@@ -381,7 +377,7 @@ void * _div(void * x, void * y) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) / get_int_value(x_tk);
         free(x_tk->value);
         x_tk->value = result; x_tk->vtype_id = INTEGER;
-    }
+    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return x_tk;
 }
 
@@ -389,7 +385,6 @@ void * _pow(void * x, void * y){
     // y ^ x
     ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
     get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if (y_tk->vtype_id == STRING || x_tk->vtype_id == STRING) throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = pow(get_float_value(y_tk), get_float_value(x_tk));
@@ -400,7 +395,7 @@ void * _pow(void * x, void * y){
         int * result = malloc(sizeof(int)); *result = pow(get_int_value(y_tk), get_int_value(x_tk));
         free(x_tk->value);
         x_tk->value = result; x_tk->vtype_id = INTEGER;
-    }
+    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return x_tk;
 }
 
