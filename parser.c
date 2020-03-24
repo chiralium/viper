@@ -18,7 +18,7 @@ Array ** parser(Array ** tokens) {
             parsed_tokens = append(parsed_tokens, STMT_FUNC, function_statement);
         } else if (token->type_id == LEXER_EXPRESSION_TK) {
             parsed_tokens = append(parsed_tokens, TOKEN, token);
-        }
+        } else throw_statement_exception("<complex>", PARSER_COMMON_SYNTAX_EXCEPTION);
     }
     return parsed_tokens;
 }

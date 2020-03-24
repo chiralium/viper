@@ -22,6 +22,7 @@
 #define PARSER_MISSING_FUNC_PARAMS           "the function parameters is not defined"
 #define PARSER_MISSING_WHILE_CONDITION       "the expression of `while` statement is not defined"
 #define PARSER_MISSING_WHILE_BODY            "the body of `while` statement is not defined"
+#define PARSER_COMMON_SYNTAX_EXCEPTION       "undefined block"
 
 /* The structure function will contained the information of function. Then this structure stored in NameSpace */
 typedef struct Function {
