@@ -129,7 +129,7 @@ Array ** postfix(Array ** expression_tokens) {
                 } else break;
             }
             tokens_stack = append(tokens_stack, EXP_TK, token); free(current_token);
-        }
+        } else throw_arithmetical_exception(expression_as_string, ARITHMETICA_SYNTAX_EXCEPTION);
     }
     Array * stack_el;
     while (stack_el = pop_last_el(tokens_stack)) {
