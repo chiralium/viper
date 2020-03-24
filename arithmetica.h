@@ -34,7 +34,7 @@
 
 /* The struct of index */
 typedef struct Index {
-    void * object;;
+    void * object;
     Array ** params; // the first element - is a just index of array, if second element is exist - is a stop index, if third element is exist is a step value
     int params_count;
 } Index;
@@ -65,6 +65,8 @@ typedef struct Constant {
 #define ARITHMETICA_TYPECASTING_ERROR         "converting from <%c>-type to <%c>-type"
 #define ARITHMETICA_UNDEFINED_NAME            "undefined name of variable"
 #define ARITHMETICA_STRING_CONCATE_EXCEPTION  "invalid concating operand"
+#define ARITHMETICA_UNDEFINED_OPERATOR        "undefined operator (something wrong with expression parser)"
+#define ARITHMETICA_SYNTAX_EXCEPTION          "syntax error"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);

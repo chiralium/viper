@@ -269,6 +269,7 @@ void typecast_index(Array ** exp_tokens) {
     while (token = get_curr_exp_token(exp_tokens)) {
         if (token->type_id == OP_OPEN_SBRACK) {
             int position = _next - 1; exp_token_destructor(pop_next_exp_token(exp_tokens));
+            if (position < 0) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
             Array ** index_params = cut_index(exp_tokens);
             Index * index = new_index(exp_tokens[position]->element, index_params, _get_len(index_params));
             ExpressionToken * index_tk = malloc(sizeof(ExpressionToken));
