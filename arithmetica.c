@@ -63,7 +63,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
             if (x_tk->type_id != EXPRESSION_CONSTANT_TK || y_tk->type_id != EXPRESSION_CONSTANT_TK) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
 
             void * (*function_pointer)(void *, void *) = token->value;
-            /* if function_pointer is a _tmp function, it is mean, some tokens like [], cannot be remove in below step of parsing */
+            /* if function_pointer is a _tmp function, it is mean, some tokens like [], cannot be removed at below step of parsing */
             if (function_pointer == _tmp) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_OPERATOR);
             ExpressionToken * result_tk = function_pointer(x_tk, y_tk);
             constant_stack = append(constant_stack, EXP_TK, result_tk);
@@ -77,7 +77,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
 
     Constant * value = malloc(sizeof(Constant));
     value->type_id = result_tk->vtype_id;
-    value->value = copy_data(result_tk->value, result_tk->vtype_id); // copy data from to token, cause all token-list must be destroyed
+    value->value = copy_data(result_tk->value, result_tk->vtype_id); // copy data from token, cause all token-list must be destroyed
 
     free(last);
     free(constant_stack);
