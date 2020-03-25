@@ -11,9 +11,10 @@ Array ** expression_lexer(Array ** tokens) {
             Token * token = (tokens[tokens_counter]->element);
             char * token_literal = token->value;
             Array ** expression_tokens = extract_exp_token(token_literal);
+            expression_as_string = as_string(expression_tokens);
             token_typecast(expression_tokens);
             expression = append(expression, ARRAY, expression_tokens);
-            free(tokens[tokens_counter]);
+            free(tokens[tokens_counter]); free(expression_as_string);
         } else {
             expression = append(expression, tokens[tokens_counter]->type_id, tokens[tokens_counter]->element);
             free(tokens[tokens_counter]);
@@ -157,6 +158,7 @@ Array ** cut_index_body(Array ** exp_tokens) {
             tokens = append(tokens, EXP_TK,token);
         }
     }
+    if (o != c) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
     return tokens;
 }
 
@@ -189,7 +191,13 @@ Array ** cut_index(Array ** exp_tokens) {
             if (++coma_counter > _get_len(index_params) || is_empty(index_params)) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
             exp_token_destructor(pop_next_exp_token(index_body));
         } else if (token->type_id != OP_OPEN_SBRACK) {
-            index_params = append(index_params, ARRAY, cut_index_el(index_body));
+            Array ** index_parameter = cut_index_el(index_body);
+            // This is not a good way...
+            int _tmp = _next; _next = 0;
+            token_typecast(index_parameter);
+            _next = _tmp;
+
+            index_params = append(index_params, ARRAY, index_parameter);
             if (_get_len(index_params) > ARITMHETICA_MAX_INDEX_PARAM) throw_arithmetical_exception(expression_as_string, EXPRESSION_TOO_MUCH_INDEX_PARAMS);
         }
     }
@@ -230,12 +238,10 @@ Array ** cut_arglist(Array ** exp_tokens) {
 }
 
 void token_typecast(Array ** exp_tokens) {
-    expression_as_string = as_string(exp_tokens);
     typecast_constant(exp_tokens);
     typecast_array(exp_tokens);
     typecast_index(exp_tokens);
     typecast_function(exp_tokens);
-    free(expression_as_string);
 }
 
 void typecast_constant(Array ** exp_tokens) {

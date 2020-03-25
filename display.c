@@ -38,7 +38,7 @@ void display_array_beauty(Array ** _array, char * tabs) {
                     break;
                 case INDEX:
                     printf("%s%s{`<index>`}:\n", tabs, tabs, token_type_id);
-                    char child_tabs_index[255]; strcpy(child_tabs_index, tabs);  strcat(child_tabs_index, tabs); strcat(child_tabs_index, tabs);
+                    char child_tabs_index[512]; strcpy(child_tabs_index, tabs);  strcat(child_tabs_index, tabs); strcat(child_tabs_index, tabs);
                     display_index(token_value, child_tabs_index);
                     break;
                 case STRING:
@@ -46,7 +46,7 @@ void display_array_beauty(Array ** _array, char * tabs) {
                     break;
                 case ARRAY_EL: case ARRAY:
                     printf("%s%s{`<array>`}:\n", tabs, tabs, token_type_id);
-                    char child_tabs[255]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs);
+                    char child_tabs[512]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs);
                     display_array_beauty(token_value, child_tabs);
                     break;
                 case INTEGER:
@@ -57,7 +57,7 @@ void display_array_beauty(Array ** _array, char * tabs) {
                     break;
                 case FUNCTION_RES:
                     printf("%s%s{`function_call`:<%s>}: arg_list: \n", tabs, tabs, ((FuncCall *)token_value)->name);
-                    char child_tabs_function_call[255]; strcpy(child_tabs_function_call, tabs); strcat(child_tabs_function_call, tabs);
+                    char child_tabs_function_call[512]; strcpy(child_tabs_function_call, tabs); strcat(child_tabs_function_call, tabs);
                     display_array_beauty(((FuncCall *)token_value)->arg_list, child_tabs_function_call);
                     break;
                 default:
@@ -66,7 +66,7 @@ void display_array_beauty(Array ** _array, char * tabs) {
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("%s%s{TK:%d; `<complex>`}, \n", tabs, tabs, ((Token *)(_array[array_counter] -> element)) -> type_id);
         else if (_array[array_counter] -> type_id == ARRAY || _array[array_counter] -> type_id == ARRAY_EL) {
-            char child_tabs[255]; strcpy(child_tabs, tabs);
+            char child_tabs[512]; strcpy(child_tabs, tabs);
             display_array_beauty((Array **)(_array[array_counter] -> element), child_tabs);
         }
         array_counter++;
@@ -121,7 +121,8 @@ void display_array(Array ** _array) {
                     printf("{`function_call`}");
                     break;
                 default:
-                    printf("{`%s`:<%c>(0x%p)}, ", token_literal, token_value_type_id, token_value);
+                    printf("{`function`:<%s> (0x%p)}, ", token_literal, token_value);
+                    break;
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("{TK:%d; `<complex>`}, ", ((Token *)(_array[array_counter] -> element)) -> type_id);
         else if (_array[array_counter] -> type_id == ARRAY) {
@@ -132,7 +133,7 @@ void display_array(Array ** _array) {
     printf("]");
 }
 
-void display_statements(void * statement, char type_id, char tabs[255]) {
+void display_statements(void * statement, char type_id, char tabs[512]) {
     If * if_statement;
     Function * function_statement;
     While * while_statement;
@@ -152,7 +153,7 @@ void display_statements(void * statement, char type_id, char tabs[255]) {
             }
             else printf("[empty]\n");
             printf("\n%s%s%sBODY:\n", tabs, tabs, tabs);
-            char child_tabs[255]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs);
+            char child_tabs[512]; strcpy(child_tabs, tabs); strcat(child_tabs, tabs);
             display_array_beauty(function_statement->body, child_tabs);
             break;
 
@@ -178,12 +179,12 @@ void display_statements(void * statement, char type_id, char tabs[255]) {
     }
 }
 
-void display_index(Index * index, char tabs[255]) {
+void display_index(Index * index, char tabs[512]) {
 
     printf("%sINDEX:\n", tabs);
     printf("%s%sOBJECT:\n", tabs, tabs);
 
-    char child_tabs[255];
+    char child_tabs[512];
     strcpy(child_tabs, tabs);
     strcat(child_tabs, tabs);
 
@@ -193,7 +194,7 @@ void display_index(Index * index, char tabs[255]) {
     else if (object->vtype_id == INDEX) display_index(object->value, child_tabs);
     else if (object->vtype_id == STRING) printf("%s%s`%s`\n", tabs, tabs, (char *)object->value);
 
-    printf("%s%sSTART:", tabs, tabs); display_array((index->params[0])->element); printf("\n");
+    printf("%s%sSTART:", tabs, tabs); display_array_beauty((index->params[0])->element, child_tabs); printf("\n");
 
     if (index->params_count == 3) {
         printf("%s%sSTOP:", tabs, tabs); display_array((index->params[1])->element); printf("\n");
