@@ -58,6 +58,9 @@ char * cut_string(char * literal);
 /* The function will return real character that assignment with escaped character */
 char escape2real(char symbol);
 
+
+
+/* ROLLBACK SECTION ---------------------------------------------------------- */
 /* The function will store the tokens between {} and return it as array */
 Array ** cut_array(Array ** exp_tokens);
 
@@ -96,6 +99,20 @@ void typecast_function(Array ** exp_tokens);
 
 /* The function will compose and typecasting all tokens */
 void token_typecast(Array ** exp_tokens);
+/* ROLLBACK SECTION ---------------------------------------------------------- */
+
+
+/* The function will typecasting token list to data structures */
+void token_typecasting(Array ** exp_tokens);
+
+/* The function will typecasting token list to array-structure */
+Array ** array_typecasting(Array ** exp_tokens, int position);
+
+/* The function will be cut parrent array */
+Array ** cut_array_body(Array ** exp_tokens, int position);
+
+/* The function will be collect array elements like token list */
+Array ** cut_array_element(Array ** exp_tokens);
 
 /* The function will allocate data of integer, float or string type into heap */
 int allocate_token_value(ExpressionToken * exp_token);

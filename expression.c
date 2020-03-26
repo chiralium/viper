@@ -12,7 +12,7 @@ Array ** expression_lexer(Array ** tokens) {
             char * token_literal = token->value;
             Array ** expression_tokens = extract_exp_token(token_literal);
             expression_as_string = as_string(expression_tokens);
-            token_typecast(expression_tokens);
+            token_typecasting(expression_tokens);
             expression = append(expression, ARRAY, expression_tokens);
             free(tokens[tokens_counter]); free(expression_as_string);
         } else {
@@ -116,6 +116,9 @@ char * cut_string(char * token) {
     return string_literal;
 }
 
+/*
+ * ROLLBACK SECTION
+ *
 
 Array ** cut_array_el(Array ** exp_tokens) {
     Array ** tokens = new_array(); ExpressionToken * token;
@@ -290,8 +293,6 @@ void typecast_array(Array ** exp_tokens) {
     _next = 0;
 }
 
-// TODO: review index typecasting!!!
-
 void typecast_index(Array ** exp_tokens) {
     ExpressionToken * token;
     while (token = get_curr_exp_token(exp_tokens)) {
@@ -336,7 +337,84 @@ void typecast_function(Array ** exp_tokens) {
         } else _next++;
     }
     _next = 0;
+} */
+
+Array ** cut_array_element(Array ** exp_tokens) {
+    Array ** array_element = new_array(); ExpressionToken * token; int o = 0; int c = 0;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        (token->type_id == OP_OPEN_BBRACK) ? o++ : (token->type_id == OP_CLOSE_BBRACK) ? c++ : 0;
+        if (token->type_id == OP_COMA && o == c) {
+            exp_token_destructor(pop_next_exp_token(exp_tokens));
+            break;
+        } else {
+            token = pop_next_exp_token(exp_tokens);
+            array_element = append(array_element, EXP_TK, token);
+        }
+    }
+    if (o != c) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_ARRAY_DECLARATION);
+    return array_element;
 }
+
+Array ** cut_array_body(Array ** exp_tokens, int position) {
+    Array ** array = new_array(); ExpressionToken * token;
+    int o = 1; int c = 0;
+    _next = position + 1;
+    while (token = get_curr_exp_token(exp_tokens)) {
+        (token->type_id == OP_OPEN_BBRACK) ? o++ : (token->type_id == OP_CLOSE_BBRACK) ? c++ : 0;
+        if (token->type_id == OP_CLOSE_BBRACK && o == c) {
+            exp_token_destructor(pop_next_exp_token(exp_tokens));
+            break;
+        } else {
+            token = pop_next_exp_token(exp_tokens);
+            array = append(array, EXP_TK, token);
+        }
+    }
+    if (o != c) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_ARRAY_DECLARATION);
+    _next = 0;
+    return array;
+}
+
+// TODO: check the array typecasting & fix the exception handlers
+
+Array ** array_typecasting(Array ** exp_tokens, int position) {
+    Array ** array = new_array();
+    Array ** array_body = cut_array_body(exp_tokens, position);
+    ExpressionToken * token; int coma_counter = 0;
+    while (token = get_curr_exp_token(array_body)) {
+        if (token->type_id == OP_CLOSE_BBRACK) {
+            exp_token_destructor(pop_next_exp_token(array_body));
+            break;
+        } else if (token->type_id == OP_COMA) {
+            if (++coma_counter > _get_len(array) || is_empty(array)) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_ARRAY_DECLARATION);
+            exp_token_destructor(pop_next_exp_token(array_body));
+        } else {
+            Array ** array_element = cut_array_element(array_body);
+            token_typecasting(array_element);
+            array = append(array, ARRAY_EL, array_element);
+        }
+    }
+    free(array_body);
+    return array;
+}
+
+void token_typecasting(Array ** exp_tokens) {
+    int counter = 0;
+    while (exp_tokens[counter]) {
+        ExpressionToken * token = exp_tokens[counter]->element;
+        if (token->type_id == OP_OPEN_BBRACK) {
+            Array ** array = array_typecasting(exp_tokens, counter);
+            ExpressionToken * array_tk = malloc(sizeof(ExpressionToken));
+            array_tk->type_id = EXPRESSION_CONSTANT_TK;
+            array_tk->vtype_id = ARRAY;
+            array_tk->value = array;
+            array_tk->literal = NULL;
+            exp_token_destructor(exp_tokens[counter]->element);
+            exp_tokens[counter]->element = array_tk;
+        } else allocate_token_value(token);
+        counter++;
+    }
+}
+
 
 int allocate_token_value(ExpressionToken * exp_token) {
     char * literal = exp_token->literal; void * (*function_pointer)(void *, void *) = NULL;
