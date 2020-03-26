@@ -145,6 +145,26 @@ Array ** cut_array(Array ** exp_tokens) {
     return array;
 }
 
+Array ** cut_index_object(Array ** exp_tokens, int * position) {
+    int pos = *position;
+    Array ** object = new_array(); ExpressionToken * token; int o = 0; int c = 0;
+    while (exp_tokens[pos] && pos >= 0) {
+        token = exp_tokens[pos]->element;
+        (token->type_id == OP_OPEN_CBRACK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
+        if (token->type_id == EXPRESSION_OPERATOR_TK && c == 0) break;
+        else {
+            token = pop_exp_token(exp_tokens, pos);
+            object = insert(object, EXP_TK, token, 0);
+            pos--;
+        }
+    }
+    int _tmp = _next; _next = 0;
+    token_typecast(object);
+    _next = _tmp;
+    *position = pos;
+    return object;
+}
+
 Array ** cut_index_body(Array ** exp_tokens) {
     Array ** tokens = new_array(); ExpressionToken * token;
     int o = 1; int c = 0;
@@ -270,6 +290,8 @@ void typecast_array(Array ** exp_tokens) {
     _next = 0;
 }
 
+// TODO: review index typecasting!!!
+
 void typecast_index(Array ** exp_tokens) {
     ExpressionToken * token;
     while (token = get_curr_exp_token(exp_tokens)) {
@@ -277,13 +299,21 @@ void typecast_index(Array ** exp_tokens) {
             int position = _next - 1; exp_token_destructor(pop_next_exp_token(exp_tokens));
             if (position < 0) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
             Array ** index_params = cut_index(exp_tokens);
-            Index * index = new_index(exp_tokens[position]->element, index_params, _get_len(index_params));
+            Array ** object = cut_index_object(exp_tokens, &position);
+            Index * index = new_index(object, index_params, _get_len(index_params));
             ExpressionToken * index_tk = malloc(sizeof(ExpressionToken));
             index_tk->type_id = EXPRESSION_CONSTANT_TK;
             index_tk->literal = NULL;
             index_tk->vtype_id = INDEX;
             index_tk->value = index;
-            exp_tokens[position]->element = index_tk;
+            //exp_tokens[position]->element = index_tk;
+            exp_tokens = append(exp_tokens, EXP_TK, index_tk);
+            printf("OBJECT: \n\n");
+            display_array(object);
+            printf("\n");
+            printf("EXP TOKENS:\n\n");
+            display_array(exp_tokens);
+            exit(0);
         } else _next++;
     }
     _next = 0;
@@ -384,6 +414,15 @@ ExpressionToken * pop_next_exp_token(Array ** exp_tokens) {
     } else {
         return 0;
     }
+}
+
+ExpressionToken * pop_exp_token(Array ** exp_tokens, int position) {
+    if (exp_tokens[position]) {
+        int length = _get_len(exp_tokens);
+        ExpressionToken * token = exp_tokens[position]->element; free(exp_tokens[position]);
+        memcpy(exp_tokens + position, exp_tokens + (position + 1), sizeof(Array *) * (length - position));
+        return token;
+    } else return 0;
 }
 
 void exp_token_destructor(ExpressionToken * token) {

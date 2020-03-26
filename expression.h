@@ -67,6 +67,9 @@ Array ** cut_array_el(Array ** exp_tokens);
 /* The function will cut the tokens while not meet the stop token */
 Array ** cut_index_body(Array ** exp_tokens);
 
+/* The function will cut the index object */
+Array ** cut_index_object(Array ** exp_tokens, int * position);
+
 /* The function will cut the tokens between [] */
 Array ** cut_index_el(Array ** exp_tokens);
 
@@ -121,6 +124,7 @@ char * as_string(Array ** exp_token);
 /* Tools */
 ExpressionToken * get_next_exp_token(Array ** exp_tokens);
 ExpressionToken * pop_next_exp_token(Array ** exp_tokens);
+ExpressionToken * pop_exp_token(Array ** exp_tokens, int position);
 ExpressionToken * get_curr_exp_token(Array ** exp_tokens);
 
 /* Destructor */
