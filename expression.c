@@ -189,7 +189,9 @@ Array ** cut_index_parameter(Array ** exp_tokens) {
 }
 
 Array ** cut_index_body(Array ** exp_tokens, int position) {
-    Array ** index_body = new_array(); ExpressionToken * token;
+    ExpressionToken * token = exp_tokens[position]->element;
+    if (token->type_id == OP_CLOSE_SBRACK) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
+    Array ** index_body = new_array();
     int o = 1; int c = 0;
     _next = position;
     while (token = get_curr_exp_token(exp_tokens)) {
