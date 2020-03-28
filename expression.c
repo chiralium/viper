@@ -120,34 +120,6 @@ char * cut_string(char * token) {
  * ROLLBACK SECTION
  *
 
-Array ** cut_array_el(Array ** exp_tokens) {
-    Array ** tokens = new_array(); ExpressionToken * token;
-    while (token = get_curr_exp_token(exp_tokens)) {
-        if (token->type_id != OP_COMA && token->type_id != OP_CLOSE_BBRACK) {
-            token = pop_next_exp_token(exp_tokens);
-            tokens = append(tokens, EXP_TK, token);
-        } else break;
-    }
-    return tokens;
-}
-
-Array ** cut_array(Array ** exp_tokens) {
-    Array ** array = new_array(); ExpressionToken * token; int coma_counter = 0;
-    while (token = get_curr_exp_token(exp_tokens)) {
-        if (token->type_id == OP_CLOSE_BBRACK) {
-            exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the }-token
-            break;
-        } else if (token->type_id == OP_COMA) {
-            if (++coma_counter > _get_len(array) || is_empty(array)) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_ARRAY_DECLARATION);
-            exp_token_destructor(pop_next_exp_token(exp_tokens));
-        } else if (token->type_id == OP_OPEN_BBRACK) {
-              exp_token_destructor(pop_next_exp_token(exp_tokens)); // free the {-token
-              array = append(array, ARRAY, cut_array(exp_tokens));
-        } else if (token->type_id != OP_OPEN_BBRACK) array = append(array, ARRAY_EL, cut_array_el(exp_tokens));
-    }
-    return array;
-}
-
 Array ** cut_index_object(Array ** exp_tokens, int * position) {
     int pos = *position;
     Array ** object = new_array(); ExpressionToken * token; int o = 0; int c = 0;
@@ -374,20 +346,17 @@ Array ** cut_array_body(Array ** exp_tokens, int position) {
     return array;
 }
 
-// TODO: check the array typecasting & fix the exception handlers
-
 Array ** array_typecasting(Array ** exp_tokens, int position) {
     Array ** array = new_array();
     Array ** array_body = cut_array_body(exp_tokens, position);
+
     ExpressionToken * token; int coma_counter = 0;
     while (token = get_curr_exp_token(array_body)) {
         if (token->type_id == OP_CLOSE_BBRACK) {
             exp_token_destructor(pop_next_exp_token(array_body));
             break;
-        } else if (token->type_id == OP_COMA) {
-            if (++coma_counter > _get_len(array) || is_empty(array)) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_ARRAY_DECLARATION);
-            exp_token_destructor(pop_next_exp_token(array_body));
-        } else {
+        } else if (token->type_id == OP_COMA) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_ARRAY_DECLARATION);
+        else {
             Array ** array_element = cut_array_element(array_body);
             token_typecasting(array_element);
             array = append(array, ARRAY_EL, array_element);

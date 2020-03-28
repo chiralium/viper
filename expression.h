@@ -61,12 +61,6 @@ char escape2real(char symbol);
 
 
 /* ROLLBACK SECTION ---------------------------------------------------------- */
-/* The function will store the tokens between {} and return it as array */
-Array ** cut_array(Array ** exp_tokens);
-
-/* The function will cut the tokens while not meet stop token in cut_factor string */
-Array ** cut_array_el(Array ** exp_tokens);
-
 /* The function will cut the tokens while not meet the stop token */
 Array ** cut_index_body(Array ** exp_tokens);
 
@@ -96,9 +90,6 @@ void typecast_index(Array ** exp_tokens);
 
 /* The function will compose the function call structure */
 void typecast_function(Array ** exp_tokens);
-
-/* The function will compose and typecasting all tokens */
-void token_typecast(Array ** exp_tokens);
 /* ROLLBACK SECTION ---------------------------------------------------------- */
 
 
