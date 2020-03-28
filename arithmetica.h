@@ -67,6 +67,7 @@ typedef struct Constant {
 #define ARITHMETICA_STRING_CONCATE_EXCEPTION  "invalid concating operand"
 #define ARITHMETICA_UNDEFINED_OPERATOR        "undefined operator (something wrong with expression parser)"
 #define ARITHMETICA_SYNTAX_EXCEPTION          "syntax error"
+#define ARITHMETICA_NOT_ITERABLE_EXCEPTION    "the object not iterable"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -99,6 +100,12 @@ Array ** fixing_unary_operators(Array ** expression_tokens);
 
 /* The function will calculated the arrays element */
 Array ** array_precalc(Array ** array);
+
+/* The function will calculated the index's element */
+Constant * index_precalc(Index * index);
+
+/* The function will return value of object */
+Constant * get_by_index(Constant * object, Array ** params);
 
 /* The function will crate the zero-token */
 void * make_zero_tk();

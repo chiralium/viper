@@ -1,1 +1,2 @@
-(1+"Hello")[0, 2, 5/9,7]["b"[0]];
+symbol = "this is the symbol = " + "hello"[5 -4];
+symbol[0][0];

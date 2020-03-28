@@ -27,6 +27,51 @@ Array ** array_precalc(Array ** array) {
     return array;
 }
 
+Constant * get_by_index(Constant * object, Array ** params) {
+    int params_count = _get_len(params);
+    Constant * result = malloc(sizeof(Constant));
+
+    switch(params_count) {
+        case 1:
+            if (object->type_id == STRING) {
+                char * single_symbol = malloc(sizeof(char) * 2);
+                single_symbol[0] = ((char *)(object->value))[*(int *)(params[0]->element)];
+                single_symbol[1] = '\0';
+                result->value = single_symbol;
+                result->type_id = STRING;
+            } else if (object->type_id == ARRAY) {
+                Array * element = ((Array **)(object->value))[*(int *)(params[0]->element)];
+                result->value = element->element;
+                result->type_id = element->type_id;
+            }
+    }
+    constant_destructor(object);
+    return result;
+}
+
+Constant * index_precalc(Index * index) {
+    Array ** index_parameters = index->params;
+    Array ** calculated_index_parameters = new_array();
+
+    /* Calculate the index parameters */
+    int params_counter = 0;
+    while (params_counter < index->params_count) {
+        Constant * calculated_parameter = arithmetica(index_parameters[params_counter]->element, namespace);
+        calculated_index_parameters = append(calculated_index_parameters, calculated_parameter->type_id, calculated_parameter->value);
+        free(calculated_parameter); free(index_parameters[params_counter]);
+        params_counter++;
+    }
+    free(index_parameters);
+
+    /* Calculate the index object */
+    Array ** index_object = index->object;
+    Constant * calculated_object = arithmetica(index_object, namespace);
+    if (calculated_object->type_id != STRING && calculated_object->type_id != ARRAY) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
+    void * result = get_by_index(calculated_object, calculated_index_parameters);
+    array_destructor(calculated_index_parameters); free(index);
+    return result;
+}
+
 Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     /* Init global variable of module */
     namespace = current_namespace;
@@ -53,6 +98,12 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
         ExpressionToken * token = postfixed_expression[counter]->element;
         if (token->type_id == EXPRESSION_CONSTANT_TK) {
             if (token->vtype_id == ARRAY) token->value = array_precalc(token->value);
+            else if (token->vtype_id == INDEX) {
+                Constant * result = index_precalc(token->value);
+                token->vtype_id = result->type_id;
+                token->value = result->value;
+                free(result);
+            }
             constant_stack = append(constant_stack, EXP_TK, token);
         } else {
             Array * stack_el_x = pop_last_el(constant_stack); Array * stack_el_y = pop_last_el(constant_stack);
@@ -207,7 +258,7 @@ Index * new_index(void * object, Array ** params) {
 }
 
 void index_destructor(Index * index) {
-    exp_token_destructor(index->object);
+    array_destructor(index->object);
     array_destructor(index->params);
     free(index);
 }
