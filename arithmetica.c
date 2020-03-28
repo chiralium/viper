@@ -198,11 +198,11 @@ void * assign_function(char * literal) {
     return function_pointer;
 }
 
-Index * new_index(void * object, Array ** params, int params_count) {
+Index * new_index(void * object, Array ** params) {
     Index * index = malloc(sizeof(Index));
     index->object = object;
     index->params = params;
-    index->params_count = params_count;
+    index->params_count = _get_len(params);
     return index;
 }
 

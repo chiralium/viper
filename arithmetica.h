@@ -110,7 +110,7 @@ int _get_priority(char * operator);
 void * assign_function(char * literal);
 
 /* The function will compose the Index-structure by input params */
-Index * new_index(void * object, Array ** params, int params_count);
+Index * new_index(void * object, Array ** params);
 
 /* The function will compose the FuncCall-structure by input params */
 FuncCall * new_func_call(char * name, Array ** arg_list);

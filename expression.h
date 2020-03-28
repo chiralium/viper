@@ -58,52 +58,29 @@ char * cut_string(char * literal);
 /* The function will return real character that assignment with escaped character */
 char escape2real(char symbol);
 
-
-
-/* ROLLBACK SECTION ---------------------------------------------------------- */
-/* The function will cut the tokens while not meet the stop token */
-Array ** cut_index_body(Array ** exp_tokens);
-
-/* The function will cut the index object */
-Array ** cut_index_object(Array ** exp_tokens, int * position);
-
-/* The function will cut the tokens between [] */
-Array ** cut_index_el(Array ** exp_tokens);
-
-/* The function will store the tokens between [] and return it as array of tokens */
-Array ** cut_index(Array ** exp_tokens);
-
-/* The function will store the tokens between () while not meet the coma */
-Array ** cut_single_arg(Array ** exp_tokens);
-
-/* The function will store the tokens between () like array of array */
-Array ** cut_arglist(Array ** exp_tokens);
-
-/* The function will create real value of token in a heap just for simple data*/
-void typecast_constant(Array ** exp_tokens);
-
-/* The function will compose the arrays from tokens stream */
-void typecast_array(Array ** exp_tokens);
-
-/* The function will compose the index from tokens stream */
-void typecast_index(Array ** exp_tokens);
-
-/* The function will compose the function call structure */
-void typecast_function(Array ** exp_tokens);
-/* ROLLBACK SECTION ---------------------------------------------------------- */
-
-
 /* The function will typecasting token list to data structures */
 void token_typecasting(Array ** exp_tokens);
 
 /* The function will typecasting token list to array-structure */
 Array ** array_typecasting(Array ** exp_tokens, int position);
 
-/* The function will be cut parrent array */
+/* The function will be cut parent array */
 Array ** cut_array_body(Array ** exp_tokens, int position);
 
 /* The function will be collect array elements like token list */
 Array ** cut_array_element(Array ** exp_tokens);
+
+/* The function will typecasting token list to index-structure */
+Array ** index_typecasting(Array ** exp_tokens, int position);
+
+/* The function will be cut parent index body */
+Array ** cut_index_body(Array ** exp_tokens, int position);
+
+/* The function will be cut index parameter */
+Array ** cut_index_parameter(Array ** exp_tokens);
+
+/* The function will store the tokens of index's object */
+Array ** cut_index_object(Array ** exp_tokens, int * position);
 
 /* The function will allocate data of integer, float or string type into heap */
 int allocate_token_value(ExpressionToken * exp_token);

@@ -188,11 +188,9 @@ void display_index(Index * index, char tabs[512]) {
     strcpy(child_tabs, tabs);
     strcat(child_tabs, tabs);
 
-    ExpressionToken * object = index->object;
+    Array ** object = index->object;
 
-    if (object->vtype_id == ARRAY) display_array_beauty(object->value, child_tabs);
-    else if (object->vtype_id == INDEX) display_index(object->value, child_tabs);
-    else if (object->vtype_id == STRING) printf("%s%s`%s`\n", tabs, tabs, (char *)object->value);
+    display_array_beauty(object, child_tabs);
 
     printf("%s%sSTART:", tabs, tabs); display_array_beauty((index->params[0])->element, child_tabs); printf("\n");
 
