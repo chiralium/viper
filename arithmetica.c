@@ -41,7 +41,8 @@ Constant * get_by_index(Constant * object, Array ** params) {
                 result->type_id = STRING;
             } else if (object->type_id == ARRAY) {
                 Array * element = ((Array **)(object->value))[*(int *)(params[0]->element)];
-                result->value = element->element;
+
+                result->value = copy_data(element->element, element->type_id);
                 result->type_id = element->type_id;
             }
     }
