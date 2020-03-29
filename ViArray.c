@@ -21,6 +21,7 @@ Constant * _get_by_index(Constant * object, Array ** params) {
                 result->type_id = STRING;
             } else if (object->type_id == ARRAY) {
                 int index = *(int *)(params[0]->element);
+                if (index > _get_len(object->value) - 1) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
                 Array * element = ((Array **)(object->value))[index];
                 result->value = copy_data(element->element, element->type_id);
                 result->type_id = element->type_id;

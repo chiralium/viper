@@ -272,7 +272,7 @@ void token_typecasting(Array ** exp_tokens) {
             index_tk->type_id = EXPRESSION_CONSTANT_TK;
             index_tk->vtype_id = INDEX;
             index_tk->value = index;
-            index_tk->literal = NULL;
+            index_tk->literal = alloc_string(expression_as_string);
             exp_token_destructor(exp_tokens[counter]->element);
             exp_tokens[counter]->element = index_tk;
         } else allocate_token_value(token);
