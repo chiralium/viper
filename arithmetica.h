@@ -104,9 +104,6 @@ Array ** array_precalc(Array ** array);
 /* The function will calculated the index's element */
 Constant * index_precalc(Index * index);
 
-/* The function will return value of object */
-Constant * get_by_index(Constant * object, Array ** params);
-
 /* The function will crate the zero-token */
 void * make_zero_tk();
 

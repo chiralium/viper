@@ -1,5 +1,6 @@
 #include "expression.h"
 #include "arithmetica.h"
+#include "ViArray.h"
 
 Node * namespace;
 char * expression_as_string;
