@@ -14,6 +14,12 @@
 /* The function will be returned element of array by mode */
 Constant * _get_by_index(Constant * object, Array ** params);
 
+/* The function will be returned sub-array of sub-string by start & end */
+Constant * _get_range(Constant * object, int start, int end);
+
+/* The function will be returned ony single element */
+Constant * _get_single(Constant * object, int index);
+
 /* The function will be validate the type of index parameter */
 void _validate_index_parameter(Array ** params);
 
