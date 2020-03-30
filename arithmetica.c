@@ -103,19 +103,19 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
             void * (*function_pointer)(void *, void *) = elexpr->value;
             /* if function_pointer is a _tmp function, it is mean, some elexprs like [], cannot be removed at below step of parsing */
             if (function_pointer == _tmp) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_OPERATOR);
-            Element * result_tk = function_pointer(x_el, y_el);
-            constant_stack = append(constant_stack, ELEMENT, result_tk);
+            Element * result_el = function_pointer(x_el, y_el);
+            constant_stack = append(constant_stack, ELEMENT, result_el);
         }
         counter++;
     }
 
     Array * last = pop_last_el(constant_stack);
     if (!is_empty(constant_stack)) throw_arithmetical_exception(expression_as_string, ARITHMETICA_SYNTAX_EXCEPTION);
-    Element * result_tk = last->element; get_from_namespace(result_tk);
+    Element * result_el = last->element; get_from_namespace(result_el);
 
     Constant * value = malloc(sizeof(Constant));
-    value->type_id = result_tk->vtype_id;
-    value->value = copy_data(result_tk->value, result_tk->vtype_id); // copy data from token, cause all token-list must be destroyed
+    value->type_id = result_el->vtype_id;
+    value->value = copy_data(result_el->value, result_el->vtype_id); // copy data from token, cause all token-list must be destroyed
 
     free(last);
     free(constant_stack);
@@ -329,31 +329,31 @@ void * copy_data(void * src, char type_id) {
 }
 
 int get_int_value(void * elexpr) {
-    Element * tk = elexpr;
-    if (tk->vtype_id == INTEGER) return *(int *)(tk->value);
-    else if (tk->vtype_id == FLOAT) return (int)(*(float *)(tk->value));
+    Element * el = elexpr;
+    if (el->vtype_id == INTEGER) return *(int *)(el->value);
+    else if (el->vtype_id == FLOAT) return (int)(*(float *)(el->value));
     else {
-        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, tk->vtype_id, 'i');
+        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, el->vtype_id, 'i');
         throw_typecasting_exception(expression_as_string, message);
     }
 }
 
 float get_float_value(void * elexpr) {
-    Element * tk = elexpr;
-    if (tk->vtype_id == INTEGER) return (float)(*(int *)(tk->value));
-    else if (tk->vtype_id == FLOAT) return *(float *)(tk->value);
+    Element * el = elexpr;
+    if (el->vtype_id == INTEGER) return (float)(*(int *)(el->value));
+    else if (el->vtype_id == FLOAT) return *(float *)(el->value);
     else {
-        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, tk->vtype_id, 'f');
+        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, el->vtype_id, 'f');
         throw_typecasting_exception(expression_as_string, message);
     }
 }
 
 int get_from_namespace(void * elexpr) {
-    Element * tk = elexpr;
-    if (tk->vtype_id != UNDEFINED) return 0;
-    Constant * value = find_node(namespace, faq6(tk->literal));
+    Element * el = elexpr;
+    if (el->vtype_id != UNDEFINED) return 0;
+    Constant * value = find_node(namespace, faq6(el->literal));
     if (value == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
-    tk->value = copy_data(value->value, value->type_id); tk->vtype_id = value->type_id;
+    el->value = copy_data(value->value, value->type_id); el->vtype_id = value->type_id;
 }
 
 void * _add(void * x, void * y) {
