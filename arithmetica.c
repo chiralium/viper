@@ -55,7 +55,15 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     /* Init global variable of module */
     namespace = current_namespace;
 
+    int counter = 0;
     Array ** postfixed_expression = postfix(expression_tokens);
+    while(postfixed_expression[counter]) {
+        ExpressionToken * token = postfixed_expression[counter]->element;
+        Element * elexpr = convert_to_element(token);
+        postfixed_expression[counter]->element = elexpr;
+        postfixed_expression[counter]->type_id = ELEMENT;
+        free(token); counter++;
+    }
 
     /*
      * Calculate the value:
@@ -72,38 +80,38 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
      */
 
     Array ** constant_stack = new_array();
-    int counter = 0;
+    counter = 0;
     while (postfixed_expression[counter]) {
-        ExpressionToken * token = postfixed_expression[counter]->element;
-        if (token->type_id == EXPRESSION_CONSTANT_TK) {
-            if (token->vtype_id == ARRAY) token->value = array_precalc(token->value);
-            else if (token->vtype_id == INDEX) {
-                Constant * result = index_precalc(token->value);
-                token->vtype_id = result->type_id;
-                token->value = result->value;
+        Element * elexpr = postfixed_expression[counter]->element;
+        if (elexpr->type_id == EXPRESSION_CONSTANT_TK) {
+            if (elexpr->vtype_id == ARRAY) elexpr->value = array_precalc(elexpr->value);
+            else if (elexpr->vtype_id == INDEX) {
+                Constant * result = index_precalc(elexpr->value);
+                elexpr->vtype_id = result->type_id;
+                elexpr->value = result->value;
                 free(result);
             }
-            constant_stack = append(constant_stack, EXP_TK, token);
+            constant_stack = append(constant_stack, ELEMENT, elexpr);
         } else {
             Array * stack_el_x = pop_last_el(constant_stack); Array * stack_el_y = pop_last_el(constant_stack);
             if (!stack_el_x || !stack_el_y) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_EXPRESSION_SYNTAX);
 
-            ExpressionToken * x_tk = stack_el_x->element; free(stack_el_x);
-            ExpressionToken * y_tk = stack_el_y->element; free(stack_el_y);
-            if (x_tk->type_id != EXPRESSION_CONSTANT_TK || y_tk->type_id != EXPRESSION_CONSTANT_TK) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+            Element * x_el = stack_el_x->element; free(stack_el_x);
+            Element * y_el = stack_el_y->element; free(stack_el_y);
+            if (x_el->type_id != EXPRESSION_CONSTANT_TK || y_el->type_id != EXPRESSION_CONSTANT_TK) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
 
-            void * (*function_pointer)(void *, void *) = token->value;
-            /* if function_pointer is a _tmp function, it is mean, some tokens like [], cannot be removed at below step of parsing */
+            void * (*function_pointer)(void *, void *) = elexpr->value;
+            /* if function_pointer is a _tmp function, it is mean, some elexprs like [], cannot be removed at below step of parsing */
             if (function_pointer == _tmp) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_OPERATOR);
-            ExpressionToken * result_tk = function_pointer(x_tk, y_tk);
-            constant_stack = append(constant_stack, EXP_TK, result_tk);
+            Element * result_tk = function_pointer(x_el, y_el);
+            constant_stack = append(constant_stack, ELEMENT, result_tk);
         }
         counter++;
     }
 
     Array * last = pop_last_el(constant_stack);
     if (!is_empty(constant_stack)) throw_arithmetical_exception(expression_as_string, ARITHMETICA_SYNTAX_EXCEPTION);
-    ExpressionToken * result_tk = last->element; get_from_namespace(result_tk);
+    Element * result_tk = last->element; get_from_namespace(result_tk);
 
     Constant * value = malloc(sizeof(Constant));
     value->type_id = result_tk->vtype_id;
@@ -165,7 +173,7 @@ Array ** postfix(Array ** expression_tokens) {
     while (stack_el = pop_last_el(tokens_stack)) {
         ExpressionToken * token = stack_el->element;
         if (token->type_id == OP_OPEN_CBRACK || token->type_id == OP_CLOSE_CBRACK) throw_arithmetical_exception(expression, ARITHMETICA_BRACES_NOT_BALANCED);
-        output = append(output, EXP_TK, token); free(stack_el);
+        output = append(output, ELEMENT, token); free(stack_el);
     }
 
     free(expression); free(tokens_stack); free(expression_tokens);
@@ -173,10 +181,22 @@ Array ** postfix(Array ** expression_tokens) {
     return output;
 }
 
+Element * convert_to_element(void * token) {
+    ExpressionToken * tk = token;
+    Element * el = malloc(sizeof(Element));
+
+    el->literal = tk->literal;
+    el->type_id = tk->type_id;
+    el->vtype_id = tk->vtype_id;
+    el->value = tk->value;
+    el->is_child = 0; el->origin = 0; el->parent_id = 0;
+    return el;
+}
+
 Array ** fixing_unary_operators(Array ** expression_tokens) {
     int token_counter = 0;
     while (expression_tokens[token_counter]) {
-        ExpressionToken * token = expression_tokens[token_counter]->element;
+        Element * token = expression_tokens[token_counter]->element;
         if (token->vtype_id == OPERATOR_PLUS || token->vtype_id == OPERATOR_MINUS) {
             if (!token_counter) expression_tokens = insert(expression_tokens, EXP_TK, make_zero_tk(), token_counter++);
             else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == OP_OPEN_CBRACK ||
@@ -308,8 +328,8 @@ void * copy_data(void * src, char type_id) {
     }
 }
 
-int get_int_value(void * token) {
-    ExpressionToken * tk = token;
+int get_int_value(void * elexpr) {
+    Element * tk = elexpr;
     if (tk->vtype_id == INTEGER) return *(int *)(tk->value);
     else if (tk->vtype_id == FLOAT) return (int)(*(float *)(tk->value));
     else {
@@ -318,8 +338,8 @@ int get_int_value(void * token) {
     }
 }
 
-float get_float_value(void * token) {
-    ExpressionToken * tk = token;
+float get_float_value(void * elexpr) {
+    Element * tk = elexpr;
     if (tk->vtype_id == INTEGER) return (float)(*(int *)(tk->value));
     else if (tk->vtype_id == FLOAT) return *(float *)(tk->value);
     else {
@@ -328,8 +348,8 @@ float get_float_value(void * token) {
     }
 }
 
-int get_from_namespace(void * token) {
-    ExpressionToken * tk = token;
+int get_from_namespace(void * elexpr) {
+    Element * tk = elexpr;
     if (tk->vtype_id != UNDEFINED) return 0;
     Constant * value = find_node(namespace, faq6(tk->literal));
     if (value == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
@@ -338,98 +358,98 @@ int get_from_namespace(void * token) {
 
 void * _add(void * x, void * y) {
     // y + x
-    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
-    get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if (y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
-        float * result = malloc(sizeof(float)); *result = get_float_value(y_tk) + get_float_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = FLOAT;
-    } else if (y_tk->vtype_id == INTEGER) {
-        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) + get_int_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = INTEGER;
-    } else if (y_tk->vtype_id == STRING) {
-        if (x_tk->vtype_id != STRING) throw_typecasting_exception(expression_as_string,  ARITHMETICA_STRING_CONCATE_EXCEPTION);
+    Element * x_el = x; Element * y_el = y;
+    get_from_namespace(x_el); get_from_namespace(y_el);
+    if (y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
+        float * result = malloc(sizeof(float)); *result = get_float_value(y_el) + get_float_value(x_el);
+        free(x_el->value);
+        x_el->value = result; x_el->vtype_id = FLOAT;
+    } else if (y_el->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = get_int_value(y_el) + get_int_value(x_el);
+        free(x_el->value);
+        x_el->value = result; x_el->vtype_id = INTEGER;
+    } else if (y_el->vtype_id == STRING) {
+        if (x_el->vtype_id != STRING) throw_typecasting_exception(expression_as_string,  ARITHMETICA_STRING_CONCATE_EXCEPTION);
         char stack_tmp_result[ARITHMETICA_MAX_STRING_LEN + 1];
-        strcpy(stack_tmp_result, (char *)y_tk->value);
-        strcat(stack_tmp_result, (char *)x_tk->value);
+        strcpy(stack_tmp_result, (char *)y_el->value);
+        strcat(stack_tmp_result, (char *)x_el->value);
         char * result = alloc_string(stack_tmp_result);
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = STRING;
+        free(x_el->value);
+        x_el->value = result; x_el->vtype_id = STRING;
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_tk;
+    return x_el;
 }
 
 void * _sub(void * x, void * y) {
     // y - x
-    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
-    get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
+    Element * x_el = x; Element * y_el = y;
+    get_from_namespace(x_el); get_from_namespace(y_el);
+    if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
-        *result = get_float_value(y_tk) - get_float_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result;
-        x_tk->vtype_id = FLOAT;
-    } else if (y_tk->vtype_id == INTEGER) {
-        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) - get_int_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = INTEGER;
+        *result = get_float_value(y_el) - get_float_value(x_el);
+        free(x_el->value);
+        x_el->value = result;
+        x_el->vtype_id = FLOAT;
+    } else if (y_el->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = get_int_value(y_el) - get_int_value(x_el);
+        free(x_el->value);
+        x_el->value = result; x_el->vtype_id = INTEGER;
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_tk;
+    return x_el;
 }
 
 void * _mul(void * x, void * y) {
     // y * x
-    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
-    get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
+    Element * x_el = x; Element * y_el = y;
+    get_from_namespace(x_el); get_from_namespace(y_el);
+    if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
-        *result = get_float_value(y_tk) * get_float_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result;
-        x_tk->vtype_id = FLOAT;
-    } else if (y_tk->vtype_id == INTEGER) {
-        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) * get_int_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = INTEGER;
+        *result = get_float_value(y_el) * get_float_value(x_el);
+        free(x_el->value);
+        x_el->value = result;
+        x_el->vtype_id = FLOAT;
+    } else if (y_el->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = get_int_value(y_el) * get_int_value(x_el);
+        free(x_el->value);
+        x_el->value = result; x_el->vtype_id = INTEGER;
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_tk;
+    return x_el;
 }
 
 void * _div(void * x, void * y) {
     // y / x
-    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
-    get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
+    Element * x_el = x; Element * y_el = y;
+    get_from_namespace(x_el); get_from_namespace(y_el);
+    if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
-        *result = get_float_value(y_tk) / get_float_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result;
-        x_tk->vtype_id = FLOAT;
-    } else if (y_tk->vtype_id == INTEGER) {
-        int * result = malloc(sizeof(int)); *result = get_int_value(y_tk) / get_int_value(x_tk);
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = INTEGER;
+        *result = get_float_value(y_el) / get_float_value(x_el);
+        free(x_el->value);
+        x_el->value = result;
+        x_el->vtype_id = FLOAT;
+    } else if (y_el->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = get_int_value(y_el) / get_int_value(x_el);
+        free(x_el->value);
+        x_el->value = result; x_el->vtype_id = INTEGER;
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_tk;
+    return x_el;
 }
 
 void * _pow(void * x, void * y){
     // y ^ x
-    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
-    get_from_namespace(x_tk); get_from_namespace(y_tk);
-    if(y_tk->vtype_id == FLOAT || x_tk->vtype_id == FLOAT) {
+    Element * x_el = x; Element * y_el = y;
+    get_from_namespace(x_el); get_from_namespace(y_el);
+    if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
-        *result = pow(get_float_value(y_tk), get_float_value(x_tk));
-        free(x_tk->value);
-        x_tk->value = result;
-        x_tk->vtype_id = FLOAT;
-    } else if (y_tk->vtype_id == INTEGER) {
-        int * result = malloc(sizeof(int)); *result = pow(get_int_value(y_tk), get_int_value(x_tk));
-        free(x_tk->value);
-        x_tk->value = result; x_tk->vtype_id = INTEGER;
+        *result = pow(get_float_value(y_el), get_float_value(x_el));
+        free(x_el->value);
+        x_el->value = result;
+        x_el->vtype_id = FLOAT;
+    } else if (y_el->vtype_id == INTEGER) {
+        int * result = malloc(sizeof(int)); *result = pow(get_int_value(y_el), get_int_value(x_el));
+        free(x_el->value);
+        x_el->value = result; x_el->vtype_id = INTEGER;
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_tk;
+    return x_el;
 }
 
 void * _not(void * x, void * y) {
@@ -459,14 +479,14 @@ void * _equal(void * x, void * y) {
 void * _asg(void * x, void * y) {
     /* Assign the literal of y-token with value of x-token into namespace */
     // Y = X, return X
-    ExpressionToken * x_tk = x; ExpressionToken * y_tk = y;
-    char type_id = x_tk->vtype_id; // type of value
-    void * value; value = copy_data(x_tk->value, type_id);
+    Element * x_el = x; Element * y_el = y;
+    char type_id = x_el->vtype_id; // type of value
+    void * value; value = copy_data(x_el->value, type_id);
 
     Constant * copied_value = new_constant(type_id, value); // create the new constant structure with copied value from token
-    Node * namespace_object = new_node(faq6(y_tk->literal), copied_value); // create node of namespace binary tree with created constant
+    Node * namespace_object = new_node(faq6(y_el->literal), copied_value); // create node of namespace binary tree with created constant
     insert_node(namespace, namespace_object); // save it into namespace
-    return x_tk;
+    return x_el;
 }
 
 void * _tmp(void * x, void * y) {

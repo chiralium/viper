@@ -52,6 +52,17 @@ typedef struct Constant {
     void * value;
 } Constant;
 
+/* The data-structure like ExpressionToken but with extra fields */
+typedef struct Element {
+    char * literal;
+    char type_id;
+    void * value;
+    char vtype_id;
+    int is_child;    // this field will be indicate the element likie child element of complex structure like class or array
+    char parent_id;  // the type of parrent structure
+    void * origin;   // the pointer to the same element in parent structure
+} Element;
+
 /* Types parameters */
 #define ARITHMETICA_MAX_STRING_LEN 255
 
@@ -97,6 +108,9 @@ Array ** postfix(Array ** expression_tokens);
 
 /* The function will insert zero-token-value before unary plus or minus */
 Array ** fixing_unary_operators(Array ** expression_tokens);
+
+/* The function will convert the ExpressionToken to the Element-structure */
+Element * convert_to_element(void * token);
 
 /* The function will calculated the arrays element */
 Array ** array_precalc(Array ** array);
