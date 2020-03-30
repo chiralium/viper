@@ -53,12 +53,17 @@ typedef struct Constant {
 } Constant;
 
 /* The data-structure like ExpressionToken but with extra fields */
+/* New data structure necessary for few reason:
+ * 1. Mixing absolutely differ structure by value is a not good way (ExpressionToken is a token -- result of parsing)
+ * 2. Extra fields necessary to indicating the origin of element (for example, some element of expression is a element of array and etc.)
+ * 3. Constant structure is a structure of result of work this module
+ * 4. Element structure is a intermediate structure that used in calculations
+ */
 typedef struct Element {
     char * literal;
     char type_id;
     void * value;
     char vtype_id;
-    int is_child;    // this field will be indicate the element likie child element of complex structure like class or array
     char parent_id;  // the type of parrent structure
     void * origin;   // the pointer to the same element in parent structure
 } Element;

@@ -54,9 +54,10 @@ Constant * index_precalc(Index * index) {
 Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     /* Init global variable of module */
     namespace = current_namespace;
-
-    int counter = 0;
     Array ** postfixed_expression = postfix(expression_tokens);
+
+    /* Convert the all ExpressionToken into Element-structure */
+    int counter = 0;
     while(postfixed_expression[counter]) {
         ExpressionToken * token = postfixed_expression[counter]->element;
         Element * elexpr = convert_to_element(token);
@@ -64,20 +65,6 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
         postfixed_expression[counter]->type_id = ELEMENT;
         free(token); counter++;
     }
-
-    /*
-     * Calculate the value:
-     * 1. if current token is a complex value like array or index:
-     *    - for array necessary precalculate each elements of array;
-     *    - for index necessary precalculate index value;
-     *    - save the precalculated value into value of ExpressionTokens
-     *
-     * 2. if current value is a variable:
-     *    - get real value from namespace
-     *    - save this value into value of ExpressionTokens
-     *
-     * 3. Calculate value and return as Constant-structure
-     */
 
     Array ** constant_stack = new_array();
     counter = 0;
@@ -189,7 +176,9 @@ Element * convert_to_element(void * token) {
     el->type_id = tk->type_id;
     el->vtype_id = tk->vtype_id;
     el->value = tk->value;
-    el->is_child = 0; el->origin = 0; el->parent_id = 0;
+    /* --- extra fields --- */
+    el->origin = 0;
+    el->parent_id = 0;
     return el;
 }
 
