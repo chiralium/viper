@@ -28,7 +28,7 @@ void insert_node(Node * root, Node * node) {
 
 void * find_node(Node * root, int key) {
     if (root == NULL) return NULL;
-    if (root->key == key) return root->value;
+    if (root->key == key) return root;
     else {
         if (root->key > key) find_node(root->left, key);
         else if (root->key < key) find_node(root->right, key);

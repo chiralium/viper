@@ -64,7 +64,6 @@ typedef struct Element {
     char type_id;
     void * value;
     char vtype_id;
-    char parent_id;  // the type of parrent structure
     void * origin;   // the pointer to the same element in parent structure
 } Element;
 

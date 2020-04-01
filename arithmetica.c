@@ -178,7 +178,6 @@ Element * convert_to_element(void * token) {
     el->value = tk->value;
     /* --- extra fields --- */
     el->origin = 0;
-    el->parent_id = 0;
     return el;
 }
 
@@ -340,15 +339,16 @@ float get_float_value(void * elexpr) {
 int get_from_namespace(void * elexpr) {
     Element * el = elexpr;
     if (el->vtype_id != UNDEFINED) return 0;
-    Constant * value = find_node(namespace, faq6(el->literal));
-    if (value == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
-    el->value = copy_data(value->value, value->type_id); el->vtype_id = value->type_id;
+    Node * node = find_node(namespace, faq6(el->literal));
+    if (node == NULL) return -1;
+    Constant * value = node->value;
+    el->value = copy_data(value->value, value->type_id); el->vtype_id = value->type_id; el->origin = node;
 }
 
 void * _add(void * x, void * y) {
     // y + x
     Element * x_el = x; Element * y_el = y;
-    get_from_namespace(x_el); get_from_namespace(y_el);
+    if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if (y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float * result = malloc(sizeof(float)); *result = get_float_value(y_el) + get_float_value(x_el);
         free(x_el->value);
@@ -372,7 +372,7 @@ void * _add(void * x, void * y) {
 void * _sub(void * x, void * y) {
     // y - x
     Element * x_el = x; Element * y_el = y;
-    get_from_namespace(x_el); get_from_namespace(y_el);
+    if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = get_float_value(y_el) - get_float_value(x_el);
@@ -390,7 +390,7 @@ void * _sub(void * x, void * y) {
 void * _mul(void * x, void * y) {
     // y * x
     Element * x_el = x; Element * y_el = y;
-    get_from_namespace(x_el); get_from_namespace(y_el);
+    if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = get_float_value(y_el) * get_float_value(x_el);
@@ -408,7 +408,7 @@ void * _mul(void * x, void * y) {
 void * _div(void * x, void * y) {
     // y / x
     Element * x_el = x; Element * y_el = y;
-    get_from_namespace(x_el); get_from_namespace(y_el);
+    if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = get_float_value(y_el) / get_float_value(x_el);
@@ -426,7 +426,7 @@ void * _div(void * x, void * y) {
 void * _pow(void * x, void * y){
     // y ^ x
     Element * x_el = x; Element * y_el = y;
-    get_from_namespace(x_el); get_from_namespace(y_el);
+    if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = pow(get_float_value(y_el), get_float_value(x_el));
@@ -469,12 +469,19 @@ void * _asg(void * x, void * y) {
     /* Assign the literal of y-token with value of x-token into namespace */
     // Y = X, return X
     Element * x_el = x; Element * y_el = y;
-    char type_id = x_el->vtype_id; // type of value
-    void * value; value = copy_data(x_el->value, type_id);
-
-    Constant * copied_value = new_constant(type_id, value); // create the new constant structure with copied value from token
-    Node * namespace_object = new_node(faq6(y_el->literal), copied_value); // create node of namespace binary tree with created constant
-    insert_node(namespace, namespace_object); // save it into namespace
+    if (get_from_namespace(x_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
+    if (get_from_namespace(y_el) != -1) {
+        // that means the variable Y is already set
+        Node * origin = y_el->origin; constant_destructor(origin->value);
+        Constant * new_value = malloc(sizeof(Constant));
+        new_value->type_id = x_el->vtype_id; new_value->value = copy_data(x_el->value, x_el->vtype_id);
+        origin->value = new_value;
+    } else {
+        // that means the variable Y is initialized
+        Constant * copied_value = new_constant(x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id)); // create the new constant structure with copied value from token
+        Node * namespace_object = new_node(faq6(y_el->literal), copied_value); // create node of namespace binary tree with created constant
+        insert_node(namespace, namespace_object); // save it into namespace
+    }
     return x_el;
 }
 
