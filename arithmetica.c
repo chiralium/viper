@@ -78,7 +78,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
                 elexpr->value = result->value;
                 free(result);
             }
-            constant_stack = append(constant_stack, ELEMENT, elexpr);
+            constant_stack = append(constant_stack, ELEMENT, elexpr); free(postfixed_expression[counter]);
         } else {
             Array * stack_el_x = pop_last_el(constant_stack); Array * stack_el_y = pop_last_el(constant_stack);
             if (!stack_el_x || !stack_el_y) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_EXPRESSION_SYNTAX);
@@ -92,21 +92,30 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
             if (function_pointer == _tmp) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_OPERATOR);
             Element * result_el = function_pointer(x_el, y_el);
             constant_stack = append(constant_stack, ELEMENT, result_el);
+
+            free(postfixed_expression[counter]);
+            free(elexpr->literal); free(elexpr);
+            element_destructor(y_el);
         }
         counter++;
     }
 
     Array * last = pop_last_el(constant_stack);
     if (!is_empty(constant_stack)) throw_arithmetical_exception(expression_as_string, ARITHMETICA_SYNTAX_EXCEPTION);
-    Element * result_el = last->element; get_from_namespace(result_el);
+    Element * result_el = last->element;
+
+    if (get_from_namespace(result_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
 
     Constant * value = malloc(sizeof(Constant));
     value->type_id = result_el->vtype_id;
-    value->value = copy_data(result_el->value, result_el->vtype_id); // copy data from token, cause all token-list must be destroyed
+    value->value = result_el->value;
+    value->origin = result_el->origin;
+
+    free(result_el->literal); free(result_el);
 
     free(last);
     free(constant_stack);
-    array_destructor(postfixed_expression);
+    free(postfixed_expression);
     return value;
 }
 
@@ -264,17 +273,35 @@ void func_call_destructor(FuncCall * funccall) {
     free(funccall);
 }
 
+void element_destructor(Element * elexpr) {
+    if (elexpr->origin == NULL) {
+        switch (elexpr->vtype_id) {
+            case INTEGER:
+            case FLOAT:
+            case STRING:
+                free(elexpr->value);
+        }
+    }
+    free(elexpr->literal);
+    free(elexpr);
+}
+
 void constant_destructor(Constant * constant) {
-    switch (constant->type_id) {
-        case INTEGER: case FLOAT: case STRING:
-            free(constant->value);
-            break;
-        case ARRAY: case ARRAY_EL:
-            array_destructor(constant->value);
-            break;
-        case INDEX:
-            index_destructor(constant->value);
-            break;
+    if (constant->origin == NULL) {
+        switch (constant->type_id) {
+            case INTEGER:
+            case FLOAT:
+            case STRING:
+                free(constant->value);
+                break;
+            case ARRAY:
+            case ARRAY_EL:
+                array_destructor(constant->value);
+                break;
+            case INDEX:
+                index_destructor(constant->value);
+                break;
+        }
     }
     free(constant);
 }
@@ -293,7 +320,9 @@ void * make_zero_tk() {
 
 Constant * new_constant(char type_id, void * value) {
     Constant * new_constant = malloc(sizeof(Constant));
-    new_constant->type_id = type_id; new_constant->value = value;
+    new_constant->type_id = type_id;
+    new_constant->value = value;
+    new_constant->origin = NULL;
     return new_constant;
 }
 
@@ -342,7 +371,20 @@ int get_from_namespace(void * elexpr) {
     Node * node = find_node(namespace, faq6(el->literal));
     if (node == NULL) return -1;
     Constant * value = node->value;
-    el->value = copy_data(value->value, value->type_id); el->vtype_id = value->type_id; el->origin = node;
+
+    switch (value->type_id) {
+        case INTEGER:
+        case FLOAT:
+        case STRING:
+            el->value = copy_data(value->value, value->type_id);
+            el->vtype_id = value->type_id;
+            el->origin = NULL;
+            break;
+        default:
+            el->value = value->value;
+            el->vtype_id = value->type_id;
+            el->origin = node;
+    }
 }
 
 void * _add(void * x, void * y) {
@@ -470,16 +512,19 @@ void * _asg(void * x, void * y) {
     // Y = X, return X
     Element * x_el = x; Element * y_el = y;
     if (get_from_namespace(x_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
-    if (get_from_namespace(y_el) != -1) {
+    // current variable is exists ?
+    if (y_el->origin = find_node(namespace, faq6(y_el->literal))) {
         // that means the variable Y is already set
-        Node * origin = y_el->origin; constant_destructor(origin->value);
-        Constant * new_value = malloc(sizeof(Constant));
-        new_value->type_id = x_el->vtype_id; new_value->value = copy_data(x_el->value, x_el->vtype_id);
-        origin->value = new_value;
+        Node * previuos_value = y_el->origin; constant_destructor(previuos_value->value); // destroy the previous value in namespace
+
+        Constant * new_value = new_constant(x_el->vtype_id, x_el->value);
+        previuos_value->value = new_value;
+        x_el->origin = previuos_value;
     } else {
         // that means the variable Y is initialized
-        Constant * copied_value = new_constant(x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id)); // create the new constant structure with copied value from token
-        Node * namespace_object = new_node(faq6(y_el->literal), copied_value); // create node of namespace binary tree with created constant
+        Constant * value = new_constant(x_el->vtype_id, x_el->value); // create the new constant structure with copied value from token
+        Node * namespace_object = new_node(faq6(y_el->literal), value); // create node of namespace binary tree with created constant
+        x_el->origin = namespace_object;
         insert_node(namespace, namespace_object); // save it into namespace
     }
     return x_el;

@@ -50,6 +50,7 @@ typedef struct FuncCall {
 typedef struct Constant {
     char type_id;
     void * value;
+    void * origin;
 } Constant;
 
 /* The data-structure like ExpressionToken but with extra fields */
@@ -154,5 +155,6 @@ int get_from_namespace(void * token);
 void index_destructor(Index * index);
 void func_call_destructor(FuncCall * funccall);
 void constant_destructor(Constant * constant);
+void element_destructor(Element * elexpr);
 
 #endif //VIPER_V4_ARITHMETICA_H
