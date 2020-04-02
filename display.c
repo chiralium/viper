@@ -217,7 +217,7 @@ void display_constant(Constant * constant) {
             printf("%f", *(float *)constant->value);
             break;
         case STRING:
-            printf("%s", (char *)constant->value);
+            printf("`%s`", (char *)constant->value);
             break;
         case VIARRAY:
             printf("["); display_viarray(constant->value); printf("]");

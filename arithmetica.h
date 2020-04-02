@@ -157,4 +157,6 @@ void func_call_destructor(FuncCall * funccall);
 void constant_destructor(Constant * constant);
 void element_destructor(Element * elexpr);
 
+/* Return true if the type is an simple data */
+int is_simple_data(char type_id);
 #endif //VIPER_V4_ARITHMETICA_H

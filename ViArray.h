@@ -17,7 +17,13 @@ Node * new_viarray(Array ** array);
 /* Display viarray */
 void display_viarray(Node * root);
 
+/* The function will be return element or sub-array by index */
+Constant * get_by_index(Constant * object, Array ** params);
+
+/* The function will be return single element by index */
+Constant * get_single(Constant * object, int index);
+
 /* The function will be validate the type of index parameter */
-void _validate_index_parameter(Array ** params);
+void validate_index_parameter(Array ** params);
 
 #endif //VIPER_V4_VIARRAY_H

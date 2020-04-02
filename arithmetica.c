@@ -28,28 +28,28 @@ Array ** array_precalc(Array ** array) {
     return array;
 }
 
-//Constant * index_precalc(Index * index) {
-//    Array ** index_parameters = index->params;
-//    Array ** calculated_index_parameters = new_array();
-//
-//    /* Calculate the index parameters */
-//    int params_counter = 0;
-//    while (params_counter < index->params_count) {
-//        Constant * calculated_parameter = arithmetica(index_parameters[params_counter]->element, namespace);
-//        calculated_index_parameters = append(calculated_index_parameters, calculated_parameter->type_id, calculated_parameter->value);
-//        free(calculated_parameter); free(index_parameters[params_counter]);
-//        params_counter++;
-//    }
-//    free(index_parameters);
-//
-//    /* Calculate the index object */
-//    Array ** index_object = index->object;
-//    Constant * calculated_object = arithmetica(index_object, namespace);
-//    if (calculated_object->type_id != STRING && calculated_object->type_id != ARRAY) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
-//    void * result = _get_by_index(calculated_object, calculated_index_parameters);
-//    array_destructor(calculated_index_parameters); free(index);
-//    return result;
-//}
+Constant * index_precalc(Index * index) {
+    Array ** index_parameters = index->params;
+    Array ** calculated_index_parameters = new_array();
+
+    /* Calculate the index parameters */
+    int params_counter = 0;
+    while (params_counter < index->params_count) {
+        Constant * calculated_parameter = arithmetica(index_parameters[params_counter]->element, namespace);
+        calculated_index_parameters = append(calculated_index_parameters, calculated_parameter->type_id, calculated_parameter->value);
+        free(calculated_parameter); free(index_parameters[params_counter]);
+        params_counter++;
+    }
+    free(index_parameters);
+
+    /* Calculate the index object */
+    Array ** index_object = index->object;
+    Constant * calculated_object = arithmetica(index_object, namespace);
+    if (calculated_object->type_id != STRING && calculated_object->type_id != VIARRAY) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
+    void * result = get_by_index(calculated_object, calculated_index_parameters);
+    array_destructor(calculated_index_parameters); free(index);
+    return result;
+}
 
 Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     /* Init global variable of module */
@@ -72,13 +72,18 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
         Element * elexpr = postfixed_expression[counter]->element;
         if (elexpr->type_id == EXPRESSION_CONSTANT_TK) {
             if (elexpr->vtype_id == ARRAY) {
-                // calculate the array element
                 Array ** array = array_precalc(elexpr->value);
-                // convert the ARRAY to VIARRAY
                 Node * viarray = new_viarray(array);
                 elexpr->vtype_id = VIARRAY;
                 elexpr->value = viarray;
                 elexpr->origin = NULL;
+            } else if (elexpr->vtype_id == INDEX) {
+                Index * index = elexpr->value;
+                Constant * result = index_precalc(index);
+                elexpr->vtype_id = result->type_id;
+                elexpr->value = copy_data(result->value,  result->type_id);
+                elexpr->origin = result->origin;
+                free(result);
             }
             constant_stack = append(constant_stack, ELEMENT, elexpr); free(postfixed_expression[counter]);
         } else {
@@ -277,12 +282,7 @@ void func_call_destructor(FuncCall * funccall) {
 
 void element_destructor(Element * elexpr) {
     if (elexpr->origin == NULL) {
-        switch (elexpr->vtype_id) {
-            case INTEGER:
-            case FLOAT:
-            case STRING:
-                free(elexpr->value);
-        }
+        if (is_simple_data(elexpr->vtype_id)) free(elexpr->value);
     }
     free(elexpr->literal);
     free(elexpr);
@@ -347,6 +347,8 @@ void * copy_data(void * src, char type_id) {
         void * tmp;
         tmp = copy_array(tmp, src);
         return tmp;
+    } else {
+        return src;
     }
 }
 
@@ -377,18 +379,14 @@ int get_from_namespace(void * elexpr) {
     if (node == NULL) return -1;
     Constant * value = node->value;
 
-    switch (value->type_id) {
-        case INTEGER:
-        case FLOAT:
-        case STRING:
-            el->value = copy_data(value->value, value->type_id);
-            el->vtype_id = value->type_id;
-            el->origin = NULL;
-            break;
-        default:
-            el->value = value->value;
-            el->vtype_id = value->type_id;
-            el->origin = node;
+    if (is_simple_data(value->type_id)) {
+        el->value = copy_data(value->value, value->type_id);
+        el->vtype_id = value->type_id;
+        el->origin = NULL;
+    } else {
+        el->value = value->value;
+        el->vtype_id = value->type_id;
+        el->origin = node;
     }
 }
 
@@ -517,24 +515,55 @@ void * _asg(void * x, void * y) {
     // Y = X, return X
     Element * x_el = x; Element * y_el = y;
     if (get_from_namespace(x_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
-    // current variable is exists ?
-    if (y_el->origin = find_node(namespace, faq6(y_el->literal))) {
+    // current variable is exist ?
+    void * origin = find_node(namespace, faq6(y_el->literal));
+    if (origin || y_el->origin) {
+        (origin) ? y_el->origin = origin : NULL;
         // that means the variable Y is already set
         Node * previuos_value = y_el->origin; constant_destructor(previuos_value->value); // destroy the previous value in namespace
-
+        if (is_simple_data(y_el->vtype_id)) free(y_el->value);
         Constant * new_value = new_constant(x_el->vtype_id, x_el->value);
         previuos_value->value = new_value;
         x_el->origin = previuos_value;
     } else {
         // that means the variable Y is initialized
-        Constant * value = new_constant(x_el->vtype_id, x_el->value); // create the new constant structure with copied value from token
-        Node * namespace_object = new_node(faq6(y_el->literal), value); // create node of namespace binary tree with created constant
-        x_el->origin = namespace_object;
-        insert_node(namespace, namespace_object); // save it into namespace
+        Node * namespace_object; Constant * y_value;
+        if (x_el->origin) {
+            Node * node = x_el->origin; char is_pointer;
+            if (is_simple_data(x_el->vtype_id)) {
+                y_value = new_constant(x_el->vtype_id, x_el->value);
+                is_pointer = 0; // so if the X variable is a simple data namespace_object is not a pointer
+            } else {
+                y_value = node->value;
+                is_pointer = 1; // so if the X variable is a complex data namespace_object is a pointer
+            }
+            namespace_object = new_node(faq6(y_el->literal), y_value);
+            namespace_object->is_pointer = is_pointer;
+            x_el->origin = namespace_object;
+        } else {
+            // if X variable is an simple data like string or numbers
+            y_value = new_constant(x_el->vtype_id, x_el->value);
+            namespace_object = new_node(faq6(y_el->literal), y_value);
+            x_el->origin = namespace_object;
+        }
+        insert_node(namespace, namespace_object);
     }
     return x_el;
 }
 
 void * _tmp(void * x, void * y) {
     return NULL;
+}
+
+int is_simple_data(char type_id) {
+    switch (type_id) {
+        case INTEGER:
+        case FLOAT:
+        case STRING:
+            return 1;
+        case VIARRAY:
+            return 0;
+        default:
+            return 0;
+    }
 }
