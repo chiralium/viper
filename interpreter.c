@@ -7,7 +7,7 @@ void interpreter(Array ** code) {
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
             Constant * value = calculate_expression(code[code_counter]->element, root);
-            display_constant(value);
+            printf("\n"); display_constant(value); printf("\n");
             constant_destructor(value);
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_IF) {

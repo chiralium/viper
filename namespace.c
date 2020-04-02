@@ -9,8 +9,8 @@ Node * new_node(int key, void * value) {
     node->right = NULL;
 }
 
-void insert_node(Node * root, Node * node) {
-    if (root == NULL) root = node;
+Node * insert_node(Node * root, Node * node) {
+    if (root == NULL) return node;
     else {
         if (root->key > node->key) {
             if (root->left == NULL) root->left = node;

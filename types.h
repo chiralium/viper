@@ -1,6 +1,12 @@
 #ifndef VIPER_V4_TYPES_H
 #define VIPER_V4_TYPES_H
 
+/* Viper's types */
+#define INTEGER      'i'
+#define FLOAT        'f'
+#define STRING       's'
+#define VIARRAY       8
+
 /* Basic information types */
 #define INTEGER      'i'
 #define FLOAT        'f'

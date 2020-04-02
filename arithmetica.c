@@ -28,28 +28,28 @@ Array ** array_precalc(Array ** array) {
     return array;
 }
 
-Constant * index_precalc(Index * index) {
-    Array ** index_parameters = index->params;
-    Array ** calculated_index_parameters = new_array();
-
-    /* Calculate the index parameters */
-    int params_counter = 0;
-    while (params_counter < index->params_count) {
-        Constant * calculated_parameter = arithmetica(index_parameters[params_counter]->element, namespace);
-        calculated_index_parameters = append(calculated_index_parameters, calculated_parameter->type_id, calculated_parameter->value);
-        free(calculated_parameter); free(index_parameters[params_counter]);
-        params_counter++;
-    }
-    free(index_parameters);
-
-    /* Calculate the index object */
-    Array ** index_object = index->object;
-    Constant * calculated_object = arithmetica(index_object, namespace);
-    if (calculated_object->type_id != STRING && calculated_object->type_id != ARRAY) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
-    void * result = _get_by_index(calculated_object, calculated_index_parameters);
-    array_destructor(calculated_index_parameters); free(index);
-    return result;
-}
+//Constant * index_precalc(Index * index) {
+//    Array ** index_parameters = index->params;
+//    Array ** calculated_index_parameters = new_array();
+//
+//    /* Calculate the index parameters */
+//    int params_counter = 0;
+//    while (params_counter < index->params_count) {
+//        Constant * calculated_parameter = arithmetica(index_parameters[params_counter]->element, namespace);
+//        calculated_index_parameters = append(calculated_index_parameters, calculated_parameter->type_id, calculated_parameter->value);
+//        free(calculated_parameter); free(index_parameters[params_counter]);
+//        params_counter++;
+//    }
+//    free(index_parameters);
+//
+//    /* Calculate the index object */
+//    Array ** index_object = index->object;
+//    Constant * calculated_object = arithmetica(index_object, namespace);
+//    if (calculated_object->type_id != STRING && calculated_object->type_id != ARRAY) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
+//    void * result = _get_by_index(calculated_object, calculated_index_parameters);
+//    array_destructor(calculated_index_parameters); free(index);
+//    return result;
+//}
 
 Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     /* Init global variable of module */
@@ -71,12 +71,14 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     while (postfixed_expression[counter]) {
         Element * elexpr = postfixed_expression[counter]->element;
         if (elexpr->type_id == EXPRESSION_CONSTANT_TK) {
-            if (elexpr->vtype_id == ARRAY) elexpr->value = array_precalc(elexpr->value);
-            else if (elexpr->vtype_id == INDEX) {
-                Constant * result = index_precalc(elexpr->value);
-                elexpr->vtype_id = result->type_id;
-                elexpr->value = result->value;
-                free(result);
+            if (elexpr->vtype_id == ARRAY) {
+                // calculate the array element
+                Array ** array = array_precalc(elexpr->value);
+                // convert the ARRAY to VIARRAY
+                Node * viarray = new_viarray(array);
+                elexpr->vtype_id = VIARRAY;
+                elexpr->value = viarray;
+                elexpr->origin = NULL;
             }
             constant_stack = append(constant_stack, ELEMENT, elexpr); free(postfixed_expression[counter]);
         } else {
@@ -293,6 +295,9 @@ void constant_destructor(Constant * constant) {
             case FLOAT:
             case STRING:
                 free(constant->value);
+                break;
+            case VIARRAY:
+                namespace_destructor(constant->value);
                 break;
             case ARRAY:
             case ARRAY_EL:

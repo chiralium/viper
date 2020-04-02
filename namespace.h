@@ -18,7 +18,7 @@ typedef struct Node {
 Node * new_node(int key, void * value);
 
 /* The function will insert the new value into tree */
-void insert_node(Node * root, Node * new_node);
+Node * insert_node(Node * root, Node * new_node);
 
 /* The function will find the value associated by key and return it */
 void * find_node(Node * root, int key);

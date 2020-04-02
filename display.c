@@ -1,4 +1,5 @@
 #include "display.h"
+#include "ViArray.h"
 
 void display_array_beauty(Array ** _array, char * tabs) {
     strcat(tabs, "-");
@@ -208,15 +209,20 @@ void display_index(Index * index, char tabs[512]) {
 
 void display_constant(Constant * constant) {
     switch (constant->type_id) {
+        /* Vipers types */
         case INTEGER:
-            printf("\n%d\n", *(int *)constant->value);
+            printf("%d", *(int *)constant->value);
             break;
         case FLOAT:
-            printf("\n%f\n", *(float *)constant->value);
+            printf("%f", *(float *)constant->value);
             break;
         case STRING:
-            printf("\n%s\n", (char *)constant->value);
+            printf("%s", (char *)constant->value);
             break;
+        case VIARRAY:
+            printf("["); display_viarray(constant->value); printf("]");
+            break;
+        /* Systems types */
         case ARRAY:
             printf("\n<array>: "); display_array(constant->value); printf("\n");
             break;
