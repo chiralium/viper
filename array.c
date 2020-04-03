@@ -123,6 +123,7 @@ void array_destructor(Array **_array) {
         if (_array[i] -> type_id == ARRAY || _array[i] -> type_id == ARRAY_EL) array_destructor(_array[i] -> element);
         else if (_array[i] -> type_id == TOKEN) token_destructor(_array[i] -> element);
         else if (_array[i] -> type_id == EXP_TK || _array[i] -> type_id == ELEMENT) exp_token_destructor(_array[i]->element);
+        else if (_array[i] -> type_id == CONSTANT) constant_destructor(_array[i]->element);
         else free(_array[i] -> element);
         free(_array[i]);
         i++;

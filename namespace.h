@@ -9,7 +9,6 @@
 
 typedef struct Node {
     int key;
-    char is_pointer; // if current node is a pointer to some existed value
     void * value;
     void * left;
     void * right;

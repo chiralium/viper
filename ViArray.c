@@ -6,8 +6,6 @@
 
 extern char * expression_as_string;
 
-// TODO: b => a => VIARRAY; a = 3.14; b = (?). RIGHT: b => VIARRAY, a => 3.14
-
 Node * new_viarray(Array ** array) {
     Node * root = NULL;
     int index = 0;
@@ -41,21 +39,22 @@ Node * new_viarray(Array ** array) {
 
 Constant * get_by_index(Constant * object, Array ** params) {
     validate_index_parameter(params);
-    int params_count = _get_len(params); Constant * result;
+    int params_count = _get_len(params);
+    Constant * result;
     switch (params_count) {
         case 1:
-            result = get_single(object, *(int *)(params[0]->element));
+            result = get_single(object, params[0]->element);
             break;
     }
     free(object);
     return result;
 }
 
-Constant * get_single(Constant * object, int index) {
-    Constant * element;
+Constant * get_single(Constant * object, Constant * index) {
+    Constant * element; int index_value = *(int *)(index->value);
     if (object->type_id == VIARRAY) {
         Node * viarray = object->value;
-        Node * element_node = find_node(viarray, index);
+        Node * element_node = find_node(viarray, index_value);
 
         Constant * array_element;
         if (!element_node) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
@@ -69,10 +68,10 @@ Constant * get_single(Constant * object, int index) {
 
 void validate_index_parameter(Array ** params) {
     while (*params) {
-        Array * parameter = *params;
+        Constant * parameter = (*params)->element;
         switch (parameter->type_id) {
             case INTEGER:
-                if (*((int *)parameter->element) < 0) throw_arithmetical_exception(expression_as_string, VIARRAY_INDEX_EXCEPTION);
+                if (*((int *)parameter->value) < 0) throw_arithmetical_exception(expression_as_string, VIARRAY_INDEX_EXCEPTION);
                 break;
             default: throw_arithmetical_exception(expression_as_string, VIARRAY_INDEX_EXCEPTION);
         }

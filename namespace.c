@@ -7,7 +7,6 @@ Node * new_node(int key, void * value) {
     node->value = value;
     node->left = NULL;
     node->right = NULL;
-    node->is_pointer = 0;
 }
 
 Node * insert_node(Node * root, Node * node) {
@@ -53,7 +52,7 @@ int faq6(const char * str) {
 int namespace_destructor(Node * root) {
     if (root == NULL) return 0;
     else {
-        if (!root->is_pointer) constant_destructor(root->value); // if the current node is a pointer to existed value don't free it
+        constant_destructor(root->value); // if the current node is a pointer to existed value don't free it
         if (root->left != NULL) namespace_destructor(root->left);
         if (root->right != NULL) namespace_destructor(root->right);
         free(root);

@@ -36,8 +36,8 @@ Constant * index_precalc(Index * index) {
     int params_counter = 0;
     while (params_counter < index->params_count) {
         Constant * calculated_parameter = arithmetica(index_parameters[params_counter]->element, namespace);
-        calculated_index_parameters = append(calculated_index_parameters, calculated_parameter->type_id, calculated_parameter->value);
-        free(calculated_parameter); free(index_parameters[params_counter]);
+        calculated_index_parameters = append(calculated_index_parameters, CONSTANT, calculated_parameter);
+        free(index_parameters[params_counter]);
         params_counter++;
     }
     free(index_parameters);
@@ -47,7 +47,8 @@ Constant * index_precalc(Index * index) {
     Constant * calculated_object = arithmetica(index_object, namespace);
     if (calculated_object->type_id != STRING && calculated_object->type_id != VIARRAY) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
     void * result = get_by_index(calculated_object, calculated_index_parameters);
-    array_destructor(calculated_index_parameters); free(index);
+    array_destructor(calculated_index_parameters);
+    free(index);
     return result;
 }
 
@@ -81,7 +82,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
                 Index * index = elexpr->value;
                 Constant * result = index_precalc(index);
                 elexpr->vtype_id = result->type_id;
-                elexpr->value = copy_data(result->value,  result->type_id);
+                elexpr->value = result->value; //copy_data(result->value, result->type_id);
                 elexpr->origin = result->origin;
                 free(result);
             }
@@ -520,8 +521,9 @@ void * _asg(void * x, void * y) {
     if (origin || y_el->origin) {
         (origin) ? y_el->origin = origin : NULL;
         // that means the variable Y is already set
-        Node * previuos_value = y_el->origin; constant_destructor(previuos_value->value); // destroy the previous value in namespace
-        if (is_simple_data(y_el->vtype_id)) free(y_el->value);
+        Node * previuos_value = y_el->origin;
+        constant_destructor(previuos_value->value); // destroy the previous value in namespace
+        //if (is_simple_data(y_el->vtype_id)) free(y_el->value);
         Constant * new_value = new_constant(x_el->vtype_id, x_el->value);
         previuos_value->value = new_value;
         x_el->origin = previuos_value;
@@ -531,15 +533,18 @@ void * _asg(void * x, void * y) {
         if (x_el->origin) {
             Node * node = x_el->origin; char is_pointer;
             if (is_simple_data(x_el->vtype_id)) {
-                y_value = new_constant(x_el->vtype_id, x_el->value);
-                is_pointer = 0; // so if the X variable is a simple data namespace_object is not a pointer
+                // if an simple data and x_el have origin that means the element is a stored in complex structure
+                void * copied_value = copy_data(x_el->value, x_el->vtype_id);
+                y_value = new_constant(x_el->vtype_id, copied_value);
+                namespace_object = new_node(faq6(y_el->literal), y_value);
+                x_el->origin = namespace_object;
             } else {
-                y_value = node->value;
-                is_pointer = 1; // so if the X variable is a complex data namespace_object is a pointer
+                Constant * complex_value = node->value;
+                y_value = new_constant(complex_value->type_id, complex_value->value);
+                namespace_object = new_node(faq6(y_el->literal), y_value);
+                x_el->origin = namespace_object;
+                complex_value->origin = namespace_object;
             }
-            namespace_object = new_node(faq6(y_el->literal), y_value);
-            namespace_object->is_pointer = is_pointer;
-            x_el->origin = namespace_object;
         } else {
             // if X variable is an simple data like string or numbers
             y_value = new_constant(x_el->vtype_id, x_el->value);

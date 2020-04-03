@@ -21,7 +21,7 @@ void display_viarray(Node * root);
 Constant * get_by_index(Constant * object, Array ** params);
 
 /* The function will be return single element by index */
-Constant * get_single(Constant * object, int index);
+Constant * get_single(Constant * object, Constant * index);
 
 /* The function will be validate the type of index parameter */
 void validate_index_parameter(Array ** params);
