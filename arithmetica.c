@@ -19,9 +19,9 @@ Array ** array_precalc(Array ** array) {
         if (array[element_counter]->type_id == ARRAY_EL) {
             Array **element = array[element_counter]->element;
             Constant *element_value = arithmetica(element, namespace);
-            array[element_counter]->element = element_value->value;
-            array[element_counter]->type_id = element_value->type_id;
-            free(element_value);
+            array[element_counter]->element = element_value;
+            array[element_counter]->type_id = CONSTANT;
+            //free(element_value);
         } else if (array[element_counter]->type_id == ARRAY) array[element_counter]->element = array_precalc(array[element_counter]->element);
         element_counter++;
     }

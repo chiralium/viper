@@ -28,5 +28,6 @@
 #define STMT_WHILE     3
 #define ARRAY_EL       4
 #define ELEMENT        6
+#define CONSTANT       7
 
 #endif //VIPER_V4_TYPES_H

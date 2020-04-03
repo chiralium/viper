@@ -6,7 +6,7 @@
 
 extern char * expression_as_string;
 
-//TODO: how to add VIARRAY to main array (???). ln: 27, array_element is leaked
+// TODO: b => a => VIARRAY; a = 3.14; b = (?). RIGHT: b => VIARRAY, a => 3.14
 
 Node * new_viarray(Array ** array) {
     Node * root = NULL;
@@ -14,21 +14,23 @@ Node * new_viarray(Array ** array) {
     while (array[index]) {
         if (!array[index]) break;
         else {
-            Constant * array_element; Node * node;
-            if (is_simple_data(array[index]->type_id)) {
-                array_element = new_constant(array[index]->type_id, array[index]->element);
-                node = new_node(index, array_element);
+            Constant * array_element = array[index]->element;
+            Constant * viarray_element; Node * node;
+            if (is_simple_data(array_element->type_id)) {
+                viarray_element = new_constant(array_element->type_id, array_element->value);
+                node = new_node(index, viarray_element);
                 (root == NULL) ? root = insert_node(root, node) : insert_node(root, node);
-            } else if (array[index]->type_id == ARRAY) {
-                node = array[index]->element;
-                array_element = new_constant(VIARRAY, node);
-                (root == NULL) ? root = insert_node(root, new_node(index, array_element)) : insert_node(root, new_node(index, array_element));
-            } else if (array[index]->type_id == VIARRAY) {
-                node = array[index]->element;
-                array_element = new_constant(VIARRAY, node);
-                Node * pointer_node = new_node(index, array_element); pointer_node->is_pointer = 1;
+            } else if (array_element->type_id == ARRAY) {
+                node = array_element->value;
+                viarray_element = new_constant(VIARRAY, node);
+                (root == NULL) ? root = insert_node(root, new_node(index, viarray_element)) : insert_node(root, new_node(index, viarray_element));
+            } else if (array_element->type_id == VIARRAY) {
+                node = array_element->value;
+                viarray_element = new_constant(VIARRAY, node);
+                Node * pointer_node = new_node(index, viarray_element); viarray_element->origin = array_element->origin;
                 (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
             }
+            free(array_element);
         }
         free(array[index]);
         index++;
