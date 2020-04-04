@@ -244,7 +244,7 @@ Array ** cut_index_object(Array ** exp_tokens, int * position) {
         pos--;
         if (pos < 0) break;
     }
-    *position = pos > 0 ? pos + 1 : 0;
+    *position = pos >= 0 ? pos + 1 : 0;
     return index_object;
 }
 

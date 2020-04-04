@@ -41,4 +41,4 @@ TEST;
 level1 = {3, 2, 5}; level2[0] = "hello"; level2[a[0]] = "----------------"; level2[2] = "world";
 TEST;
 level1;
-2 + a[0];
+2-a[0];
