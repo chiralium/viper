@@ -18,10 +18,6 @@ Node * new_viarray(Array ** array) {
                 viarray_element = new_constant(array_element->type_id, array_element->value);
                 node = new_node(index, viarray_element);
                 (root == NULL) ? root = insert_node(root, node) : insert_node(root, node);
-            } else if (array_element->type_id == ARRAY) {
-                node = array_element->value;
-                viarray_element = new_constant(VIARRAY, node);
-                (root == NULL) ? root = insert_node(root, new_node(index, viarray_element)) : insert_node(root, new_node(index, viarray_element));
             } else if (array_element->type_id == VIARRAY) {
                 node = array_element->value;
                 viarray_element = new_constant(VIARRAY, node);

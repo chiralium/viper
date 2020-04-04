@@ -523,7 +523,6 @@ void * _asg(void * x, void * y) {
         // that means the variable Y is already set
         Node * previuos_value = y_el->origin;
         constant_destructor(previuos_value->value); // destroy the previous value in namespace
-        //if (is_simple_data(y_el->vtype_id)) free(y_el->value);
         Constant * new_value = new_constant(x_el->vtype_id, x_el->value);
         previuos_value->value = new_value;
         x_el->origin = previuos_value;
