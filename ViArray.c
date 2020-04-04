@@ -21,8 +21,12 @@ Node * new_viarray(Array ** array) {
             } else if (array_element->type_id == VIARRAY) {
                 node = array_element->value;
                 viarray_element = new_constant(VIARRAY, node);
-                Node * pointer_node = new_node(index, viarray_element); viarray_element->origin = array_element->origin;
+                Node * pointer_node = new_node(index, viarray_element);
                 (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
+                if (array_element->origin != NULL) {
+                    Constant * complex_value = ( (Node *)(array_element->origin) )->value;
+                    complex_value->origin = pointer_node;
+                }
             }
             free(array_element);
         }

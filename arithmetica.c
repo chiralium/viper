@@ -525,12 +525,17 @@ void * _asg(void * x, void * y) {
         constant_destructor(previuos_value->value); // destroy the previous value in namespace
         Constant * new_value = new_constant(x_el->vtype_id, x_el->value);
         previuos_value->value = new_value;
+        if (x_el->origin != NULL) {
+            Node * node = x_el->origin;
+            Constant * complex_value =  node->value;
+            complex_value->origin = previuos_value;
+        }
         x_el->origin = previuos_value;
     } else {
         // that means the variable Y is initialized
         Node * namespace_object; Constant * y_value;
         if (x_el->origin) {
-            Node * node = x_el->origin; char is_pointer;
+            Node * node = x_el->origin;
             if (is_simple_data(x_el->vtype_id)) {
                 // if an simple data and x_el have origin that means the element is a stored in complex structure
                 void * copied_value = copy_data(x_el->value, x_el->vtype_id);
