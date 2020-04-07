@@ -394,95 +394,176 @@ int get_from_namespace(void * elexpr) {
 void * _add(void * x, void * y) {
     // y + x
     Element * x_el = x; Element * y_el = y;
+    Element * result_el = NULL;
     if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if (y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float * result = malloc(sizeof(float)); *result = get_float_value(y_el) + get_float_value(x_el);
-        free(x_el->value);
-        x_el->value = result; x_el->vtype_id = FLOAT;
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = FLOAT;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_el) + get_int_value(x_el);
-        free(x_el->value);
-        x_el->value = result; x_el->vtype_id = INTEGER;
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = INTEGER;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else if (y_el->vtype_id == STRING) {
         if (x_el->vtype_id != STRING) throw_typecasting_exception(expression_as_string,  ARITHMETICA_STRING_CONCATE_EXCEPTION);
         char stack_tmp_result[ARITHMETICA_MAX_STRING_LEN + 1];
         strcpy(stack_tmp_result, (char *)y_el->value);
         strcat(stack_tmp_result, (char *)x_el->value);
         char * result = alloc_string(stack_tmp_result);
-        free(x_el->value);
-        x_el->value = result; x_el->vtype_id = STRING;
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = STRING;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_el;
+    return result_el;
 }
 
 void * _sub(void * x, void * y) {
     // y - x
+    Element * result_el = NULL;
     Element * x_el = x; Element * y_el = y;
     if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
         float *result = malloc(sizeof(float));
         *result = get_float_value(y_el) - get_float_value(x_el);
-        free(x_el->value);
-        x_el->value = result;
-        x_el->vtype_id = FLOAT;
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = FLOAT;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_el) - get_int_value(x_el);
-        free(x_el->value);
-        x_el->value = result; x_el->vtype_id = INTEGER;
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = INTEGER;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_el;
+    return result_el;
 }
 
 void * _mul(void * x, void * y) {
     // y * x
+    Element * result_el = NULL;
     Element * x_el = x; Element * y_el = y;
     if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
-        float *result = malloc(sizeof(float));
-        *result = get_float_value(y_el) * get_float_value(x_el);
-        free(x_el->value);
-        x_el->value = result;
-        x_el->vtype_id = FLOAT;
+        float *result = malloc(sizeof(float)); *result = get_float_value(y_el) * get_float_value(x_el);
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = FLOAT;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_el) * get_int_value(x_el);
-        free(x_el->value);
-        x_el->value = result; x_el->vtype_id = INTEGER;
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = INTEGER;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_el;
+    return result_el;
 }
 
 void * _div(void * x, void * y) {
     // y / x
+    Element * result_el = NULL;
     Element * x_el = x; Element * y_el = y;
     if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
-        float *result = malloc(sizeof(float));
-        *result = get_float_value(y_el) / get_float_value(x_el);
-        free(x_el->value);
-        x_el->value = result;
-        x_el->vtype_id = FLOAT;
+        float *result = malloc(sizeof(float)); *result = get_float_value(y_el) / get_float_value(x_el);
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = FLOAT;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_el) / get_int_value(x_el);
-        free(x_el->value);
-        x_el->value = result; x_el->vtype_id = INTEGER;
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = INTEGER;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_el;
+    return result_el;
 }
 
 void * _pow(void * x, void * y){
     // y ^ x
+    Element * result_el = NULL;
     Element * x_el = x; Element * y_el = y;
     if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if(y_el->vtype_id == FLOAT || x_el->vtype_id == FLOAT) {
-        float *result = malloc(sizeof(float));
-        *result = pow(get_float_value(y_el), get_float_value(x_el));
-        free(x_el->value);
-        x_el->value = result;
-        x_el->vtype_id = FLOAT;
+        float *result = malloc(sizeof(float)); *result = pow(get_float_value(y_el), get_float_value(x_el));
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = FLOAT;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = pow(get_int_value(y_el), get_int_value(x_el));
-        free(x_el->value);
-        x_el->value = result; x_el->vtype_id = INTEGER;
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = INTEGER;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return x_el;
 }
