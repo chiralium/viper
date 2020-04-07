@@ -231,12 +231,14 @@ Array ** index_typecasting(Array ** exp_tokens, int position) {
 }
 
 Array ** cut_index_object(Array ** exp_tokens, int * position) {
-    Array ** index_object = new_array(); ExpressionToken * token;
-    int c = 0; int o = 0; int pos = *position;
+    int pos = *position;
+    Array ** index_object = new_array(); ExpressionToken * token = exp_tokens[pos]->element;
+    int c = 0; int o = 0; int is_bracket_start = token->type_id == OP_CLOSE_CBRACK;
     while (exp_tokens[pos]) {
         token = exp_tokens[pos]->element;
         (token->type_id == OP_OPEN_CBRACK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
-        if (token->type_id == EXPRESSION_OPERATOR_TK && o == c) break;
+        if (token->type_id == EXPRESSION_OPERATOR_TK && !is_bracket_start && o == c) break;
+        else if (!is_bracket_start && c + o != 0) break;
         else {
             token = pop_exp_token(exp_tokens, pos);
             index_object = insert(index_object, EXP_TK, token, 0);
