@@ -34,7 +34,7 @@ Array ** extract_exp_token(char * literal) {
             char * string_literal = cut_string(literal);
             ExpressionToken * string_token = malloc(sizeof(ExpressionToken));
             string_token->type_id = EXPRESSION_CONSTANT_TK;
-            string_token->literal = NULL;
+            string_token->literal = alloc_string(string_literal);
             string_token->vtype_id = STRING;
             string_token->value = string_literal;
             expression_token = append(expression_token, EXP_TK, string_token);
@@ -261,7 +261,7 @@ void token_typecasting(Array ** exp_tokens) {
             array_tk->type_id = EXPRESSION_CONSTANT_TK;
             array_tk->vtype_id = ARRAY;
             array_tk->value = array;
-            array_tk->literal = NULL;
+            array_tk->literal = alloc_string("<array>");
             exp_token_destructor(exp_tokens[counter]->element);
             exp_tokens[counter]->element = array_tk;
         } else if (token->type_id == OP_OPEN_SBRACK) {
