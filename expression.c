@@ -246,6 +246,7 @@ Array ** cut_index_object(Array ** exp_tokens, int * position) {
         pos--;
         if (pos < 0) break;
     }
+    if (is_empty(index_object)) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
     *position = pos >= 0 ? pos + 1 : 0;
     return index_object;
 }
@@ -266,7 +267,7 @@ void token_typecasting(Array ** exp_tokens) {
             exp_tokens[counter]->element = array_tk;
         } else if (token->type_id == OP_OPEN_SBRACK) {
             /* <EXP>[...] */
-            counter--;
+            if (--counter < 0) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
             Array ** index_object = cut_index_object(exp_tokens, &counter); // this function will decrease the counter value for each object's tokens
             Array ** index_parameters = index_typecasting(exp_tokens, counter + 1);
             Index * index = new_index(index_object, index_parameters);

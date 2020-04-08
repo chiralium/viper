@@ -1,6 +1,6 @@
 a = {1, {"this is an", "array"}, 3, 4};
 b = a;
-F = b[1][1 - a[0]][0];
+F = b[1][1 - a-[0]][0];
 b[1][a[0]] = "change it";
 b;
 a;
