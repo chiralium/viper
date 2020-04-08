@@ -83,7 +83,8 @@ typedef struct Element {
 #define ARITHMETICA_STRING_CONCATE_EXCEPTION  "invalid concating operand"
 #define ARITHMETICA_UNDEFINED_OPERATOR        "undefined operator (something wrong with expression parser)"
 #define ARITHMETICA_SYNTAX_EXCEPTION          "syntax error"
-#define ARITHMETICA_NOT_ITERABLE_EXCEPTION    "the object not iterable"
+#define ARITHMETICA_NOT_ITERABLE_EXCEPTION    "the object is not iterable"
+#define ARITHMETICA_OBJECT_NOT_ASSIGNABLE     "the object is not assignable"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);

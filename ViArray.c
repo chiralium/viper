@@ -62,6 +62,12 @@ Constant * get_single(Constant * object, Constant * index) {
         array_element = element_node->value;
         element = new_constant(array_element->type_id, array_element->value);
         element->origin = element_node;
+    } else if (object->type_id == STRING) {
+        char * string = object->value;
+        if (strlen(string) <= index_value) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
+        char stack_tmp[2] = "\0"; stack_tmp[0] = string[index_value];
+        element = new_constant(STRING, alloc_string(stack_tmp));
+        if (object->origin == NULL) free(string);
     }
     return element;
 }

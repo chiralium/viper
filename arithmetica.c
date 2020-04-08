@@ -597,8 +597,11 @@ void * _asg(void * x, void * y) {
     // Y = X, return X
     Element * x_el = x; Element * y_el = y;
     if (get_from_namespace(x_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
-    // current variable is exist ?
+
+    if (y_el->literal == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
     void * origin = find_node(namespace, faq6(y_el->literal));
+    if (!is_name(y_el->literal) && origin == NULL && y_el->origin == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
+
     if (origin || y_el->origin) {
         (origin) ? y_el->origin = origin : NULL;
         // that means the variable Y is already set
