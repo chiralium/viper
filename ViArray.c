@@ -45,9 +45,34 @@ Constant * get_by_index(Constant * object, Array ** params) {
         case 1:
             result = get_single(object, params[0]->element);
             break;
+        case 0:
+            result = get_new(object);
+            break;
     }
     free(object);
     return result;
+}
+
+int get_length(Node * viarray) {
+    if (viarray == NULL) return 0;
+    else {
+        return 1 + get_length(viarray->right);
+    }
+}
+
+// TODO: E = {1}; E[] = 2; => {1, 2} -- good; E = {}; E[] = 0; => {} -- bad
+
+Constant * get_new(Constant * object) {
+    Constant * element;
+    if (object->type_id == VIARRAY) {
+        Node * viarray = object->value; int last_position = get_length(viarray);
+        Constant * new_value_of_element = new_constant(UNDEFINED, NULL);
+        Node * new_viarray_element = new_node(last_position, new_value_of_element);
+        (viarray == NULL) ? viarray = new_viarray_element : insert_node(viarray, new_viarray_element);
+        element = new_constant(UNDEFINED, new_value_of_element);
+        element->origin = new_viarray_element;
+    }
+    return element;
 }
 
 Constant * get_single(Constant * object, Constant * index) {

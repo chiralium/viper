@@ -257,7 +257,7 @@ Index * new_index(void * object, Array ** params) {
     Index * index = malloc(sizeof(Index));
     index->object = object;
     index->params = params;
-    index->params_count = _get_len(params);
+    index->params_count = (params != NULL) ? _get_len(params) : 0; // if the index is NULL
     return index;
 }
 

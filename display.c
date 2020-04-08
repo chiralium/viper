@@ -193,7 +193,10 @@ void display_index(Index * index, char tabs[512]) {
 
     display_array_beauty(object, child_tabs);
 
-    printf("%s%sSTART:", tabs, tabs); display_array_beauty((index->params[0])->element, child_tabs); printf("\n");
+    printf("%s%sSTART:", tabs, tabs);
+    if (index->params != NULL) {
+        display_array_beauty((index->params[0])->element, child_tabs); printf("\n");
+    } else printf("%s<NEW_ELEMENT>\n", child_tabs);
 
     if (index->params_count == 3) {
         printf("%s%sSTOP:", tabs, tabs); display_array((index->params[1])->element); printf("\n");
