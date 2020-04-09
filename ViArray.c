@@ -7,7 +7,7 @@
 extern char * expression_as_string;
 
 Node * new_viarray(Array ** array) {
-    Node * root = NULL;
+    Node * root = (_get_len(array) == 0) ? new_node(0, new_constant(UNDEFINED, NULL)) : NULL;
     int index = 0;
     while (array[index]) {
         if (!array[index]) break;
@@ -60,17 +60,23 @@ int get_length(Node * viarray) {
     }
 }
 
-// TODO: E = {1}; E[] = 2; => {1, 2} -- good; E = {}; E[] = 0; => {} -- bad
-
 Constant * get_new(Constant * object) {
     Constant * element;
     if (object->type_id == VIARRAY) {
-        Node * viarray = object->value; int last_position = get_length(viarray);
-        Constant * new_value_of_element = new_constant(UNDEFINED, NULL);
-        Node * new_viarray_element = new_node(last_position, new_value_of_element);
-        (viarray == NULL) ? viarray = new_viarray_element : insert_node(viarray, new_viarray_element);
-        element = new_constant(UNDEFINED, new_value_of_element);
-        element->origin = new_viarray_element;
+        Node * viarray = object->value; Constant * first_element = viarray->value;
+        if ( first_element->type_id != UNDEFINED ) {
+            // if viarray is not an empty, create new node with constant structure with undefined type, insert at last position and return it
+            int last_position = get_length(viarray);
+            Constant * new_value_of_element = new_constant(UNDEFINED, NULL);
+            Node * new_viarray_element = new_node(last_position, new_value_of_element);
+            insert_node(viarray, new_viarray_element);
+            element = new_constant(UNDEFINED, new_value_of_element);
+            element->origin = new_viarray_element;
+        } else {
+            // if viarray is an empty, that means the first Constant-structure has undefined type. Just return it
+            element = new_constant(UNDEFINED, viarray);
+            element->origin = viarray;
+        }
     }
     return element;
 }

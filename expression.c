@@ -448,7 +448,7 @@ char escape2real(char symbol) {
         case 't': return '\t';
         case '\\': return '\\';
         case '\"': return '"';
-        default: return NULL;
+        default: return 0;
     }
 }
 
