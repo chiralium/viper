@@ -56,8 +56,6 @@ Constant * get_by_index(Constant * object, Array ** params) {
     return result;
 }
 
-// TODO: a = {1, 2, {3, 4}, 5}; a[0,3] => namespace destructor error
-
 Constant * get_subviarray(Constant * object, Constant * start, Constant * end) {
     Constant * sub_element; int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value);
     if (object->type_id == VIARRAY) {
@@ -78,6 +76,13 @@ Constant * get_subviarray(Constant * object, Constant * start, Constant * end) {
             else throw_internal_error(expression_as_string);
         }
         sub_element = new_constant(VIARRAY, subviarray);
+    } else if (object->type_id == STRING) {
+        char * string = object->value;
+        if (start_indx >= strlen(string) || end_indx >= strlen(string)) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
+        char * sub_string = calloc(end_indx - start_indx + 1, sizeof(char));
+        memcpy(sub_string, string + start_indx, end_indx - start_indx);
+        sub_element = new_constant(STRING, sub_string);
+        if (object->origin == NULL) free(string);
     }
     return sub_element;
 }

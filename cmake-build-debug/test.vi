@@ -49,7 +49,7 @@ CONSTANTTEST * a[0] + level1[2];
 
 a = {};
 a[] = {3, 4, 5};
-a[0][] = "hello world";
+a[0][] = "hello world"[4, 7];
 a;
 
 b = {1, 2, 3};

@@ -1,7 +1,7 @@
 #include "arithmetica.h"
 
 /*
- * The module for working with arrays in viper-language context
+ * The module for working with arrays in viper-language context & string
  */
 
 #ifndef VIPER_V4_VIARRAY_H
