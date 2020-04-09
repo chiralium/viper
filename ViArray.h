@@ -24,6 +24,9 @@ Constant * get_by_index(Constant * object, Array ** params);
 /* The function will be return single element by index */
 Constant * get_single(Constant * object, Constant * index);
 
+/* The function will be return the sub-viarray by parameters */
+Constant * get_subviarray(Constant * object, Constant * start, Constant * end);
+
 /* The function will be create new node of viarray and return the origin */
 Constant * get_new(Constant * object);
 

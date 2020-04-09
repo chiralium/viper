@@ -45,6 +45,9 @@ Constant * get_by_index(Constant * object, Array ** params) {
         case 1:
             result = get_single(object, params[0]->element);
             break;
+        case 2:
+            result = get_subviarray(object, params[0]->element, params[1]->element);
+            break;
         case 0:
             result = get_new(object);
             break;
@@ -53,11 +56,32 @@ Constant * get_by_index(Constant * object, Array ** params) {
     return result;
 }
 
+// TODO: a = {1, 2, {3, 4}, 5}; a[0,3] => namespace destructor error
+
+Constant * get_subviarray(Constant * object, Constant * start, Constant * end) {
+    Constant * sub_element; int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value);
+    if (object->type_id == VIARRAY) {
+        Node * viarray = object->value; Node * subviarray = NULL;
+        Node * start_node = find_node(viarray, start_indx); Node * end_node = find_node(viarray, end_indx);
+        if (start_node == NULL || end_node == NULL) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
+
+        Node * current_node = start_node; int index = 0;
+        while (current_node->key <= end_indx) {
+            Constant * element = current_node->value;
+            Constant * copied_element = new_constant( element->type_id, copy_data(element->value, element->type_id) ); copied_element->origin = element->origin;
+            Node * subviarray_node = new_node(index++, copied_element);
+            (subviarray == NULL) ? subviarray = insert_node(subviarray, subviarray_node) : insert_node(subviarray, subviarray_node);
+            if (current_node->right != NULL) current_node = current_node->right;
+            else throw_internal_error(expression_as_string);
+        }
+        sub_element = new_constant(VIARRAY, subviarray);
+    }
+    return sub_element;
+}
+
 int get_length(Node * viarray) {
     if (viarray == NULL) return 0;
-    else {
-        return 1 + get_length(viarray->right);
-    }
+    else return 1 + get_length(viarray->right);
 }
 
 Constant * get_new(Constant * object) {

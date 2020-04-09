@@ -11,6 +11,10 @@
 #define EXCEPTION_STATEMENT_ERROR      "StatementError: at line `%s` (%s)\n"
 #define EXCEPTION_ARITHMETICAL_ERROR   "ArithmeticalError: at line `%s` (%s)\n"
 #define EXCEPTION_TYPECASTING_ERROR    "TypeError: at line `%s` (%s)\n"
+#define EXCEPTION_INTERNAL_ERROR       "SystemError: at line `%s`"
+
+/* Something gonna be really wrong. What happend? */
+void throw_internal_error(char * broken_line);
 
 /* Getting the line and terminate a program with EXCEPTION_CODE_STRUCTURE_ERROR at line */
 void throw_code_structure_exception(int line, char * message);
