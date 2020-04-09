@@ -77,7 +77,7 @@ Constant * get_new(Constant * object) {
             element = new_constant(UNDEFINED, viarray);
             element->origin = viarray;
         }
-    }
+    } else throw_arithmetical_exception(expression_as_string, VIARRAY_NEW_ELEMENT_ERR);
     return element;
 }
 

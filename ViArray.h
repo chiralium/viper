@@ -10,6 +10,7 @@
 /* Exception messages */
 #define VIARRAY_INDEX_EXCEPTION "unacceptable index value"
 #define VIARRAY_RANGE_EXCEPTION "index out of range"
+#define VIARRAY_NEW_ELEMENT_ERR "create new element available only for arrays"
 
 /* The function will be allocate the system array into heap */
 Node * new_viarray(Array ** array);
