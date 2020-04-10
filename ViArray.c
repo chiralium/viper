@@ -59,6 +59,8 @@ Constant * get_by_index(Constant * object, Array ** params) {
     return result;
 }
 
+// TODO: needs testing
+
 Constant * get_subviarray_step(Constant * object, Constant * start, Constant * end, Constant * step) {
     Constant * sub_element;
     int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value); int step_val = *(int *)(step->value);
@@ -67,7 +69,7 @@ Constant * get_subviarray_step(Constant * object, Constant * start, Constant * e
         Node * start_node = find_node(viarray, start_indx); Node * end_node = find_node(viarray, end_indx);
         if (start_node == NULL || end_node == NULL) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
         Node * current_node = start_node; int index = 0; Constant * copied_element;
-        while (current_node->key <= end_indx || current_node != NULL) {
+        while (start_indx <= end_indx || current_node != NULL) {
             Constant * element = current_node->value;
 
             copied_element = new_constant(element->type_id, copy_data(element->value, element->type_id));
@@ -75,7 +77,7 @@ Constant * get_subviarray_step(Constant * object, Constant * start, Constant * e
 
             Node * subviarray_node = new_node(index++, copied_element);
             (subviarray == NULL) ? subviarray = insert_node(subviarray, subviarray_node) : insert_node(subviarray, subviarray_node);
-            current_node = find_node(viarray, start_indx + index);
+            start_indx += step_val; current_node = find_node(viarray, start_indx);
         }
         sub_element = new_constant(VIARRAY, subviarray);
     } else if (object->type_id == STRING) {
