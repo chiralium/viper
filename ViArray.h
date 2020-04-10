@@ -27,6 +27,9 @@ Constant * get_single(Constant * object, Constant * index);
 /* The function will be return the sub-viarray by parameters */
 Constant * get_subviarray(Constant * object, Constant * start, Constant * end);
 
+/* The function will be return the sub-viarray by parameters and step */
+Constant * get_subviarray_step(Constant * object, Constant * start, Constant * end, Constant * step);
+
 /* The function will be create new node of viarray and return the origin */
 Constant * get_new(Constant * object);
 

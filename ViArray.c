@@ -48,6 +48,9 @@ Constant * get_by_index(Constant * object, Array ** params) {
         case 2:
             result = get_subviarray(object, params[0]->element, params[1]->element);
             break;
+        case 3:
+            result = get_subviarray_step(object, params[0]->element, params[1]->element, params[2]->element);
+            break;
         case 0:
             result = get_new(object);
             break;
@@ -56,8 +59,43 @@ Constant * get_by_index(Constant * object, Array ** params) {
     return result;
 }
 
+Constant * get_subviarray_step(Constant * object, Constant * start, Constant * end, Constant * step) {
+    Constant * sub_element;
+    int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value); int step_val = *(int *)(step->value);
+    if (object->type_id == VIARRAY) {
+        Node * viarray = object->value; Node * subviarray = NULL;
+        Node * start_node = find_node(viarray, start_indx); Node * end_node = find_node(viarray, end_indx);
+        if (start_node == NULL || end_node == NULL) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
+        Node * current_node = start_node; int index = 0; Constant * copied_element;
+        while (current_node->key <= end_indx || current_node != NULL) {
+            Constant * element = current_node->value;
+
+            copied_element = new_constant(element->type_id, copy_data(element->value, element->type_id));
+            if (!is_simple_data(element->type_id)) copied_element->origin = element->value; // is the element is a complex data that stored into namespace set the origin
+
+            Node * subviarray_node = new_node(index++, copied_element);
+            (subviarray == NULL) ? subviarray = insert_node(subviarray, subviarray_node) : insert_node(subviarray, subviarray_node);
+            current_node = find_node(viarray, start_indx + index);
+        }
+        sub_element = new_constant(VIARRAY, subviarray);
+    } else if (object->type_id == STRING) {
+        char * string = object->value;
+        if (start_indx >= strlen(string) || end_indx >= strlen(string)) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
+        char * sub_string = calloc( ( (end_indx - start_indx) / step_val ) + 2, sizeof(char));
+        int index = 0;
+        while (start_indx <= end_indx) {
+            sub_string[index++] = string[start_indx];
+            start_indx += step_val;
+        }
+        sub_element = new_constant(STRING, sub_string);
+        if (object->origin == NULL) free(string);
+    }
+    return sub_element;
+}
+
 Constant * get_subviarray(Constant * object, Constant * start, Constant * end) {
-    Constant * sub_element; int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value);
+    Constant * sub_element;
+    int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value);
     if (object->type_id == VIARRAY) {
         Node * viarray = object->value; Node * subviarray = NULL;
         Node * start_node = find_node(viarray, start_indx); Node * end_node = find_node(viarray, end_indx);
