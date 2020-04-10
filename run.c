@@ -22,10 +22,10 @@ void run(void) {
 
     printf("\n\nExpression Tokens:\n");
     Array ** expression_tokens = expression_lexer(parsed_tokens);
-    //display_array_beauty(expression_tokens, tabs);
+    display_array_beauty(expression_tokens, tabs);
     tabs[0] = '\0';
 
-    interpreter(expression_tokens);
+    //interpreter(expression_tokens);
 
     array_destructor(literals); array_destructor(tokens);
 }

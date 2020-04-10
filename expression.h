@@ -31,6 +31,7 @@
 #define EXPRESSION_INVALID_ARRAY_DECLARATION  "invalid array declaration"
 #define EXPRESSION_INVALID_ESCAPE_CHAR        "invalid escape character"
 #define EXPRESSION_INVALID_FUNCTION_CALL      "invalid arguments definition (braces is not balanced)"
+#define EXPRESSION_INVALID_FUNCTION_ARGLIST   "invalid arguments definition (empty arguments position after coma)"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {
@@ -60,6 +61,15 @@ char escape2real(char symbol);
 
 /* The function will typecasting token list to data structures */
 void token_typecasting(Array ** exp_tokens);
+
+/* The function will be cut arg-list of function */
+Array ** cut_function_arglist(Array ** exp_tokens, int position);
+
+/* The function will be cut arg-list body of function */
+Array ** cut_arglist_body(Array ** exp_tokens, int position);
+
+/* The function will be cut single argument from arg-list */
+Array ** cut_argument(Array ** exp_tokens);
 
 /* The function will typecasting token list to array-structure */
 Array ** array_typecasting(Array ** exp_tokens, int position);

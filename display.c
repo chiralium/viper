@@ -57,12 +57,12 @@ void display_array_beauty(Array ** _array, char * tabs) {
                     printf("%s%s{`%f`:<%c>(0x%p)}, \n", tabs, tabs, *(float *)token_value, token_value_type_id, token_value);
                     break;
                 case FUNCTION_RES:
-                    printf("%s%s{`function_call`:<%s>}: arg_list: \n", tabs, tabs, ((FuncCall *)token_value)->name);
+                    printf("%s%s{`function`:<%s>}: arg_list: \n", tabs, tabs, ((FuncCall *)token_value)->name);
                     char child_tabs_function_call[512]; strcpy(child_tabs_function_call, tabs); strcat(child_tabs_function_call, tabs);
                     display_array_beauty(((FuncCall *)token_value)->arg_list, child_tabs_function_call);
                     break;
                 default:
-                    printf("%s%s{`function`:<%s> (0x%p)}, \n", tabs, tabs, token_literal, token_value);
+                    printf("%s%s{`operator`:<%s> (0x%p)}, \n", tabs, tabs, token_literal, token_value);
                     break;
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("%s%s{TK:%d; `<complex>`}, \n", tabs, tabs, ((Token *)(_array[array_counter] -> element)) -> type_id);
@@ -113,16 +113,16 @@ void display_array(Array ** _array) {
                     printf("{`%f`:<%c>(0x%p)}, ", *(float *)token_value, token_value_type_id, token_value);
                     break;
                 case OPERATOR:
-                    printf("{`function`:<%s> (0x%p)}, ", token_literal, token_value);
+                    printf("{`operator`:<%s> (0x%p)}, ", token_literal, token_value);
                     break;
                 case INDEX:
                     printf("{`index`}, ");
                     break;
                 case FUNCTION_RES:
-                    printf("{`function_call`}");
+                    printf("{`function`}");
                     break;
                 default:
-                    printf("{`function`:<%s> (0x%p)}, ", token_literal, token_value);
+                    printf("{`operator`:<%s> (0x%p)}, ", token_literal, token_value);
                     break;
             }
         } else if (_array[array_counter] -> type_id == COMPLEX_TOKEN) printf("{TK:%d; `<complex>`}, ", ((Token *)(_array[array_counter] -> element)) -> type_id);
@@ -232,5 +232,13 @@ void display_constant(Constant * constant) {
         case INDEX:
             printf("\n<index>: "); display_index(constant->value, " "); printf("\n");
             break;
+        case FUNCTION_RES:
+            printf("\n<function>: "); display_function(constant->value, " "); printf("\n");
+            break;
     }
+}
+
+void display_function(FuncCall * function, char tabs[512]) {
+    printf("%s(", function->name);
+    display_array_beauty(function->arg_list, tabs);
 }

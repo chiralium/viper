@@ -16,6 +16,7 @@ void display_array(Array ** _array);
 void display_array_beauty(Array ** _array, char tabs[512]);
 void display_statements(void * statement, char type_id, char tabs[512]);
 void display_index(Index * index, char tabs[512]);
+void display_function(FuncCall * function, char tabs[512]);
 void display_constant(Constant * constant);
 
 #endif //VIPER_V4_DISPLAY_H
