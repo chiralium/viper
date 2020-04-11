@@ -13,6 +13,7 @@ Node * performing_local_namespace(Array ** input_arguments, Function * function_
             counter++;
         }
     }
+    free(input_arguments);
     return root;
 }
 

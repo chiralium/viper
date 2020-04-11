@@ -31,12 +31,13 @@ Constant * function_precalc(FuncCall * function_call, Function * function_object
         counter++;
     }
     free(input_args);
+    free(function_call->name); free(function_call);
 
     // performing the local name space
     Node * local_namespace = performing_local_namespace(calculated_args, function_object);
 
     // starting executing the function
-    call_stack = append(call_stack, STRING, function_object->name);
+    call_stack = append(call_stack, STRING, alloc_string(function_object->name));
     Constant * returned_value = function_exec(function_code, local_namespace);
     return returned_value;
 }

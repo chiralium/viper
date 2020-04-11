@@ -1,5 +1,6 @@
 function foo(x, y) : {
     x = x * y;
-    return x + y;
+    f = x * 2100;
+    return f + 2.7;
 }
 foo(3.14, 5);

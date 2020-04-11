@@ -29,7 +29,6 @@ Constant * function_exec(Array ** function_code, Node * local_namespace) {
     Array ** expression_tokens = expression_lexer(parsed_tokens);
     returned_value = interpreter(expression_tokens, local_namespace);
 
-
     if (returned_value == NULL) {
         namespace_destructor(local_namespace);
         return new_constant(NONE, NULL);
@@ -49,6 +48,8 @@ Constant * return_exec(char * return_expression, Node * local_namespace) {
     array_destructor(literals); array_destructor(tokens);
     return result;
 }
+
+// TODO: the interpreter always returning NULL
 
 Constant * interpreter(Array ** code, Node * current_namespace) {
     printf("\nCallStack: "); display_callstack(call_stack);
