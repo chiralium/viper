@@ -5,6 +5,13 @@ void throw_internal_error(char * broken_line) {
     exit(0);
 }
 
+void throw_function_exception(char * broken_line, char * message, char * function_name) {
+    char message_with_function_name[512];
+    sprintf(message_with_function_name, message, function_name);
+    printf(EXCEPTION_FUNCTION_CALL_ERROR, broken_line, message_with_function_name);
+    exit(0);
+}
+
 void throw_code_structure_exception(int line, char * message) {
     printf(EXCEPTION_CODE_STRUCTURE_ERROR, line, message);
     exit(0);

@@ -4,6 +4,7 @@
 #include <math.h>
 #include "array.h"
 #include "namespace.h"
+#include "parser.h"
 
 /*
  * This header file contained the simple arithmetical functions which assigned with tokens.
@@ -128,6 +129,9 @@ Array ** array_precalc(Array ** array);
 /* The function will calculated the index's element */
 Constant * index_precalc(Index * index);
 
+/* The function will calculated the function */
+Constant * function_precalc(FuncCall * function_call, Function * function_object);
+
 /* The function will crate the zero-token */
 void * make_zero_tk();
 
@@ -162,6 +166,10 @@ void func_call_destructor(FuncCall * funccall);
 void constant_destructor(Constant * constant);
 void element_destructor(Element * elexpr);
 
-/* Return true if the type is an simple data */
+/* Return a true if the type is an simple data */
 int is_simple_data(char type_id);
+
+/* Return a true if the element has type CONSTANT */
+int is_constant(char type_id);
+
 #endif //VIPER_V4_ARITHMETICA_H

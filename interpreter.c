@@ -13,7 +13,7 @@ void main_entry(char * single_line) {
 
 void function_declaration(Function * function_object, Node * current_namespace) {
     char * function_name = function_object->name;
-    Constant * node_value = new_constant(FUNCTION_DECLARATION, function_object);
+    Constant * node_value = new_constant(FUNCTION, function_object);
     Node * function = new_node(faq6(function_name), node_value);
     insert_node(current_namespace, function);
 }

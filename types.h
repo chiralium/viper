@@ -7,6 +7,7 @@
 #define STRING       's'
 #define VIARRAY       8
 #define KEYPAIR       9
+#define FUNCTION     11
 
 /* Basic information types */
 #define INTEGER      'i'
@@ -31,6 +32,5 @@
 #define ARRAY_EL              4
 #define ELEMENT               6
 #define CONSTANT              7
-#define FUNCTION_DECLARATION 11
 
 #endif //VIPER_V4_TYPES_H

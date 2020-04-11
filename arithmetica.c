@@ -1,5 +1,6 @@
 #include "expression.h"
 #include "arithmetica.h"
+#include "functions.h"
 #include "ViArray.h"
 
 Node * namespace;
@@ -10,6 +11,10 @@ Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namesp
     Constant * result = arithmetica(expression_tokens, current_namespace);
     free(expression_as_string);
     return result;
+}
+
+Constant * function_precalc(FuncCall * function_call, Function * function_object) {
+    if (!validate_function_call(function_call, function_object)) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_object->name);
 }
 
 Array ** array_precalc(Array ** array) {
@@ -74,7 +79,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     counter = 0;
     while (postfixed_expression[counter]) {
         Element * elexpr = postfixed_expression[counter]->element;
-        if (elexpr->type_id == EXPRESSION_CONSTANT_TK) {
+        if (is_constant(elexpr->type_id)) {
             if (elexpr->vtype_id == ARRAY) {
                 Array ** array = array_precalc(elexpr->value);
                 Node * viarray = new_viarray(array);
@@ -96,7 +101,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
 
             Element * x_el = stack_el_x->element; free(stack_el_x);
             Element * y_el = stack_el_y->element; free(stack_el_y);
-            if (x_el->type_id != EXPRESSION_CONSTANT_TK || y_el->type_id != EXPRESSION_CONSTANT_TK) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+            if (!is_constant(x_el->type_id) || !is_constant(y_el->type_id) ) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
 
             void * (*function_pointer)(void *, void *) = elexpr->value;
             /* if function_pointer is a _tmp function, it is mean, some elexprs like [], cannot be removed at below step of parsing */
@@ -313,7 +318,7 @@ void constant_destructor(Constant * constant) {
             case INDEX:
                 index_destructor(constant->value);
                 break;
-            case FUNCTION_DECLARATION:
+            case FUNCTION:
                 function_destructor(constant->value);
                 break;
         }
@@ -384,7 +389,7 @@ float get_float_value(void * elexpr) {
 
 int get_from_namespace(void * elexpr) {
     Element * el = elexpr;
-    if (el->vtype_id != UNDEFINED) return 0;
+    if (el->vtype_id != UNDEFINED && el->vtype_id != FUNCTION_RES) return 0;
     Node * node = find_node(namespace, faq6(el->literal));
     if (node == NULL) return -1;
     Constant * value = node->value;
@@ -392,6 +397,11 @@ int get_from_namespace(void * elexpr) {
     if (is_simple_data(value->type_id)) {
         el->value = copy_data(value->value, value->type_id);
         el->vtype_id = value->type_id;
+        el->origin = NULL;
+    } else if (value->type_id == FUNCTION) {
+        Constant * function_result = function_precalc(el->value, value->value);
+        el->value = function_result->value;
+        el->vtype_id = function_result->type_id;
         el->origin = NULL;
     } else {
         el->value = value->value;
@@ -729,6 +739,17 @@ int is_simple_data(char type_id) {
             return 1;
         case VIARRAY:
             return 0;
+        default:
+            return 0;
+    }
+}
+
+int is_constant(char type_id) {
+    switch (type_id) {
+        case EXPRESSION_CONSTANT_TK:
+        case EXPRESSION_CONSTANT_FUNC_TK:
+            return 1;
+            break;
         default:
             return 0;
     }
