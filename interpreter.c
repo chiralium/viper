@@ -77,7 +77,7 @@ Node * meta_data() {
 
 void display_callstack(Array ** points) {
     while (*points) {
-        printf(" -> %s", (*points)->element);
+        printf("-> %s ", (*points)->element);
         points++;
     }
 }
