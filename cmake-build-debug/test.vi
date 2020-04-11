@@ -2,5 +2,4 @@ function foo(x, y) : {
     x = x * y;
     return x + y;
 }
-
 foo(3.14, 5);

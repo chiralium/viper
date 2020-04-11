@@ -11,6 +11,7 @@ Constant * main_entry(char * single_line) {
     Array ** expression_tokens = expression_lexer(parsed_tokens);
     result = interpreter(expression_tokens, current_namespace);
     array_destructor(literals); array_destructor(tokens);
+    namespace_destructor(current_namespace);
     return result;
 }
 
@@ -27,8 +28,15 @@ Constant * function_exec(Array ** function_code, Node * local_namespace) {
     Array ** parsed_tokens = parser(tokens);
     Array ** expression_tokens = expression_lexer(parsed_tokens);
     returned_value = interpreter(expression_tokens, local_namespace);
-    if (returned_value == NULL) return new_constant(NONE, NULL);
-    else return returned_value;
+
+
+    if (returned_value == NULL) {
+        namespace_destructor(local_namespace);
+        return new_constant(NONE, NULL);
+    }else {
+        namespace_destructor(local_namespace);
+        return returned_value;
+    }
 }
 
 Constant * return_exec(char * return_expression, Node * local_namespace) {
