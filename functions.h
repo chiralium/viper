@@ -8,7 +8,10 @@
 #define VIPER_V4_FUNCTIONS_H
 
 /* Exception message */
-#define FUNCTIONS_INVALID_ARG_LIST "invalid input argument list for function <%s>"
+#define FUNCTIONS_INVALID_ARG_LIST "invalid input arguments list for function <%s>"
+
+/* The function will be performing the local namespace by function object & function call */
+Node * performing_local_namespace(Array ** input_arguments, Function * function_object);
 
 /* The function will be validate function call by function object that stored in namespace */
 int validate_function_call(FuncCall * function_call, Function * function_object);

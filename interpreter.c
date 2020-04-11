@@ -2,13 +2,16 @@
 
 extern Array ** call_stack;
 
-void main_entry(char * single_line) {
+Constant * main_entry(char * single_line) {
+    Constant * result;
+    Node * current_namespace = meta_data();
     Array ** literals = recursive_descent(single_line); free(single_line);
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
     Array ** expression_tokens = expression_lexer(parsed_tokens);
-    interpreter(expression_tokens);
+    result = interpreter(expression_tokens, current_namespace);
     array_destructor(literals); array_destructor(tokens);
+    return result;
 }
 
 void function_declaration(Function * function_object, Node * current_namespace) {
@@ -18,14 +21,34 @@ void function_declaration(Function * function_object, Node * current_namespace) 
     insert_node(current_namespace, function);
 }
 
-void interpreter(Array ** code) {
+Constant * function_exec(Array ** function_code, Node * local_namespace) {
+    Constant * returned_value;
+    Array ** tokens = lexer(function_code);
+    Array ** parsed_tokens = parser(tokens);
+    Array ** expression_tokens = expression_lexer(parsed_tokens);
+    returned_value = interpreter(expression_tokens, local_namespace);
+    if (returned_value == NULL) return new_constant(NONE, NULL);
+    else return returned_value;
+}
+
+Constant * return_exec(char * return_expression, Node * local_namespace) {
+    Constant * result;
+    Array ** literals = recursive_descent(return_expression); free(return_expression);
+    Array ** tokens = lexer(literals);
+    Array ** parsed_tokens = parser(tokens);
+    Array ** expression_tokens = expression_lexer(parsed_tokens);
+    result = interpreter(expression_tokens, local_namespace);
+    array_destructor(literals); array_destructor(tokens);
+    return result;
+}
+
+Constant * interpreter(Array ** code, Node * current_namespace) {
     printf("\nCallStack: "); display_callstack(call_stack);
-    Node * root = meta_data(); // init.  the namespace by insert some meta-info into it
-    int code_counter = 0;
+    int code_counter = 0; Constant * result = NULL;
     while (code[code_counter]) {
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
-            Constant * value = calculate_expression(code[code_counter]->element, root);
+            Constant * value = calculate_expression(code[code_counter]->element, current_namespace);
             printf("\n"); display_constant(value); printf("\n");
             constant_destructor(value);
             free(code[code_counter]);
@@ -37,12 +60,12 @@ void interpreter(Array ** code) {
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_FUNC) {
             Function * function_object = code[code_counter]->element;
-            function_declaration(function_object, root);
+            function_declaration(function_object, current_namespace);
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_RETURN) {
             Return * return_statement = code[code_counter]->element;
             call_stack = append(call_stack, STRING, alloc_string("return"));
-            main_entry(return_statement->expression);
+            result = return_exec(return_statement->expression, current_namespace);
             free(code[code_counter]->element);
             free(code[code_counter]);
             break;
@@ -50,7 +73,7 @@ void interpreter(Array ** code) {
         code_counter++;
     }
     free(code);
-    namespace_destructor(root);
+    return result; // result will be not null only if the code contained return statement
 }
 
 Constant * calculate_expression(Array ** expression, Node * current_namespace) {

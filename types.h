@@ -8,6 +8,7 @@
 #define VIARRAY       8
 #define KEYPAIR       9
 #define FUNCTION     11
+#define NONE         12
 
 /* Basic information types */
 #define INTEGER      'i'

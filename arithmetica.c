@@ -2,6 +2,9 @@
 #include "arithmetica.h"
 #include "functions.h"
 #include "ViArray.h"
+#include "interpreter.h"
+
+extern Array ** call_stack;
 
 Node * namespace;
 char * expression_as_string;
@@ -15,6 +18,27 @@ Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namesp
 
 Constant * function_precalc(FuncCall * function_call, Function * function_object) {
     if (!validate_function_call(function_call, function_object)) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_object->name);
+    Array ** input_args = function_call->arg_list;
+    Array ** function_code = function_object->body;
+
+    // calculate the input arguments
+    Array ** calculated_args = new_array();
+    int counter = 0;
+    while (input_args[counter]) {
+        Constant * argument_value = arithmetica(input_args[counter]->element, namespace);
+        calculated_args = append(calculated_args, CONSTANT, argument_value);
+        free(input_args[counter]);
+        counter++;
+    }
+    free(input_args);
+
+    // performing the local name space
+    Node * local_namespace = performing_local_namespace(calculated_args, function_object);
+
+    // starting executing the function
+    call_stack = append(call_stack, STRING, function_object->name);
+    Constant * returned_value = function_exec(function_code, local_namespace);
+    return returned_value;
 }
 
 Array ** array_precalc(Array ** array) {

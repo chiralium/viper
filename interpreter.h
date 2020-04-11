@@ -11,16 +11,22 @@
 #define VIPER_V4_INTERPRETER_H
 
 /* Main entry point */
-void main_entry(char * single_line);
+Constant * main_entry(char * single_line);
 
 /* Interprete the global code structures */
-void interpreter(Array ** code);
+Constant * interpreter(Array ** code, Node * current_namespace);
 
 /* The function will be send expression to arithmetica-module */
 Constant * calculate_expression(Array ** expression, Node * current_namespace);
 
 /* The function will be store declared function into namespace */
 void function_declaration(Function * function_object, Node * current_namespace);
+
+/* The function will be execute the vipers-functions locally */
+Constant * function_exec(Array ** function_code, Node * local_namespace);
+
+/* The function will be execute the return-statement locally */
+Constant * return_exec(char * return_expression, Node * local_namespace);
 
 /* Display the callstack */
 void display_callstack(Array ** points);
