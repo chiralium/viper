@@ -31,7 +31,7 @@ int faq6(const char * str);
 
 /* Destructor */
 int namespace_destructor(Node * root);
-
+void display_node(Node * node);
 
 /* USAGE
     int * hello = malloc(sizeof(int)); *hello = 6996;

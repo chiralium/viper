@@ -45,7 +45,10 @@ Constant * index_precalc(Index * index) {
     /* Calculate the index object */
     Array ** index_object = index->object;
     Constant * calculated_object = arithmetica(index_object, namespace);
-    if (calculated_object->type_id != STRING && calculated_object->type_id != VIARRAY) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
+    if (calculated_object->type_id != STRING &&
+        calculated_object->type_id != VIARRAY &&
+        calculated_object->type_id != KEYPAIR) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
+
     void * result = get_by_index(calculated_object, calculated_index_parameters);
     array_destructor(calculated_index_parameters);
     free(index);
@@ -217,13 +220,14 @@ Array ** fixing_unary_operators(Array ** expression_tokens) {
 
 int _get_priority(char * operator) {
     if (strcmp(operator, ARITHMETICA_ASG) == 0) return 0;
+    else if (strcmp(operator, ARITHMETICA_ASC) == 0) return 1;
     else if (strcmp(operator, ARITHMETICA_LESS) == 0 ||
              strcmp(operator, ARITHMETICA_MORE) == 0 ||
              strcmp(operator, ARITHMETICA_MEQ) ==  0 ||
-             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 1;
-    else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 2;
-    else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 3;
-    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 4;
+             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 2;
+    else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 3;
+    else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 4;
+    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 5;
     return -1;
 }
 
@@ -241,6 +245,7 @@ void * assign_function(char * literal) {
     else if (strcmp(literal, ARITHMETICA_NOT) == 0) function_pointer = _not;
     else if (strcmp(literal, ARITHMETICA_POW) == 0) function_pointer = _pow;
     else if (strcmp(literal, ARITHMETICA_ASG) == 0) function_pointer = _asg;
+    else if (strcmp(literal, ARITHMETICA_ASC) == 0) function_pointer = _asc;
     else if (strcmp(literal, ARITHMETICA_OCB) == 0 ||
              strcmp(literal, ARITHMETICA_CCB) == 0 ||
              strcmp(literal, ARITHMETICA_OBB) == 0 ||
@@ -298,6 +303,7 @@ void constant_destructor(Constant * constant) {
                 free(constant->value);
                 break;
             case VIARRAY:
+            case KEYPAIR:
                 namespace_destructor(constant->value);
                 break;
             case ARRAY:
@@ -642,6 +648,70 @@ void * _asg(void * x, void * y) {
         insert_node(namespace, namespace_object);
     }
     return x_el;
+}
+
+void * _asc(void * x, void * y) {
+    /* Associate the Y token like key, X token like array */
+    // y => x
+    Element * result_el = NULL;
+    Element * x_el = x; Element * y_el = y;
+    if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
+    if (y_el->vtype_id == INTEGER) {
+        Constant * node_value = new_constant( x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id) ); node_value->origin = x_el->origin;
+        Node * result = new_node( get_int_value(y_el), node_value );
+        if (x_el->origin != NULL) {
+            Constant * complex_value = ( (Node *)(x_el->origin) )->value;
+            complex_value->origin = result;
+        }
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = KEYPAIR;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
+    } else if (y_el->vtype_id == FLOAT) {
+        Constant * node_value = new_constant( x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id) ); node_value->origin = x_el->origin;
+        // if the key is a float type value, convert it to string for get hash
+        char float_in_str[EXPRESSION_MAX_LEN];
+        gcvt(get_float_value(y_el), 10, float_in_str);
+        Node * result = new_node( faq6(float_in_str), node_value );
+        if (x_el->origin != NULL) {
+            Constant * complex_value = ( (Node *)(x_el->origin) )->value;
+            complex_value->origin = result;
+        }
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = KEYPAIR;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
+    } else if (y_el->vtype_id == STRING) {
+        Constant * node_value = new_constant( x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id) );
+        Node * result = new_node( faq6(y_el->value), node_value );
+        if (x_el->origin != NULL) {
+            Constant * complex_value = ( (Node *)(x_el->origin) )->value;
+            complex_value->origin = result;
+        }
+
+        result_el = malloc(sizeof(Element));
+        result_el->origin = NULL;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = KEYPAIR;
+        result_el->value = result;
+        if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
+        else result_el->literal = NULL;
+
+        element_destructor(x_el);
+    } else throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_HASHABLE);
+    return result_el;
 }
 
 void * _tmp(void * x, void * y) {

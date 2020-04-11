@@ -235,6 +235,9 @@ void display_constant(Constant * constant) {
         case FUNCTION_RES:
             printf("\n<function>: "); display_function(constant->value, " "); printf("\n");
             break;
+        case KEYPAIR:
+            display_node(constant->value);
+            break;
     }
 }
 

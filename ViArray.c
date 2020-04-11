@@ -18,9 +18,12 @@ Node * new_viarray(Array ** array) {
                 viarray_element = new_constant(array_element->type_id, array_element->value);
                 node = new_node(index, viarray_element);
                 (root == NULL) ? root = insert_node(root, node) : insert_node(root, node);
+            } else if (array_element->type_id == KEYPAIR) {
+                Node * keypair = array_element->value;
+                (root == NULL) ? root = insert_node(root, keypair) : insert_node(root, keypair);
             } else if (array_element->type_id == VIARRAY) {
                 node = array_element->value;
-                viarray_element = new_constant(VIARRAY, node);
+                viarray_element = new_constant(array_element->type_id, node);
                 Node * pointer_node = new_node(index, viarray_element);
                 (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
                 if (array_element->origin != NULL) {
@@ -38,7 +41,6 @@ Node * new_viarray(Array ** array) {
 }
 
 Constant * get_by_index(Constant * object, Array ** params) {
-    validate_index_parameter(params);
     int params_count = _get_len(params);
     Constant * result;
     switch (params_count) {
@@ -46,9 +48,11 @@ Constant * get_by_index(Constant * object, Array ** params) {
             result = get_single(object, params[0]->element);
             break;
         case 2:
+            validate_index_parameter(params);
             result = get_subviarray(object, params[0]->element, params[1]->element);
             break;
         case 3:
+            validate_index_parameter(params);
             result = get_subviarray_step(object, params[0]->element, params[1]->element, params[2]->element);
             break;
         case 0:
@@ -58,8 +62,6 @@ Constant * get_by_index(Constant * object, Array ** params) {
     free(object);
     return result;
 }
-
-// TODO: needs testing
 
 Constant * get_subviarray_step(Constant * object, Constant * start, Constant * end, Constant * step) {
     Constant * sub_element;
@@ -154,23 +156,49 @@ Constant * get_new(Constant * object) {
 }
 
 Constant * get_single(Constant * object, Constant * index) {
-    Constant * element; int index_value = *(int *)(index->value);
+    Constant * element;
     if (object->type_id == VIARRAY) {
-        Node * viarray = object->value;
-        Node * element_node = find_node(viarray, index_value);
+        int index_value;
+        if (index->type_id == INTEGER) index_value = *(int *)(index->value);
+        else if (index->type_id == FLOAT) {
+            char float_to_string[EXPRESSION_MAX_LEN]; gcvt( *(float *)(index->value), 10, float_to_string);
+            index_value = faq6(float_to_string);
+        } else if (index->type_id == STRING) index_value = faq6(index->value);
+        else throw_arithmetical_exception(expression_as_string, VIARRAY_INVALID_KEY_TYPE);
 
-        Constant * array_element;
+        Node *viarray = object->value;
+        Node *element_node = find_node(viarray, index_value);
+
+        Constant *array_element;
         if (!element_node) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
 
         array_element = element_node->value;
         element = new_constant(array_element->type_id, array_element->value);
         element->origin = element_node;
     } else if (object->type_id == STRING) {
+        int index_value = *(int *)(index->value);
         char * string = object->value;
         if (strlen(string) <= index_value) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
         char stack_tmp[2] = "\0"; stack_tmp[0] = string[index_value];
         element = new_constant(STRING, alloc_string(stack_tmp));
         if (object->origin == NULL) free(string);
+    } else if (object->type_id == KEYPAIR) {
+        int index_value;
+        if (index->type_id == INTEGER) index_value = *(int *)(index->value);
+        else if (index->type_id == FLOAT) {
+            char float_to_string[EXPRESSION_MAX_LEN]; gcvt( *(float *)(index->value), 10, float_to_string);
+            index_value = faq6(float_to_string);
+        } else if (index->type_id == STRING) index_value = faq6(index->value);
+        else throw_arithmetical_exception(expression_as_string, VIARRAY_INVALID_KEY_TYPE);
+
+        Node * keypair_array = object->value;
+        Node * element_node = find_node(keypair_array, index_value);
+
+        Constant * array_element;
+        if (!element_node) throw_arithmetical_exception(expression_as_string, VIARRAY_UNDEFINED_KEY);
+        array_element = element_node->value;
+        element = new_constant(array_element->type_id, array_element->value);
+        element->origin = element_node;
     }
     return element;
 }
@@ -192,12 +220,17 @@ void display_viarray(Node * root) {
     if (root != NULL) {
         Constant * array_element = root->value;
         if (array_element->type_id == VIARRAY) {
-            printf("["); display_viarray(array_element->value); printf("], ");
+            printf("$%d => ", root->key);
+            printf("[");
+            display_viarray(array_element->value);
+            printf("], ");
         }
         else {
+            printf("$%d => ", root->key);
             display_constant(array_element);
             printf(", ");
         }
         display_viarray(root->right);
+        display_viarray(root->left);
     }
 }

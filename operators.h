@@ -35,6 +35,7 @@
 #define OPERATOR_EQ      9
 #define OPERATOR_NOT     10
 #define OPERATOR_ASG     11
+#define OPERATOR_ASC     12
 
 
 #endif //VIPER_V4_OPERATORS_H

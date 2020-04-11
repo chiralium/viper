@@ -17,6 +17,7 @@
 #define OPERATOR     '1'
 #define INDEX        '2'
 #define FUNCTION_RES '3'
+#define KEYPAIR       9
 
 /* Entire system types */
 #define TOKEN         't'

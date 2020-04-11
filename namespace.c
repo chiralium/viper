@@ -1,5 +1,6 @@
 #include "namespace.h"
 #include "arithmetica.h"
+#include "display.h"
 
 Node * new_node(int key, void * value) {
     Node * node = malloc(sizeof(Node));
@@ -57,4 +58,8 @@ int namespace_destructor(Node * root) {
         if (root->right != NULL) namespace_destructor(root->right);
         free(root);
     }
+}
+
+void display_node(Node * node) {
+    printf("%d => ", node->key); display_constant(node->value);
 }

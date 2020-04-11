@@ -508,6 +508,7 @@ char get_operator_type(char * operator) {
     else if (strcmp(operator, ARITHMETICA_LEQ) == 0) return OPERATOR_LEQ;
     else if (strcmp(operator, ARITHMETICA_EQ) == 0) return OPERATOR_EQ;
     else if (strcmp(operator, ARITHMETICA_ASG) == 0) return OPERATOR_ASG;
+    else if (strcmp(operator, ARITHMETICA_ASC) == 0) return OPERATOR_ASC;
     return 0;
 }
 

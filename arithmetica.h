@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
 #include "array.h"
 #include "namespace.h"
@@ -31,6 +32,7 @@
 #define ARITHMETICA_OSB  "["
 #define ARITHMETICA_CSB  "]"
 #define ARITHMETICA_COMA ","
+#define ARITHMETICA_ASC  "=>"
 
 /* The struct of index */
 typedef struct Index {
@@ -85,6 +87,7 @@ typedef struct Element {
 #define ARITHMETICA_SYNTAX_EXCEPTION          "syntax error"
 #define ARITHMETICA_NOT_ITERABLE_EXCEPTION    "the object is not iterable"
 #define ARITHMETICA_OBJECT_NOT_ASSIGNABLE     "the object is not assignable"
+#define ARITHMETICA_OBJECT_NOT_HASHABLE    "the object is not hashable"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -98,6 +101,7 @@ void * _moreeq(void * x, void * y);
 void * _lesseq(void * x, void * y);
 void * _equal(void * x, void * y);
 void * _asg(void * x, void * y);
+void * _asc(void * x, void * y);
 void * _tmp(void * x, void * y);
 
 

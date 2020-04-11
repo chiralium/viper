@@ -8,9 +8,11 @@
 #define VIPER_V4_VIARRAY_H
 
 /* Exception messages */
-#define VIARRAY_INDEX_EXCEPTION "unacceptable index value"
-#define VIARRAY_RANGE_EXCEPTION "index out of range"
-#define VIARRAY_NEW_ELEMENT_ERR "create new element available only for arrays"
+#define VIARRAY_INDEX_EXCEPTION  "unacceptable index value"
+#define VIARRAY_RANGE_EXCEPTION  "index out of range"
+#define VIARRAY_NEW_ELEMENT_ERR  "create new element available only for arrays"
+#define VIARRAY_UNDEFINED_KEY    "undefined key-value"
+#define VIARRAY_INVALID_KEY_TYPE "invalid key type"
 
 /* The function will be allocate the system array into heap */
 Node * new_viarray(Array ** array);
