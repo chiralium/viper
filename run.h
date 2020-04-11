@@ -9,6 +9,8 @@
 #ifndef VIPER_V4_RUN_H
 #define VIPER_V4_RUN_H
 
+Array ** call_stack;
+
 // Main entry point
 void run(void);
 

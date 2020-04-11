@@ -7,5 +7,6 @@
 #define KW_ELSE     "else"
 #define KW_FOR      "for"
 #define KW_WHILE    "while"
+#define KW_RETURN   "return"
 
 #endif //VIPER_V4_KEYWORDS_H

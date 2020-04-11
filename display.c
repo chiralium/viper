@@ -24,7 +24,10 @@ void display_array_beauty(Array ** _array, char * tabs) {
             printf("\n\n");
         } else if (_array[array_counter] -> type_id == STMT_WHILE) {
             printf("\n%s%s{STMT_WHILE; `%s`}: \n", tabs, tabs, ((While *) (_array[array_counter]->element))->condition);
-            display_statements(_array[array_counter] -> element, 3, tabs);
+            display_statements(_array[array_counter]->element, 3, tabs);
+            printf("\n\n");
+        } else if (_array[array_counter] -> type_id == STMT_RETURN) {
+            printf("\n%s%s{STMT_RETURN; `%s`}: \n", tabs, tabs, ((Return *) (_array[array_counter]->element))->expression);
             printf("\n\n");
         } else if (_array[array_counter] -> type_id == EXP_TK) {
             char token_type_id = ((ExpressionToken *)(_array[array_counter] -> element)) -> type_id;

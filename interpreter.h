@@ -16,6 +16,12 @@ void interpreter(Array ** code);
 /* The function will be send expression to arithmetica-module */
 Constant * calculate_expression(Array ** expression, Node * current_namespace);
 
+/* Main parsing procedure */
+void parsing(char * single_line);
+
+/* Display the callstack */
+void display_callstack(Array ** points);
+
 /* The function will be create the meta-data in namespace */
 Node * meta_data();
 

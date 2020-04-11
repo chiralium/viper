@@ -20,6 +20,7 @@
 #define LEXER_FOR_TK           7
 #define LEXER_FUNCTION_TK      8
 #define LEXER_WHILE_TK         9
+#define LEXER_RETURN_TK       10
 
 /* Lexer parameters */
 #define LEXER_MAX_VALUE  255

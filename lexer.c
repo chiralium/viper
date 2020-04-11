@@ -80,6 +80,7 @@ int is_keyword(char * literal) {
     else if (strcmp(literal, KW_ELSE) == 0) return LEXER_ELSE_TK;
     else if (strcmp(literal, KW_FOR) == 0) return LEXER_FOR_TK;
     else if (strcmp(literal, KW_WHILE) == 0) return LEXER_WHILE_TK;
+    else if (strcmp(literal, KW_RETURN) == 0) return LEXER_RETURN_TK;
     return 0;
 }
 

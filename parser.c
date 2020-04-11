@@ -14,12 +14,18 @@ Array ** parser(Array ** tokens) {
             While * while_statement = get_while_statement(tokens);
             parsed_tokens = append(parsed_tokens, STMT_WHILE, while_statement);
         } else if (token->type_id == LEXER_FUNCTION_TK) {
-            Function * function_statement = get_function_statement(tokens);
+            Function *function_statement = get_function_statement(tokens);
             parsed_tokens = append(parsed_tokens, STMT_FUNC, function_statement);
+        } else if (token->type_id == LEXER_RETURN_TK) {
+            Return * return_statement = malloc(sizeof(Return));
+            token = next_token(tokens);
+            return_statement->expression = alloc_string(token->value);
+            parsed_tokens = append(parsed_tokens, STMT_RETURN, return_statement);
         } else if (token->type_id == LEXER_EXPRESSION_TK) {
             parsed_tokens = append(parsed_tokens, TOKEN, token);
         } else throw_statement_exception("<complex>", PARSER_COMMON_SYNTAX_EXCEPTION);
     }
+    _next = 0;
     return parsed_tokens;
 }
 

@@ -50,6 +50,11 @@ typedef struct While {
     Array ** body;
 } While;
 
+/* The structure Return will contained the information about the return-statement */
+typedef struct Return {
+    char * expression;
+} Return;
+
 /* The function will parse the input token list and return the array with structures */
 Array ** parser(Array ** tokens);
 
