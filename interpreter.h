@@ -10,14 +10,17 @@
 #ifndef VIPER_V4_INTERPRETER_H
 #define VIPER_V4_INTERPRETER_H
 
+/* Main entry point */
+void main_entry(char * single_line);
+
 /* Interprete the global code structures */
 void interpreter(Array ** code);
 
 /* The function will be send expression to arithmetica-module */
 Constant * calculate_expression(Array ** expression, Node * current_namespace);
 
-/* Main entry point */
-void main_entry(char * single_line);
+/* The function will be store declared function into namespace */
+void function_declaration(Function * function_object, Node * current_namespace);
 
 /* Display the callstack */
 void display_callstack(Array ** points);

@@ -313,6 +313,9 @@ void constant_destructor(Constant * constant) {
             case INDEX:
                 index_destructor(constant->value);
                 break;
+            case FUNCTION_DECLARATION:
+                function_destructor(constant->value);
+                break;
         }
     }
     free(constant);

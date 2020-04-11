@@ -11,6 +11,13 @@ void main_entry(char * single_line) {
     array_destructor(literals); array_destructor(tokens);
 }
 
+void function_declaration(Function * function_object, Node * current_namespace) {
+    char * function_name = function_object->name;
+    Constant * node_value = new_constant(FUNCTION_DECLARATION, function_object);
+    Node * function = new_node(faq6(function_name), node_value);
+    insert_node(current_namespace, function);
+}
+
 void interpreter(Array ** code) {
     printf("\nCallStack: "); display_callstack(call_stack);
     Node * root = meta_data(); // init.  the namespace by insert some meta-info into it
@@ -29,7 +36,8 @@ void interpreter(Array ** code) {
             free(code[code_counter]->element);
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_FUNC) {
-            function_destructor(code[code_counter]->element);
+            Function * function_object = code[code_counter]->element;
+            function_declaration(function_object, root);
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_RETURN) {
             Return * return_statement = code[code_counter]->element;
@@ -45,17 +53,12 @@ void interpreter(Array ** code) {
     namespace_destructor(root);
 }
 
-void display_callstack(Array ** points) {
-    while (*points) {
-        printf(" -> %s", (*points)->element);
-        points++;
-    }
-}
-
 Constant * calculate_expression(Array ** expression, Node * current_namespace) {
     Constant * value = arithmetica_wrapper(expression, current_namespace);
     return value;
 }
+
+
 
 Node * meta_data() {
     char * ver = calloc(sizeof(char), 10); strcpy(ver, "VIPER.v4");
@@ -70,4 +73,11 @@ Node * meta_data() {
     insert_node(root, ver_node);
 
     return root;
+}
+
+void display_callstack(Array ** points) {
+    while (*points) {
+        printf(" -> %s", (*points)->element);
+        points++;
+    }
 }

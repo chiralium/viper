@@ -6,6 +6,7 @@
 #define FLOAT        'f'
 #define STRING       's'
 #define VIARRAY       8
+#define KEYPAIR       9
 
 /* Basic information types */
 #define INTEGER      'i'
@@ -17,19 +18,19 @@
 #define OPERATOR     '1'
 #define INDEX        '2'
 #define FUNCTION_RES '3'
-#define KEYPAIR       9
 
 /* Entire system types */
-#define TOKEN         't'
-#define NULL_TOKEN    'n'
-#define EXP_TK         5
-#define COMPLEX_TOKEN 'c'
-#define STMT_IF        1
-#define STMT_FUNC      2
-#define STMT_WHILE     3
-#define STMT_RETURN   10
-#define ARRAY_EL       4
-#define ELEMENT        6
-#define CONSTANT       7
+#define TOKEN                't'
+#define NULL_TOKEN           'n'
+#define EXP_TK                5
+#define COMPLEX_TOKEN        'c'
+#define STMT_IF               1
+#define STMT_FUNC             2
+#define STMT_WHILE            3
+#define STMT_RETURN          10
+#define ARRAY_EL              4
+#define ELEMENT               6
+#define CONSTANT              7
+#define FUNCTION_DECLARATION 11
 
 #endif //VIPER_V4_TYPES_H
