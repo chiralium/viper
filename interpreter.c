@@ -2,7 +2,7 @@
 
 extern Array ** call_stack;
 
-void parsing(char * single_line) {
+void main_entry(char * single_line) {
     Array ** literals = recursive_descent(single_line); free(single_line);
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
@@ -34,7 +34,7 @@ void interpreter(Array ** code) {
         } else if (code[code_counter]->type_id == STMT_RETURN) {
             Return * return_statement = code[code_counter]->element;
             call_stack = append(call_stack, STRING, alloc_string("return"));
-            parsing(return_statement->expression);
+            main_entry(return_statement->expression);
             free(code[code_counter]->element);
             free(code[code_counter]);
             break;
