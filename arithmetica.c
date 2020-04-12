@@ -617,7 +617,7 @@ void * _pow(void * x, void * y){
 
         element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
-    return x_el;
+    return result_el;
 }
 
 void * _not(void * x, void * y) {
