@@ -18,8 +18,10 @@ Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namesp
 
 Constant * function_precalc(FuncCall * function_call, Function * function_object) {
     if (!validate_function_call(function_call, function_object)) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_object->name);
+    call_stack = append(call_stack, STRING, alloc_string(function_object->name));// add function name into call stack
+
     Array ** input_args = function_call->arg_list;
-    Array ** function_code = function_object->body;
+    Array ** function_code; function_code = copy_array(function_code, function_object->body); // copy the function code cause the code should be destroyed by lexers, parser and expression parser
 
     // calculate the input arguments
     Array ** calculated_args = new_array();
@@ -37,8 +39,14 @@ Constant * function_precalc(FuncCall * function_call, Function * function_object
     Node * local_namespace = performing_local_namespace(calculated_args, function_object);
 
     // starting executing the function
-    call_stack = append(call_stack, STRING, alloc_string(function_object->name));
+    char * previous_statement_expression = expression_as_string; // save the previous debug string
+    Node * global_namespace = namespace; // save the previous namesapce
+
+    namespace = local_namespace;
     Constant * returned_value = function_exec(function_code, local_namespace);
+
+    expression_as_string = previous_statement_expression;
+    namespace = global_namespace;
     return returned_value;
 }
 
@@ -51,7 +59,6 @@ Array ** array_precalc(Array ** array) {
             Constant *element_value = arithmetica(element, namespace);
             array[element_counter]->element = element_value;
             array[element_counter]->type_id = CONSTANT;
-            //free(element_value);
         } else if (array[element_counter]->type_id == ARRAY) array[element_counter]->element = array_precalc(array[element_counter]->element);
         element_counter++;
     }
@@ -428,6 +435,7 @@ int get_from_namespace(void * elexpr) {
         el->value = function_result->value;
         el->vtype_id = function_result->type_id;
         el->origin = NULL;
+        free(function_result);
     } else {
         el->value = value->value;
         el->vtype_id = value->type_id;
