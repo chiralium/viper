@@ -124,6 +124,10 @@ void array_destructor(Array **_array) {
         else if (_array[i] -> type_id == TOKEN) token_destructor(_array[i] -> element);
         else if (_array[i] -> type_id == EXP_TK || _array[i] -> type_id == ELEMENT) exp_token_destructor(_array[i]->element);
         else if (_array[i] -> type_id == CONSTANT) constant_destructor(_array[i]->element);
+        else if (_array[i] -> type_id == STMT_IF) if_destructor(_array[i]->element);
+        else if (_array[i] -> type_id == STMT_WHILE) while_destructor(_array[i]->element);
+        else if (_array[i] -> type_id == STMT_FUNC) function_destructor(_array[i]->element);
+        else if (_array[i] -> type_id == STMT_RETURN) return_destructor(_array[i]->element);
         else free(_array[i] -> element);
         free(_array[i]);
         i++;

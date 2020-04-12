@@ -2,22 +2,51 @@
 
 extern Array ** call_stack;
 
-/* The main entry point of program */
-Constant * main_entry(char * single_line) {
-    Constant * result;
-    Node * current_namespace = meta_data();
-    Array ** literals = recursive_descent(single_line); free(single_line);
+Array ** main_parsing(char * input_stream) {
+    Array ** literals = recursive_descent(input_stream); free(input_stream);
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
     Array ** expression_tokens = expression_lexer(parsed_tokens);
-    result = interpreter(expression_tokens, current_namespace);
-    (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
-
     array_destructor(literals);
     array_destructor(tokens);
-    constant_destructor(result);
-    namespace_destructor(current_namespace);
+    return expression_tokens;
+}
+
+/* The main entry point of program */
+Constant * main_entry(char * input_stream) {
+    Constant * result;
+
+    /* parsing the input text stream */
+    Array ** parsed = main_parsing(input_stream);
+
+    /* initialization the namespace of interpreter */
+    Node * current_namespace = meta_data();
+
+    /* interpreting the program in a current_namespace */
+    result = interpreter(parsed, current_namespace);
+
+    (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
+    constant_destructor(result); namespace_destructor(current_namespace);
     return result;
+}
+
+/* The function will be parse the function code and store it into namespace */
+void function_declaration(Function * function_object, Node * current_namespace) {
+    Array ** function_code = function_object->body;
+    /* parsing the function code */
+    Array ** tokens = lexer(function_code);  // extracting simple tokens
+    Array ** parsed_tokens = parser(tokens); // extracting complex statements
+    Array ** expression_tokens = expression_lexer(parsed_tokens); // extracting tokens from expressions (if exists)
+    array_destructor(function_code); array_destructor(tokens);
+
+    /* now, function object has a parsed code */
+    function_object->body = expression_tokens;
+
+    /* store the function object with parsed code into namespace by function name */
+    char * function_name = function_object->name;
+    Constant * node_value = new_constant(FUNCTION, function_object);
+    Node * function = new_node(faq6(function_name), node_value);
+    insert_node(current_namespace, function);
 }
 
 /* The main entry point of local function */
@@ -91,13 +120,6 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
 Constant * calculate_expression(Array ** expression, Node * current_namespace) {
     Constant * value = arithmetica_wrapper(expression, current_namespace);
     return value;
-}
-
-void function_declaration(Function * function_object, Node * current_namespace) {
-    char * function_name = function_object->name;
-    Constant * node_value = new_constant(FUNCTION, function_object);
-    Node * function = new_node(faq6(function_name), node_value);
-    insert_node(current_namespace, function);
 }
 
 Node * meta_data() {

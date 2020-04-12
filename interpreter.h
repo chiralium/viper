@@ -10,8 +10,11 @@
 #ifndef VIPER_V4_INTERPRETER_H
 #define VIPER_V4_INTERPRETER_H
 
-/* Main entry point */
-Constant * main_entry(char * single_line);
+/* Main entry point to program executing */
+Constant * main_entry(char * input_stream);
+
+/* Main entry point to program parsing */
+Array ** main_parsing(char * input_stream);
 
 /* Interprete the global code structures */
 Constant * interpreter(Array ** code, Node * current_namespace);

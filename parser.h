@@ -61,9 +61,6 @@ Array ** parser(Array ** tokens);
 /* The function will create the new structure of If */
 If * make_if(char * condition, Array ** body, If * else_condition);
 
-/* The function will collect the tail of elements of else-statement */
-Array ** get_else_statement(Array ** tokens);
-
 /* The function will collect the elements of if-statement */
 If * get_if_statement(Array ** tokens);
 
@@ -85,9 +82,6 @@ While * make_while(char * condition, Array ** body);
 /* The function will collect the elements of while-statements */
 While * get_while_statement(Array ** tokens);
 
-/* The function will create the new structure of For */
-For * make_for(char * params, Array ** body);
-
 /* Return the next token from token list */
 Token * next_token(Array ** tokens);
 
@@ -100,6 +94,8 @@ char * trim(char * literal);
 /* Destructors */
 void function_destructor(Function * statement);
 void if_destructor(If * statement);
-void parsed_token_destructor(Array ** parsed_token);
+void while_destructor(While * statement);
+void return_destructor(Return * statement);
+
 
 #endif //VIPER_V4_PARSER_H

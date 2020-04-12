@@ -37,13 +37,13 @@ If * get_if_statement(Array ** tokens) {
     Token * token = next_token(tokens);
 
     if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
-        condition = trim(token->value);
+        condition = (trim(token->value) == NULL) ? NULL : alloc_string(trim(token->value));
         token = next_token(tokens);
     } else if (!is_else_tail) throw_statement_exception("if", PARSER_MISSING_IF_CONDITION);
     if (!condition && !is_else_tail) throw_statement_exception("if", PARSER_MISSING_IF_CONDITION);
 
     if (token && token->type_id == LEXER_COMPLEX_TK) {
-        body = token->value;
+        body = copy_array(body, token->value);
         // the next token can be ELSE statement, but its not necessary, lets check it
         token = get_token(tokens);
         if (token && token->type_id == LEXER_ELSE_TK) {
@@ -71,10 +71,10 @@ While * get_while_statement(Array ** tokens) {
     Token * token = next_token(tokens);
 
     if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
-        condition = trim(token->value);
+        condition = (trim(token->value) == NULL) ? NULL : alloc_string(trim(token->value));
         token = next_token(tokens);
         if (token && token->type_id == LEXER_COMPLEX_TK) {
-            body = token->value;
+            body = copy_array(body, token->value);
             if (!*body) throw_statement_exception(condition, PARSER_MISSING_WHILE_BODY);
         } else throw_statement_exception(condition, PARSER_MISSING_WHILE_BODY);
     }  else throw_statement_exception("while", PARSER_MISSING_WHILE_CONDITION);
@@ -99,7 +99,7 @@ Function * get_function_statement(Array ** tokens) {
         arg_list = extract_args(token->value);
         token = next_token(tokens);
         if (token && token->type_id == LEXER_COMPLEX_TK) {
-            body = token->value;
+            body = copy_array(body, token->value);
         } else throw_statement_exception(name, PARSER_MISSING_FUNC_BODY);
     } else throw_statement_exception("function", PARSER_MISSING_FUNC_PARAMS);
     Function * function_statement = make_function(name, arg_list, body);
@@ -158,6 +158,7 @@ char * trim(char * literal) {
 
 void function_destructor(Function * statement) {
     array_destructor(statement->arg_list);
+    array_destructor(statement->body);
     free(statement->name);
     free(statement);
 }
@@ -167,14 +168,13 @@ void if_destructor(If * statement) {
     free(statement);
 }
 
-void parsed_token_destructor(Array ** parsed_token) {
-    int counter = 0;
-    while (parsed_token[counter]) {
-        if (parsed_token[counter]->type_id == STMT_IF) if_destructor(parsed_token[counter]->element);
-        else if (parsed_token[counter]->type_id == STMT_WHILE) free(parsed_token[counter]->element);
-        else if (parsed_token[counter]->type_id == STMT_FUNC) function_destructor(parsed_token[counter]->element);
-        free(parsed_token[counter]);
-        counter++;
-    }
-    free(parsed_token);
+void while_destructor(While * statement) {
+    array_destructor(statement->body);
+    free(statement->condition);
+    free(statement);
+}
+
+void return_destructor(Return * statement) {
+    free(statement->expression);
+    free(statement);
 }
