@@ -1,6 +1,24 @@
 #include "display.h"
 #include "ViArray.h"
 
+void display_objects(Array ** objects, char * tabs) {
+    strcat(tabs, "-"); printf("%s[\n", tabs);
+
+    if (!objects) printf("]");
+    int counter = 0;
+    while (objects[counter]) {
+        Constant * obj = objects[counter]->element;
+        if (obj->type_id == COMPOSER_OBJECT_INT) printf("%s%s{obj: %d <int>}\n", tabs, tabs, *(int *)obj->value);
+        else if (obj->type_id == COMPOSER_OBJECT_FLOAT) printf("%s%s{obj: %f <float>}\n", tabs, tabs, *(float *)obj->value);
+        else if (obj->type_id == COMPOSER_OBJECT_STRING) printf("%s%s{obj: %s <str>}\n", tabs, tabs, (char *)obj->value);
+        else if (obj->type_id == COMPOSER_OBJECT_OPERATOR) printf("%s%s{obj: <%s>}\n", tabs, tabs, get_operator_as_string(obj->value));
+        else if (obj->type_id == COMPOSER_OBJECT_MATH) printf("%s%s{obj: <%c>}\n", tabs, tabs, obj->value);
+        else if (obj->type_id == COMPOSER_OBJECT_VARIABLE) printf("%s%s{obj: %s <var>}\n", tabs, tabs, obj->value);
+        counter++;
+    }
+    printf("%s]\n", tabs);
+}
+
 void display_array_beauty(Array ** _array, char * tabs) {
     strcat(tabs, "-");
     printf("%s[\n", tabs);

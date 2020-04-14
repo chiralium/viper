@@ -9,6 +9,12 @@ void throw_internal_error(char * broken_line) {
     exit(0);
 }
 
+void throw_composer_exception(char * broken_token, char * message) {
+    display_callstack(call_stack);
+    printf(EXCEPTION_COMPOSER_ERROR, broken_token, message);
+    exit(0);
+}
+
 void throw_function_exception(char * broken_line, char * message, char * function_name) {
     char message_with_function_name[512];
     sprintf(message_with_function_name, message, function_name);

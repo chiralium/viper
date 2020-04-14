@@ -12,7 +12,7 @@ Array ** expression_lexer(Array ** tokens) {
             char * token_literal = token->value;
             Array ** expression_tokens = extract_exp_token(token_literal);
             expression_as_string = as_string(expression_tokens);
-            token_typecasting(expression_tokens);
+            //token_typecasting(expression_tokens);
             expression = append(expression, ARRAY, expression_tokens);
             free(tokens[tokens_counter]); free(expression_as_string);
         } else {

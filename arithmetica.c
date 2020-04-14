@@ -289,7 +289,6 @@ void * assign_function(char * literal) {
              strcmp(literal, ARITHMETICA_CBB) == 0 ||
              strcmp(literal, ARITHMETICA_OSB) == 0 ||
              strcmp(literal, ARITHMETICA_CSB) == 0 ||
-             strcmp(literal, ARITHMETICA_ASG) == 0 ||
              strcmp(literal, ARITHMETICA_COMA) == 0) function_pointer = _tmp; // this is only for the first time
 
     return function_pointer;

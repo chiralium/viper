@@ -15,6 +15,7 @@
 #define EXCEPTION_TYPECASTING_ERROR    "-> TypeError: at line `%s` (%s)\n"
 #define EXCEPTION_FUNCTION_CALL_ERROR  "-> FunctionCallError: at line `%s` (%s)\n"
 #define EXCEPTION_INTERNAL_ERROR       "-> SystemError: at line `%s`"
+#define EXCEPTION_COMPOSER_ERROR       "-> ComposerError: at line `%s` (%s)\n"
 
 /* Something gonna be really wrong. What is happening? */
 void throw_internal_error(char * broken_line);
@@ -33,5 +34,8 @@ void throw_arithmetical_exception(char * broken_line, char * message);
 
 /* Getting the broken expression and terminate the program with EXCEPTION_TYPECASTING_ERROR */
 void throw_typecasting_exception(char * broken_line, char * message);
+
+/* Getting the broken token and terminate the program with EXCEPTION_COMPOSER_ERROR */
+void throw_composer_exception(char * broken_token, char * message);
 
 #endif //VIPER_V4_EXCEPTION_H

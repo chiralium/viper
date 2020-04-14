@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "expression.h"
 #include "arithmetica.h"
+#include "composer.h"
 
 /*
  * The tools for formatted display a complex structure

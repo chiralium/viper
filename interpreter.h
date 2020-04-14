@@ -1,5 +1,4 @@
 #include "arithmetica.h"
-#include "expression.h"
 #include "namespace.h"
 
 /*
