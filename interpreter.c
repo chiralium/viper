@@ -5,15 +5,20 @@
 extern Array ** call_stack;
 
 Array ** main_parsing(char * input_stream) {
+    int use_composer = 1;
+
+
     Array ** literals = recursive_descent(input_stream); free(input_stream);
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
     Array ** expression_tokens = expression_lexer(parsed_tokens);
 
-    Array ** objects = composer(expression_tokens);
-    char tabs[512] = "\0"; display_objects(objects, tabs);
-
-    exit(0);
+    if (use_composer == 1) {
+        Array **objects = composer(expression_tokens);
+        char tabs[512] = "\0";
+        display_objects(objects, tabs);
+        exit(0);
+    }
 
     array_destructor(literals);
     array_destructor(tokens);

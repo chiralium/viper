@@ -1,6 +1,5 @@
 #include "composer.h"
 
-static int _next_token;
 char * tokens_like_string; // the token list as string for exceptions
 
 Array ** composer(Array ** token_list) {
@@ -14,6 +13,36 @@ Array ** composer(Array ** token_list) {
     return objects;
 }
 
+Array ** compose_array_element(Array ** token_list, int * starting_token) {
+    Array ** array_element = new_array(); ExpressionToken * token;
+    int counter = *starting_token;
+    while (token = token_list[counter]->element) {
+        if (token->type_id == OP_CLOSE_BBRACK) return array_element;
+        if (token->type_id != OP_COMA) array_element = append(array_element, EXP_TK, token);
+        else break;
+        counter++;
+    }
+    *starting_token = counter;
+    return array_element;
+}
+
+Array ** compose_array_object(Array ** token_list, int * starting_token) {
+    Array ** array = new_array(); ExpressionToken * token;
+    int counter = *starting_token + 1;
+    while (token = token_list[counter]->element) {
+        if (token->type_id == OP_CLOSE_BBRACK) break;
+        else if (token->type_id == OP_COMA) throw_composer_exception(tokens_like_string, COMPOSER_INVALID_ARRAY_DECLARATION);
+        else {
+            Array ** array_element = compose_array_element(token_list, &counter);
+            Constant * array_object = new_constant(COMPOSER_OBJECT_ARRAY_ELEMENT, object_assembler(array_element));
+            array = append(array, COMPOSER_OBJECT_ARRAY, array_object);
+        }
+        counter++;
+    }
+    *starting_token = counter;
+    return array;
+}
+
 Array ** object_assembler(Array ** token_list) {
     tokens_like_string = as_string(token_list);
     Array ** objects = new_array();
@@ -21,7 +50,9 @@ Array ** object_assembler(Array ** token_list) {
     while (token_list[counter]) {
         ExpressionToken * token = token_list[counter]->element;
         if (token->type_id == OP_OPEN_BBRACK) {
-            /* {...} */
+            Array ** array = compose_array_object(token_list, &counter);
+            Constant * array_object = new_constant(COMPOSER_OBJECT_ARRAY, array);
+            objects = append(objects, OBJECT, array_object);
         } else if (token->type_id == OP_OPEN_SBRACK) {
             /* <exp>[...] */
         } else if (token->type_id == EXPRESSION_CONSTANT_FUNC_TK) {

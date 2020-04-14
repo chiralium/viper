@@ -16,14 +16,15 @@
 #define COMPOSER_OBJECT_STRING    3
 
     /* complex objects */
-#define COMPOSER_OBJECT_ARRAY     4
-#define COMPOSER_OBJECT_INDEX     5
-#define COMPOSER_OBJECT_FUNCTION  6
+#define COMPOSER_OBJECT_ARRAY         4
+#define COMPOSER_OBJECT_ARRAY_ELEMENT 5
+#define COMPOSER_OBJECT_INDEX         6
+#define COMPOSER_OBJECT_FUNCTION      7
 
     /* system objects */
-#define COMPOSER_OBJECT_OPERATOR  7
-#define COMPOSER_OBJECT_VARIABLE  8
-#define COMPOSER_OBJECT_MATH      9
+#define COMPOSER_OBJECT_OPERATOR   8
+#define COMPOSER_OBJECT_VARIABLE   9
+#define COMPOSER_OBJECT_MATH      10
 
 
 /* Operators as string */
@@ -49,7 +50,8 @@
 #define COMPOSER_OPERATOR_ASC  "=>"
 
 /* Composer exceptions */
-#define COMPOSER_UNDEFINED_TOKEN  "undefined token in token list"
+#define COMPOSER_UNDEFINED_TOKEN           "undefined token in a token list"
+#define COMPOSER_INVALID_ARRAY_DECLARATION "invalid array declaration"
 
 /* Main entry point into composer process */
 Array ** composer(Array ** token_list);
@@ -59,6 +61,12 @@ Array ** object_assembler(Array ** token_list);
 
 /* Compose the token that has token type like CONSTANT_TK, CONSTANT_STRING_TK into simple data object */
 Constant * compose_simple_data(ExpressionToken * token);
+
+/* Compose the token list into array object */
+Array ** compose_array_object(Array ** token_list, int * starting_token);
+
+/* Compose the token list into single array element */
+Array ** compose_array_element(Array ** token_list, int * starting_token);
 
 
 /* Some tools */

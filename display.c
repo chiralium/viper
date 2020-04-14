@@ -14,6 +14,11 @@ void display_objects(Array ** objects, char * tabs) {
         else if (obj->type_id == COMPOSER_OBJECT_OPERATOR) printf("%s%s{obj: <%s>}\n", tabs, tabs, get_operator_as_string(obj->value));
         else if (obj->type_id == COMPOSER_OBJECT_MATH) printf("%s%s{obj: <%c>}\n", tabs, tabs, obj->value);
         else if (obj->type_id == COMPOSER_OBJECT_VARIABLE) printf("%s%s{obj: %s <var>}\n", tabs, tabs, obj->value);
+        else if (obj->type_id == COMPOSER_OBJECT_ARRAY || obj->type_id == COMPOSER_OBJECT_ARRAY_ELEMENT) {
+            printf("%s%s{obj <array>}:\n", tabs, tabs);
+            strcat(tabs, "-");
+            display_objects(obj->value, tabs);
+        }
         counter++;
     }
     printf("%s]\n", tabs);
