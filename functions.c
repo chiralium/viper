@@ -18,11 +18,12 @@ Node * performing_local_namespace(Array ** input_arguments, Function * function_
 }
 
 int validate_function_call(FuncCall * function_call, Function * function_object) {
-    Array ** function_call_arglist = function_call->arg_list;
-    Array ** function_object_arglist = function_object->arg_list;
-    if (_get_len(function_call_arglist) != _get_len(function_object_arglist)) return 0;
+    Array ** function_call_arglist = function_call->arg_list; Array ** function_object_arglist = function_object->arg_list;
 
-    return 1;
+    if (is_empty(function_object_arglist) && is_empty(function_call_arglist)) return 1;
+    else if (_get_len(function_call_arglist) == _get_len(function_object_arglist)) return 1;
+
+    return 0;
 }
 
 Array ** copy_function_code(Array ** function_code) {

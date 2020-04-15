@@ -116,12 +116,13 @@ Function * make_function(char * name, Array ** arg_list, Array ** body) {
 }
 
 Array ** extract_args(char * literal) {
+    Array ** arg_list = new_array();
+
     if (pop_first(literal) != OP_OPEN_CBRACK) return NULL; // if the next symbol is not a '(', that means function does'nt have arguments
     if (pop_last(literal) != OP_CLOSE_CBRACK) throw_statement_exception(literal, PARSER_MISSING_FUNC_ARGS_BRACKET);
 
-    if (!*literal) return NULL; // the empty brackets is the way too to declare none-arguments function
+    if (!*literal) return arg_list; // the empty brackets is the way too to declare none-arguments function
 
-    Array ** arg_list = new_array();
     while (*literal) {
         char * arg = trim(cut_token(literal, OP_COMA));
         if (!*arg) throw_statement_exception(literal, PARSER_MISSING_FUNC_ARGS);
