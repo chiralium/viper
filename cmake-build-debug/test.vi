@@ -114,3 +114,4 @@ x = 3.14;
 x = inc(inc(inc(x, -2.7), inc(x, 2.7)), x * x);
 f = inc(x, 1.0 - x);
 ConcatResult = concat("ConcatResult: ", concat("hello ", "world!"));
+concat("hello, "[(-1+1), 2], "goodbye"[0, 3]);
