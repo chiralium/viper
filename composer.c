@@ -6,10 +6,13 @@ char * expression_as_string;
 void composer(Array ** token_list) {
     int counter = 0;
     while (token_list[counter]) {
-        Array ** tokens = token_list[counter]->element;
-        expression_as_string = as_string(tokens);
-        token_typecasting(tokens);
-        free(expression_as_string);
+        if (token_list[counter]->type_id == ARRAY) {
+            /* which means the current element is an array of tokens, not a statements */
+            Array **tokens = token_list[counter]->element;
+            expression_as_string = as_string(tokens);
+            token_composer(tokens);
+            free(expression_as_string);
+        }
         counter++;
     }
 }
@@ -61,7 +64,7 @@ Array ** array_typecasting(Array ** exp_tokens, int position) {
         } else if (token->type_id == OP_COMA) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_ARRAY_DECLARATION);
         else {
             Array ** array_element = cut_array_element(array_body);
-            token_typecasting(array_element);
+            token_composer(array_element);
             array = append(array, ARRAY_EL, array_element);
         }
     }
@@ -121,14 +124,14 @@ Array ** index_typecasting(Array ** exp_tokens, int position) {
         if (token->type_id == OP_CLOSE_SBRACK) {
             exp_token_destructor(pop_next_exp_token(index_body));
             break;
-        } else if (token->type_id == OP_COMA) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
+        } else if (token->type_id == OP_COMA) throw_composer_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
         else {
             Array ** parameter = cut_index_parameter(index_body);
-            token_typecasting(parameter);
+            token_composer(parameter);
             index_parameters = append(index_parameters, ARRAY, parameter);
         }
     }
-    if (_get_len(index_parameters) > ARITMHETICA_MAX_INDEX_PARAM) throw_arithmetical_exception(expression_as_string, EXPRESSION_TOO_MUCH_INDEX_PARAMS);
+    if (_get_len(index_parameters) > ARITMHETICA_MAX_INDEX_PARAM) throw_composer_exception(expression_as_string, EXPRESSION_TOO_MUCH_INDEX_PARAMS);
     free(index_body);
     return index_parameters;
 }
@@ -149,7 +152,7 @@ Array ** cut_index_object(Array ** exp_tokens, int * position) {
         pos--;
         if (pos < 0) break;
     }
-    if (is_empty(index_object)) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
+    if (is_empty(index_object)) throw_composer_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
     *position = pos >= 0 ? pos + 1 : 0;
     return index_object;
 }
@@ -169,7 +172,7 @@ Array ** cut_arglist_body(Array ** exp_tokens, int position) {
             arglist_body = append(arglist_body, EXP_TK, token);
         }
     }
-    if (o != c) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_FUNCTION_CALL);
+    if (o != c) throw_composer_exception(expression_as_string, EXPRESSION_INVALID_FUNCTION_CALL);
     _next = 0;
     return arglist_body;
 }
@@ -186,7 +189,7 @@ Array ** cut_argument(Array ** exp_tokens) {
             argument = append(argument, EXP_TK, token);
         }
     }
-    if (o != c) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_FUNCTION_CALL);
+    if (o != c) throw_composer_exception(expression_as_string, EXPRESSION_INVALID_FUNCTION_CALL);
     return argument;
 }
 
@@ -199,10 +202,10 @@ Array ** cut_function_arglist(Array ** exp_tokens, int position) {
         if (token->type_id == OP_CLOSE_CBRACK) {
             exp_token_destructor(pop_next_exp_token(arglist_body));
             break;
-        } else if (token->type_id == OP_COMA) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_FUNCTION_ARGLIST);
+        } else if (token->type_id == OP_COMA) throw_composer_exception(expression_as_string, EXPRESSION_INVALID_FUNCTION_ARGLIST);
         else {
             Array ** argument = cut_argument(arglist_body);
-            token_typecasting(argument);
+            token_composer(argument);
             arglist = append(arglist, ARRAY, argument);
         }
     }
@@ -210,7 +213,7 @@ Array ** cut_function_arglist(Array ** exp_tokens, int position) {
     return arglist;
 }
 
-void token_typecasting(Array ** exp_tokens) {
+void token_composer(Array ** exp_tokens) {
     int counter = 0;
     while (exp_tokens[counter]) {
         ExpressionToken * token = exp_tokens[counter]->element;
@@ -226,7 +229,7 @@ void token_typecasting(Array ** exp_tokens) {
             exp_tokens[counter]->element = array_tk;
         } else if (token->type_id == OP_OPEN_SBRACK) {
             /* <EXP>[...] */
-            if (--counter < 0) throw_arithmetical_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
+            if (--counter < 0) throw_composer_exception(expression_as_string, EXPRESSION_INVALID_INDEX_DECLARATION);
             Array **index_object = cut_index_object(exp_tokens,
                                                     &counter); // this function will decrease the counter value for each object's tokens
             Array **index_parameters = index_typecasting(exp_tokens, counter + 1);
@@ -276,7 +279,7 @@ int allocate_token_value(ExpressionToken * exp_token) {
     } else if (is_name(literal)) {
         exp_token->value = NULL;
         exp_token->vtype_id = UNDEFINED;
-    } else throw_arithmetical_exception(literal, EXPRESSION_UNDEFINED_TOKEN);
+    } else throw_composer_exception(literal, EXPRESSION_UNDEFINED_TOKEN);
 }
 
 char get_operator_type(char * operator) {

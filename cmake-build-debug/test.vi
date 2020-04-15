@@ -1,3 +1,13 @@
+function inc(x, y) : {
+    a = {1, 2, 3, 4};
+    return x + y * a[3];
+}
+
+function concat(string1, string2) : {
+    resultString = string1 + string2;
+    return resultString;
+}
+
 a = {1, {"this is an", "array"}, 3, 4};
 b = a;
 F = b[1][1 - a[0]][0];
@@ -99,3 +109,8 @@ a["C"]["D"];
 a["B"][0] = 3.14;
 a;
 a["B"][0, 9, 3];
+
+x = 3.14;
+x = inc(inc(inc(x, -2.7), inc(x, 2.7)), x * x);
+f = inc(x, 1.0 - x);
+ConcatResult = concat("ConcatResult: ", concat("hello ", "world!"));

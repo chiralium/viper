@@ -31,6 +31,9 @@ Array ** copy_array(Array **Y, Array **X) {
             Array **sub_array;
             sub_array = copy_array(sub_array, X[i] -> element);
             el -> element = sub_array;
+        } else if (X[i] -> type_id == EXP_TK) {
+            ExpressionToken * value = copy_expression_token(X[i] -> element);
+            el -> element = value;
         }
         Y[i] = el;
         i++;

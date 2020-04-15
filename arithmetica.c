@@ -21,7 +21,7 @@ Constant * function_precalc(FuncCall * function_call, Function * function_object
     call_stack = append(call_stack, STRING, alloc_string(function_object->name));// add function name into call stack
 
     Array ** input_args = function_call->arg_list;
-    Array ** function_code; function_code = copy_array(function_code, function_object->body); // copy the function code cause the code should be destroyed by lexers, parser and expression parser
+    Array ** function_code; function_code = copy_function_code(function_object->body); // copy the function code cause the code should be destroyed by lexers, parser and expression parser
 
     // calculate the input arguments
     Array ** calculated_args = new_array();

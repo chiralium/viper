@@ -219,3 +219,15 @@ char * as_string(Array ** exp_tokens) {
     char * string = alloc_string(stack_tmp);
     return string;
 }
+
+ExpressionToken * copy_expression_token(ExpressionToken * token) {
+    ExpressionToken * copied_token = malloc(sizeof(ExpressionToken));
+    copied_token->type_id = token->type_id;
+    copied_token->vtype_id = token->vtype_id;
+
+    if (token->vtype_id == STRING) copied_token->value = alloc_string(token->value);
+    else copied_token->value = NULL;
+
+    copied_token->literal = alloc_string(token->literal);
+    return copied_token;
+}

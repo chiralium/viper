@@ -11,6 +11,8 @@ Array ** main_parsing(char * input_stream) {
     Array ** expression_tokens = expression_lexer(parsed_tokens);
 
     composer(expression_tokens); // compose the token list into objects
+    //char tabs[512] = "\0"; display_array_beauty(expression_tokens, tabs); exit(0);
+
 
     array_destructor(literals);
     array_destructor(tokens);
@@ -42,6 +44,7 @@ void function_declaration(Function * function_object, Node * current_namespace) 
     Array ** tokens = lexer(function_code);  // extracting simple tokens
     Array ** parsed_tokens = parser(tokens); // extracting complex statements
     Array ** expression_tokens = expression_lexer(parsed_tokens); // extracting tokens from expressions (if exists)
+
     array_destructor(function_code); array_destructor(tokens);
 
     /* now, function object has a parsed code */
@@ -57,14 +60,11 @@ void function_declaration(Function * function_object, Node * current_namespace) 
 /* The main entry point of local function */
 Constant * function_exec(Array ** function_code, Node * local_namespace) {
     Constant * returned_value;
-    Array ** tokens = lexer(function_code);
-    Array ** parsed_tokens = parser(tokens);
-    Array ** expression_tokens = expression_lexer(parsed_tokens);
-    returned_value = interpreter(expression_tokens, local_namespace);
+    composer(function_code);
+    returned_value = interpreter(function_code, local_namespace);
 
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
 
-    array_destructor(function_code); array_destructor(tokens);
     if (returned_value == NULL) {
         namespace_destructor(local_namespace);
         return new_constant(NONE, NULL);
@@ -83,6 +83,9 @@ Constant * return_exec(char * return_expression, Node * local_namespace) {
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
     Array ** expression_tokens = expression_lexer(parsed_tokens);
+
+    composer(expression_tokens);
+
     result = interpreter(expression_tokens, local_namespace);
     array_destructor(literals); array_destructor(tokens);
 

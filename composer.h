@@ -42,7 +42,7 @@ Array ** cut_index_parameter(Array ** exp_tokens);
 Array ** cut_index_object(Array ** exp_tokens, int * position);
 
 /* The function will typecasting token list to data structures */
-void token_typecasting(Array ** exp_tokens);
+void token_composer(Array ** exp_tokens);
 
 /* The function will allocate data of integer, float or string type into heap */
 int allocate_token_value(ExpressionToken * exp_token);

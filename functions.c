@@ -24,3 +24,20 @@ int validate_function_call(FuncCall * function_call, Function * function_object)
 
     return 1;
 }
+
+Array ** copy_function_code(Array ** function_code) {
+    Array ** copied_code = new_array();
+    int counter = 0;
+    while (function_code[counter]) {
+        if (function_code[counter]->type_id == ARRAY) {
+            /* If the element has type array it is means current part of code is an expressions */
+            Array ** tokens; tokens = copy_array(tokens, function_code[counter]->element);
+            copied_code = append(copied_code, ARRAY, tokens);
+        } else if (function_code[counter]->type_id == STMT_RETURN) {
+            Return * copied_return_statement = copy_return(function_code[counter]->element);
+            copied_code = append(copied_code, STMT_RETURN, copied_return_statement);
+        }
+        counter++;
+    }
+    return copied_code;
+}

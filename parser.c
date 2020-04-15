@@ -178,3 +178,9 @@ void return_destructor(Return * statement) {
     free(statement->expression);
     free(statement);
 }
+
+Return * copy_return(Return * return_statement) {
+    Return * copied_statement = malloc(sizeof(Return));
+    copied_statement->expression = alloc_string(return_statement->expression);
+    return copied_statement;
+}

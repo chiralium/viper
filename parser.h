@@ -97,5 +97,7 @@ void if_destructor(If * statement);
 void while_destructor(While * statement);
 void return_destructor(Return * statement);
 
+/* Copy */
+Return * copy_return(Return * return_statement);
 
 #endif //VIPER_V4_PARSER_H

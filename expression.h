@@ -74,5 +74,7 @@ char * as_string(Array ** exp_token);
 
 /* Destructor */
 void exp_token_destructor(ExpressionToken * token);
-void exp_tokens_destructor(Array **);
+
+/* Copy */
+ExpressionToken * copy_expression_token(ExpressionToken * token);
 #endif //VIPER_V4_EXPRESSION_H
