@@ -176,11 +176,8 @@ Array ** postfix(Array ** expression_tokens) {
     Array * current_token;
     while (current_token = pop_el(expression_tokens)) {
         ExpressionToken * token = current_token->element;
-        if (token->type_id == EXPRESSION_CONSTANT_TK) {
+        if (token->type_id == EXPRESSION_CONSTANT_TK || token->type_id == EXPRESSION_CONSTANT_FUNC_TK) {
             output = append(output, EXP_TK, token);
-            free(current_token);
-        } else if (token->type_id == EXPRESSION_CONSTANT_FUNC_TK) {
-            tokens_stack = append(tokens_stack, EXP_TK, token);
             free(current_token);
         } else if (token->type_id == OP_OPEN_CBRACK) {
             tokens_stack = append(tokens_stack, EXP_TK, token);
