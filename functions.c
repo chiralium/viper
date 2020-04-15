@@ -1,7 +1,16 @@
 #include "functions.h"
 
 Node * performing_local_namespace(Array ** input_arguments, Function * function_object) {
-    Node * root = NULL;
+    /*
+     * create the function object into local namesapce and set not null origin for function object,
+     * cause the origin of this object is an parent namespace
+     * */
+    Constant * function = new_constant(FUNCTION, function_object); function->origin = 1;
+    Node * root = new_node(faq6(function_object->name), function);
+
+    /*
+     * create the local namespace by input parameters
+     */
     if (_get_len(function_object->arg_list) > 0) {
         Array ** arguments = function_object->arg_list;
         int counter = 0;
