@@ -1,7 +1,4 @@
-function get_pi() : {
-    f = 3.14;
-    return f;
+function get_none() : {
+   2+2;
 }
-
-f = get_pi();
-f;
+none = get_none();

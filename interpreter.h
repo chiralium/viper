@@ -36,4 +36,10 @@ void display_callstack(Array ** points);
 /* The function will be create the meta-data in namespace */
 Node * meta_data();
 
+/* The function will return 1 if the current call is __MAIN__ */
+int is_main_call(Array ** call_stack);
+
+/* The function will return 1 if the current call is return-statement */
+int is_return_call(Array ** call_stack);
+
 #endif //VIPER_V4_INTERPRETER_H

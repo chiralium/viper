@@ -94,11 +94,18 @@ Constant * return_exec(char * return_expression, Node * local_namespace) {
 Constant * interpreter(Array ** code, Node * current_namespace) {
     int code_counter = 0; Constant * result = NULL;
     while (code[code_counter]) {
-        if (result != NULL) constant_destructor(result);
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
+
             printf("\nRUNTIME: "); display_callstack(call_stack); display_constant(result); printf("\n");
+
+            /* destroy the result if the is not return statement */
+            if (!is_return_call(call_stack)) {
+                constant_destructor(result);
+                result = NULL;
+            }
+
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_IF) {
             if_destructor(code[code_counter]->element);
@@ -120,7 +127,7 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         code_counter++;
     }
     free(code);
-    return result; // result will be not null only if the code contained return statement
+    return result; // result will be not null only if the code contained return statement OR if the __MAIN__ call
 }
 
 Constant * calculate_expression(Array ** expression, Node * current_namespace) {
@@ -143,6 +150,18 @@ Node * meta_data() {
     return root;
 }
 
+int is_main_call(Array ** call_stack) {
+    Array * last_call = get_last_el(call_stack);
+    char * call_name = last_call->element;
+    return strcmp(call_name, "__MAIN__") == 0;
+}
+
+int is_return_call(Array ** call_stack) {
+    Array * last_call = get_last_el(call_stack);
+    char * call_name = last_call->element;
+    return strcmp(call_name, "return") == 0;
+}
+
 void display_callstack(Array ** points) {
     printf("CallStack: ");
     while (*points) {
@@ -150,3 +169,4 @@ void display_callstack(Array ** points) {
         points++;
     }
 }
+

@@ -216,6 +216,9 @@ void display_index(Index * index, char tabs[512]) {
 void display_constant(Constant * constant) {
     switch (constant->type_id) {
         /* Vipers types */
+        case NONE:
+            printf("<NONE>");
+            break;
         case INTEGER:
             printf("%d", *(int *)constant->value);
             break;
