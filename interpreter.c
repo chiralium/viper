@@ -1,5 +1,6 @@
 #include "interpreter.h"
 #include "expression.h"
+#include "composer.h"
 
 extern Array ** call_stack;
 
@@ -8,6 +9,8 @@ Array ** main_parsing(char * input_stream) {
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
     Array ** expression_tokens = expression_lexer(parsed_tokens);
+
+    composer(expression_tokens); // compose the token list into objects
 
     array_destructor(literals);
     array_destructor(tokens);
