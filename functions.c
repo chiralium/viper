@@ -51,3 +51,17 @@ Array ** copy_function_code(Array ** function_code) {
     }
     return copied_code;
 }
+
+void function_code_destructor(Array ** function_code, int start_position) {
+    int counter = start_position;
+    while (function_code[counter]) {
+        /* if the current element of function code is an array which means this is an expression */
+        if (function_code[counter]->type_id == ARRAY) array_destructor(function_code[counter]->element);
+        else if (function_code[counter]->type_id == STMT_RETURN) return_destructor(function_code[counter]->element);
+        else if (function_code[counter]->type_id == STMT_FUNC) function_destructor(function_code[counter]->element);
+        else if (function_code[counter]->type_id == STMT_IF) if_destructor(function_code[counter]->element);
+        else if (function_code[counter]->type_id == STMT_WHILE) while_destructor(function_code[counter]->element);
+        free(function_code[counter]); counter++;
+    }
+    free(function_code);
+}

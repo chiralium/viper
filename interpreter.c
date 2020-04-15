@@ -1,6 +1,7 @@
 #include "interpreter.h"
 #include "expression.h"
 #include "composer.h"
+#include "functions.h"
 
 extern Array ** call_stack;
 
@@ -120,13 +121,12 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         } else if (code[code_counter]->type_id == STMT_RETURN) {
             Return * return_statement = code[code_counter]->element;
             result = return_exec(return_statement->expression, current_namespace);
-            free(code[code_counter]->element);
-            free(code[code_counter]);
+            free(code[code_counter]->element); free(code[code_counter]); code_counter++;
             break;
         }
         code_counter++;
     }
-    free(code);
+    function_code_destructor(code, code_counter);
     return result; // result will be not null only if the code contained return statement OR if the __MAIN__ call
 }
 
