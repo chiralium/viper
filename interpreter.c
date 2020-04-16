@@ -29,9 +29,8 @@ Constant * main_entry(char * input_stream) {
     Node * current_namespace = meta_data();
 
     /* interpreting the program in a current_namespace */
-    result = interpreter(parsed, current_namespace);
+    result = interpreter(parsed, current_namespace); (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
 
-    (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
     constant_destructor(result); namespace_destructor(current_namespace);
     return result;
 }
@@ -60,17 +59,10 @@ void function_declaration(Function * function_object, Node * current_namespace) 
 Constant * function_exec(Array ** function_code, Node * local_namespace) {
     Constant * returned_value;
     composer(function_code);
-    returned_value = interpreter(function_code, local_namespace);
-
+    returned_value = interpreter(function_code, local_namespace); (returned_value == NULL) ? returned_value = new_constant(NONE, NULL) : NULL;
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
-
-    if (returned_value == NULL) {
-        namespace_destructor(local_namespace);
-        return new_constant(NONE, NULL);
-    }else {
-        namespace_destructor(local_namespace);
-        return returned_value;
-    }
+    namespace_destructor(local_namespace);
+    return returned_value;
 }
 
 /* The entry point of return statement */
