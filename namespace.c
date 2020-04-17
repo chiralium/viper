@@ -29,9 +29,11 @@ void * remove_node(Node * removed_node) {
             } else if (parent_of_minimal == removed_node) {
                 parent_of_minimal->parent = parent;
                 minimal_key_node->left = removed_node->left;
-                minimal_key_node->right = NULL;
                 minimal_key_node->parent = parent;
                 memcpy(removed_node, minimal_key_node, sizeof(Node));
+
+                /* set the new parent for child nodes */
+                set_parent(removed_node->left, removed_node); set_parent(removed_node->right, removed_node);
                 free(minimal_key_node);
             }
         } else {
@@ -45,28 +47,31 @@ void * remove_node(Node * removed_node) {
             } else if (parent_of_minimal == removed_node) {
                 minimal_key_node->parent = NULL;
                 minimal_key_node->left = removed_node->left;
-                minimal_key_node->right = NULL;
                 memcpy(removed_node, minimal_key_node, sizeof(Node));
+
+                /* set the new parent for child nodes */
+                set_parent(removed_node->left, removed_node); set_parent(removed_node->right, removed_node);
                 free(minimal_key_node);
             }
         }
     } else if (removed_node->left != NULL) {
         Node * left_node = removed_node->left;
-        if (parent != NULL) {
-            memcpy(removed_node, left_node, sizeof(Node));
-            left_node->parent = parent;
-            free(left_node);
-        } else {
-            memcpy(removed_node, left_node, sizeof(Node));
-            removed_node->parent = NULL;
-            free(left_node);
-        }
+        memcpy(removed_node, left_node, sizeof(Node));
+
+        /* set the new parent for child nodes */
+        set_parent(removed_node->left, removed_node); set_parent(removed_node->right, removed_node);
+        removed_node->parent = parent;
+        free(left_node);
     } else {
         /* the removed node is a last node of tree */
         if (parent->left == removed_node) parent->left = NULL;
         else if (parent->right == removed_node) parent->right = NULL;
         free(removed_node);
     }
+}
+
+void set_parent(Node * node, Node * parent) {
+    if (node != NULL) node->parent = parent;
 }
 
 Node * get_minimal_by_key(Node * root) {

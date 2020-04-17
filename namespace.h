@@ -27,7 +27,11 @@ void * find_node(Node * root, int key);
 /* The function will remove node from tree by key */
 void * remove_node(Node * removed_node);
 
+/* Return the node with minimal key */
 Node * get_minimal_by_key(Node * root);
+
+/* Set the parrent for node */
+void set_parent(Node * node, Node * parent);
 
 /* The hash-function FAQ6 */
 int faq6(const char * str);
