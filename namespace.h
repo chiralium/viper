@@ -10,8 +10,9 @@
 typedef struct Node {
     int key;
     void * value;
-    void * left;
-    void * right;
+    struct Node * left;
+    struct Node * right;
+    struct Node * parent;
 } Node;
 
 /* The function will create the new node of tree */
@@ -24,7 +25,9 @@ Node * insert_node(Node * root, Node * new_node);
 void * find_node(Node * root, int key);
 
 /* The function will remove node from tree by key */
-void remove_node(Node * root, int key);
+void * remove_node(Node * removed_node);
+
+Node * get_minimal_by_key(Node * root);
 
 /* The hash-function FAQ6 */
 int faq6(const char * str);

@@ -91,6 +91,8 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
 
+            Node * root = result->value; Node * removed_node = find_node(root, -3);
+            remove_node(removed_node);
             printf("\nRUNTIME: "); display_callstack(call_stack); display_constant(result); printf("\n");
 
             /* destroy the result if the is not return statement */
