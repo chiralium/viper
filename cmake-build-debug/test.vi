@@ -1,1 +1,6 @@
-a = {1, 2, 3, 4, 5};
+function inc(x) : {
+  r = {x + 1, x +  2, x + 3};
+  return r;
+}
+a = inc(3.14);
+a;

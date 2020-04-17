@@ -13,6 +13,7 @@ Node * new_node(int key, void * value) {
 }
 
 void * remove_node(Node * removed_node) {
+    void * removed_node_val = removed_node->value;
     Node * parent = removed_node->parent;
     if (removed_node->right != NULL) {
         Node * minimal_key_node = get_minimal_by_key(removed_node->right);
@@ -68,6 +69,7 @@ void * remove_node(Node * removed_node) {
         else if (parent->right == removed_node) parent->right = NULL;
         free(removed_node);
     }
+    return removed_node_val;
 }
 
 void set_parent(Node * node, Node * parent) {

@@ -60,6 +60,11 @@ Constant * function_exec(Array ** function_code, Node * local_namespace) {
     Constant * returned_value;
     composer(function_code);
     returned_value = interpreter(function_code, local_namespace); (returned_value == NULL) ? returned_value = new_constant(NONE, NULL) : NULL;
+
+    /* if value having origin, remove node from namespace by origin and free the node value wrapper (Constant *) */
+    if (returned_value->origin != NULL) free(remove_node(returned_value->origin));
+    returned_value->origin = NULL; // resetting origin for returned value
+
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
     namespace_destructor(local_namespace);
     return returned_value;
@@ -91,8 +96,6 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
 
-            Node * root = result->value; Node * removed_node = find_node(root, 2);
-            remove_node(removed_node);
             printf("\nRUNTIME: "); display_callstack(call_stack); display_constant(result); printf("\n");
 
             /* destroy the result if the is not return statement */
