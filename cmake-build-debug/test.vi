@@ -1,20 +1,20 @@
 function inc(x, y) : {
-    a = {1, 2, 3, 4};
-    return x + y * a[3];
+a = {1, 2, 3, 4};
+return x + y * a[3];
 }
 
 function concat(string1, string2) : {
-    resultString = string1 + string2;
-    return resultString;
+resultString = string1 + string2;
+return resultString;
 }
 
 function non_argument_function() : {
-    return "this is the returned value of non-arugment function. it is looks like";
+return "this is the returned value of non-arugment function. it is looks like";
 }
 
 function non_returned_function(x) : {
-    x = x + 1;
-    "so, this is the function that not returning any values";
+x = x + 1;
+"so, this is the function that not returning any values";
 }
 
 a = {1, {"this is an", "array"}, 3, 4};
@@ -131,17 +131,31 @@ NORET = non_returned_function(1);
 NORET;
 
 function get_array(x) : {
-  r = {x + 1, x +  2, x + 3};
-  return r;
+r = {x + 1, x +  2, x + 3};
+return r;
 }
 a = get_array(3.14);
 a;
 function change_array(array) : {
-  array[0] = array[0] - 1;
-  array[1] = array[1] - 1;
-  array[2] = array[2] - 1;
+array[0] = array[0] - 1;
+array[1] = array[1] - 1;
+array[2] = array[2] - 1;
 }
 
 array = {1, 2, 3, 4};
 change_array(array);
 array;
+
+A = {1, 2}; B = {3, 4};
+function append_with_return(A, B) : {
+    A[] = B;
+    return A;
+}
+
+function append_not_return(A, B) : {
+    A[] = B;
+}
+
+append_with_return(A, B); A;
+C = {1, 2, 3};
+append_not_return(A, C); A;

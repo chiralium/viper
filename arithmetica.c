@@ -430,12 +430,12 @@ int get_from_namespace(void * elexpr) {
         Constant * function_result = function_precalc(el->value, value->value);
         el->value = function_result->value;
         el->vtype_id = function_result->type_id;
-        el->origin = NULL;
+        el->origin = function_result->origin;
         free(function_result);
     } else {
         el->value = value->value;
         el->vtype_id = value->type_id;
-        el->origin = node;
+        el->origin = (value->origin != NULL) ? value->origin : node;
     }
 }
 

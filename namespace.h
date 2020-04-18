@@ -33,6 +33,9 @@ Node * get_minimal_by_key(Node * root);
 /* Set the parrent for node */
 void set_parent(Node * node, Node * parent);
 
+/* Return true if node belongs to namespace */
+int is_belonged(Node * root, Node * node);
+
 /* The hash-function FAQ6 */
 int faq6(const char * str);
 

@@ -137,6 +137,12 @@ int namespace_destructor(Node * root) {
     }
 }
 
+int is_belonged(Node * root, Node * node) {
+    Node * potential = find_node(root, node->key);
+    if (potential == node) return 1;
+    return 0;
+}
+
 void display_node(Node * node) {
     printf("%d => ", node->key); display_constant(node->value);
 }

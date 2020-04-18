@@ -31,7 +31,8 @@ Constant * main_entry(char * input_stream) {
     /* interpreting the program in a current_namespace */
     result = interpreter(parsed, current_namespace); (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
 
-    constant_destructor(result); namespace_destructor(current_namespace);
+    constant_destructor(result);
+    namespace_destructor(current_namespace);
     return result;
 }
 
@@ -62,8 +63,12 @@ Constant * function_exec(Array ** function_code, Node * local_namespace) {
     returned_value = interpreter(function_code, local_namespace); (returned_value == NULL) ? returned_value = new_constant(NONE, NULL) : NULL;
 
     /* if value having origin, remove node from namespace by origin and free the node value wrapper (Constant *) */
-    if (returned_value->origin != NULL) free(remove_node(returned_value->origin));
-    returned_value->origin = NULL; // resetting origin for returned value
+    if (returned_value->origin != NULL) {
+        if (is_belonged(local_namespace, returned_value->origin)) {
+            free(remove_node(returned_value->origin));
+            returned_value->origin = NULL;
+        }
+    }
 
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
     namespace_destructor(local_namespace);
