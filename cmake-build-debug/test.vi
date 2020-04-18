@@ -148,16 +148,31 @@ array;
 
 A = {1, 2}; B = {3, 4};
 function append_with_return(A, B) : {
-    A[] = B;
-    return A;
+A[] = B;
+return A;
 }
 
 function append_not_return(A, B) : {
-    r = {"hello world", "this is local variale R"};
-    B[1] = r;
-    A[] = B;
+r = {"hello world", "this is local variale R"};
+B[1] = r;
+A[] = B;
 }
 
 append_with_return(A, B); A;
 C = {1, 2, 3};
 append_not_return(A[2], C); A;
+
+function t(A) : {
+    F = A;
+    return A;
+}
+
+a = {1, 2, 3};
+t(a);
+a;
+
+function get_string() : {
+    A = {1, 2, 3, 4};
+    return A;
+}
+D = get_string()[0];

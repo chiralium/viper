@@ -678,8 +678,12 @@ void * _asg(void * x, void * y) {
                 Constant * complex_value = node->value;
                 y_value = new_constant(complex_value->type_id, complex_value->value);
                 namespace_object = new_node(faq6(y_el->literal), y_value);
-                x_el->origin = namespace_object;
-                complex_value->origin = namespace_object;
+
+                /* the X value from current namespace */
+                if (is_belonged(namespace, node)) {
+                    x_el->origin = namespace_object;
+                    complex_value->origin = namespace_object;
+                } else y_value->origin = node;
             }
         } else {
             // if X variable is an simple data like string or numbers
