@@ -647,20 +647,28 @@ void * _asg(void * x, void * y) {
     if (get_from_namespace(x_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
 
     if (y_el->literal == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
-    void * origin = find_node(namespace, faq6(y_el->literal));
-    if (!is_name(y_el->literal) && origin == NULL && y_el->origin == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
 
-    if (origin || y_el->origin) {
-        (origin) ? y_el->origin = origin : NULL;
-        // that means the variable Y is already set
-        Node * previuos_value = y_el->origin;
-        constant_destructor(previuos_value->value); // destroy the previous value in namespace
+    if (y_el->origin == NULL) y_el->origin = find_node(namespace, faq6(y_el->literal));
+
+    if (!is_name(y_el->literal) && y_el->origin == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
+
+    if (y_el->origin != NULL) {
+        /* remove the simple data from complex data (a = a[0]) */
+        if (!is_simple_data(y_el->vtype_id)) {
+            Node * node = y_el->origin; Constant * complex_value = node->value;
+            /* if the X value is belonged from Y */
+            if (is_belonged(complex_value->value, x_el->origin))
+                free(remove_node(x_el->origin));
+        }
+        /* destroy the previuous value in namespace */
+        Node * previuos_value = y_el->origin; constant_destructor(previuos_value->value);
         Constant * new_value = new_constant(x_el->vtype_id, x_el->value);
         previuos_value->value = new_value;
-        if (x_el->origin != NULL) {
-            Node * node = x_el->origin;
-            Constant * complex_value =  node->value;
-            complex_value->origin = previuos_value;
+
+        /* If the X is an complex data which extracted from NameSpace */
+        if (!is_simple_data(x_el->vtype_id) && x_el->origin != NULL) {
+            Node * node = x_el->origin; Constant * complex_value = node->value;
+            complex_value->origin = previuos_value; // set new origins by Y
         }
         x_el->origin = previuos_value;
     } else {

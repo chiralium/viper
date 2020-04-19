@@ -138,6 +138,7 @@ int namespace_destructor(Node * root) {
 }
 
 int is_belonged(Node * root, Node * node) {
+    if (node == NULL) return 0;
     Node * potential = find_node(root, node->key);
     if (potential == node) return 1;
     return 0;
