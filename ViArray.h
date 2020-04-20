@@ -38,6 +38,9 @@ Constant * get_new(Constant * object);
 /* The function will be return the length of viarray */
 int get_length(Node * viarray);
 
+/* The function will copy ViArray */
+Node * copy_viarray(Node * viarray);
+
 /* The function will be validate the type of index parameter */
 void validate_index_parameter(Array ** params);
 

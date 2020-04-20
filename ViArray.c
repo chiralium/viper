@@ -109,8 +109,8 @@ Constant * get_subviarray(Constant * object, Constant * start, Constant * end) {
         while (current_node->key <= end_indx) {
             Constant * element = current_node->value;
 
-            copied_element = new_constant(element->type_id, copy_data(element->value, element->type_id));
-            if (!is_simple_data(element->type_id)) copied_element->origin = element->value; // is the element is a complex data that stored into namespace set the origin
+            if (element->type_id == VIARRAY) copied_element = new_constant(VIARRAY, copy_viarray(element->value));
+            else copied_element = new_constant(element->type_id, copy_data(element->value, element->type_id));
 
             Node * subviarray_node = new_node(index++, copied_element);
             (subviarray == NULL) ? subviarray = insert_node(subviarray, subviarray_node) : insert_node(subviarray, subviarray_node);
@@ -201,6 +201,22 @@ Constant * get_single(Constant * object, Constant * index) {
         element->origin = element_node;
     }
     return element;
+}
+
+Node * copy_viarray(Node * viarray) {
+    Node * copied_viarray = NULL;
+    while (viarray != NULL) {
+        Constant * element = viarray->value; Constant * copied_value = NULL;
+
+        if (is_simple_data(element->type_id)) copied_value = new_constant(element->type_id, copy_data(element->value, element->type_id));
+        else if (element->type_id == VIARRAY) copied_value = new_constant(VIARRAY, copy_viarray(element->value));
+        else throw_internal_error(expression_as_string);
+
+        Node * copied_node = new_node(viarray->key, copied_value);
+        (copied_viarray == NULL) ? copied_viarray = insert_node(copied_viarray, copied_node) : insert_node(copied_viarray, copied_node);
+        viarray = viarray->right;
+    }
+    return copied_viarray;
 }
 
 void validate_index_parameter(Array ** params) {

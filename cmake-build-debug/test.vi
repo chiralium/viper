@@ -178,9 +178,9 @@ return A;
 D = get_string();
 
 function t(A) : {
-    F = {"another", "pointer"};
-    F = A;
-    return A;
+F = {"another", "pointer"};
+F = A;
+return A;
 }
 
 a = {3, 4, 5}; t(a);
