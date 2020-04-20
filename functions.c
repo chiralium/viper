@@ -5,8 +5,9 @@ Node * performing_local_namespace(Array ** input_arguments, Function * function_
      * create the function object into local namesapce and set not null origin for function object,
      * cause the origin of this object is an parent namespace
      * */
-    Constant * function = new_constant(FUNCTION, function_object); function->origin = 1;
+    Constant * function = new_constant(FUNCTION, function_object);
     Node * root = new_node(faq6(function_object->name), function);
+    function->origin = root;
 
     /*
      * create the local namespace by input parameters

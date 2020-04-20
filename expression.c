@@ -139,6 +139,7 @@ int is_float_number(char * literal) {
 }
 
 int is_name(char * literal) {
+    if (literal == NULL) return 0;
     int is_name = 0;
     if (isdigit(*literal)) return 0;
     while (*literal) {

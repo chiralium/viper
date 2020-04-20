@@ -640,70 +640,6 @@ void * _equal(void * x, void * y) {
     return NULL;
 }
 
-void * _asg(void * x, void * y) {
-    /* Assign the literal of y-token with value of x-token into namespace */
-    // Y = X, return X
-    Element * x_el = x; Element * y_el = y;
-    if (get_from_namespace(x_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
-
-    if (y_el->literal == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
-
-    if (y_el->origin == NULL) y_el->origin = find_node(namespace, faq6(y_el->literal));
-
-    if (!is_name(y_el->literal) && y_el->origin == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
-
-    if (y_el->origin != NULL) {
-        /* remove the simple data from complex data (a = a[0]) */
-        if (!is_simple_data(y_el->vtype_id)) {
-            Node * node = y_el->origin; Constant * complex_value = node->value;
-            /* if the X value is belonged from Y */
-            if (is_belonged(complex_value->value, x_el->origin))
-                free(remove_node(x_el->origin));
-        }
-        /* destroy the previuous value in namespace */
-        Node * previuos_value = y_el->origin; constant_destructor(previuos_value->value);
-        Constant * new_value = new_constant(x_el->vtype_id, x_el->value);
-        previuos_value->value = new_value;
-
-        /* If the X is an complex data which extracted from NameSpace */
-        if (!is_simple_data(x_el->vtype_id) && x_el->origin != NULL) {
-            Node * node = x_el->origin; Constant * complex_value = node->value;
-            complex_value->origin = previuos_value; // set new origins by Y
-        }
-        x_el->origin = previuos_value;
-    } else {
-        // that means the variable Y is initialized
-        Node * namespace_object; Constant * y_value;
-        if (x_el->origin) {
-            Node * node = x_el->origin;
-            if (is_simple_data(x_el->vtype_id)) {
-                // if an simple data and x_el have origin that means the element is a stored in complex structure
-                void * copied_value = copy_data(x_el->value, x_el->vtype_id);
-                y_value = new_constant(x_el->vtype_id, copied_value);
-                namespace_object = new_node(faq6(y_el->literal), y_value);
-                x_el->origin = namespace_object;
-            } else {
-                Constant * complex_value = node->value;
-                y_value = new_constant(complex_value->type_id, complex_value->value);
-                namespace_object = new_node(faq6(y_el->literal), y_value);
-
-                /* the X value from current namespace */
-                if (is_belonged(namespace, node)) {
-                    x_el->origin = namespace_object;
-                    complex_value->origin = namespace_object;
-                } else y_value->origin = node;
-            }
-        } else {
-            // if X variable is an simple data like string or numbers
-            y_value = new_constant(x_el->vtype_id, x_el->value);
-            namespace_object = new_node(faq6(y_el->literal), y_value);
-            x_el->origin = namespace_object;
-        }
-        insert_node(namespace, namespace_object);
-    }
-    return x_el;
-}
-
 void * _asc(void * x, void * y) {
     /* Associate the Y token like key, X token like array */
     // y => x
@@ -768,6 +704,78 @@ void * _asc(void * x, void * y) {
     return result_el;
 }
 
+void _asg_from_pointer_to_data(Element * y, Element * x) {
+    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal)); Constant * old_value = old_namespace_object->value;
+    constant_destructor(old_value);
+
+    Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
+    old_namespace_object->value = new_value;
+}
+
+void _asg_from_data_to_data(Element * y, Element * x) {
+    Node * old_namespace_object = find_node(namespace, faq6(y->literal));
+    if (old_namespace_object != NULL) {
+        /* variable is already set */
+        Constant * old_value = old_namespace_object->value; constant_destructor(old_value);
+        Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
+        old_namespace_object->value = new_value;
+    } else {
+        /* variable initialization */
+        Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
+        Node * new_namespace_object = new_node(faq6(y->literal), new_value);
+        insert_node(namespace, new_namespace_object);
+    }
+}
+
+void _asg_from_data_to_pointer(Element * y, Element * x) {
+    Node * old_namespace_object = find_node(namespace, faq6(y->literal));
+    if (old_namespace_object != NULL) {
+        /* variable is already set */
+        Constant * old_value = old_namespace_object->value; constant_destructor(old_value);
+        Constant * new_value = new_constant(x->vtype_id, x->value);
+        old_namespace_object->value = new_value;
+
+        if (x->origin != NULL) ( (Constant *)( (Node *)x->origin )->value )->origin = old_namespace_object;
+        else x->origin = old_namespace_object;
+    } else {
+        /* variable initialization to pointer */
+        Constant * new_value = new_constant(x->vtype_id, x->value);
+        Node * new_namespace_object = new_node(faq6(y->literal), new_value);
+
+        if (x->origin != NULL) ( (Constant *)( (Node *)x->origin )->value )->origin = new_namespace_object;
+        else x->origin = new_namespace_object;
+        insert_node(namespace, new_namespace_object);
+    }
+}
+
+void _asg_from_pointer_to_pointer(Element * y, Element * x) {
+    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal)); Constant * old_value = old_namespace_object->value;
+    constant_destructor(old_value);
+    Constant * new_value = new_constant(x->vtype_id, x->value);
+    old_namespace_object->value = new_value;
+    if (x->origin != NULL) ( (Constant *)( (Node *)x->origin )->value )->origin = old_namespace_object;
+    else x->origin = old_namespace_object;
+}
+
+void * _asg(void * x, void * y) {
+    Element * x_el = x; Element * y_el = y; int y_is_exist = 0;
+    if (x_el->origin == NULL) get_from_namespace(x_el) == -1 ? throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME) : NULL;
+    if (y_el->origin == NULL) get_from_namespace(y_el);
+    if (!is_name(y_el->literal) && y_el->origin == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
+
+    if (y_el->origin == NULL && is_simple_data(x_el->vtype_id))
+        _asg_from_data_to_data(y_el, x_el);
+    else if (y_el->origin == NULL && !is_simple_data(x_el->vtype_id))
+        _asg_from_data_to_pointer(y_el, x_el);
+    else if (y_el->origin != NULL && is_simple_data(x_el->vtype_id))
+        _asg_from_pointer_to_data(y_el, x_el);
+    else if (y_el->origin != NULL && !is_simple_data(x_el->vtype_id))
+        _asg_from_pointer_to_pointer(y_el, x_el);
+
+    return x_el;
+}
+
+
 void * _tmp(void * x, void * y) {
     return NULL;
 }
@@ -794,4 +802,68 @@ int is_constant(char type_id) {
         default:
             return 0;
     }
+}
+
+void * _asg_old(void * x, void * y) {
+    /* Assign the literal of y-token with value of x-token into namespace */
+    // Y = X, return X
+    Element * x_el = x; Element * y_el = y;
+    if (get_from_namespace(x_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
+
+    if (y_el->literal == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
+
+    if (y_el->origin == NULL) y_el->origin = find_node(namespace, faq6(y_el->literal));
+
+    if (!is_name(y_el->literal) && y_el->origin == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
+
+    if (y_el->origin != NULL) {
+        /* remove the simple data from complex data (a = a[0]) */
+        if (!is_simple_data(y_el->vtype_id)) {
+            Node * node = y_el->origin; Constant * complex_value = node->value;
+            /* if the X value is belonged from Y */
+            if (is_belonged(complex_value->value, x_el->origin))
+                free(remove_node(x_el->origin));
+        }
+        /* destroy the previuous value in namespace */
+        Node * previuos_value = y_el->origin; constant_destructor(previuos_value->value);
+        Constant * new_value = new_constant(x_el->vtype_id, x_el->value);
+        previuos_value->value = new_value;
+
+        /* If the X is an complex data which extracted from NameSpace */
+        if (!is_simple_data(x_el->vtype_id) && x_el->origin != NULL) {
+            Node * node = x_el->origin; Constant * complex_value = node->value;
+            complex_value->origin = previuos_value; // set new origins by Y
+        }
+        x_el->origin = previuos_value;
+    } else {
+        // that means the variable Y is initialized
+        Node * namespace_object; Constant * y_value;
+        if (x_el->origin) {
+            Node * node = x_el->origin;
+            if (is_simple_data(x_el->vtype_id)) {
+                // if an simple data and x_el have origin that means the element is a stored in complex structure
+                void * copied_value = copy_data(x_el->value, x_el->vtype_id);
+                y_value = new_constant(x_el->vtype_id, copied_value);
+                namespace_object = new_node(faq6(y_el->literal), y_value);
+                x_el->origin = namespace_object;
+            } else {
+                Constant * complex_value = node->value;
+                y_value = new_constant(complex_value->type_id, complex_value->value);
+                namespace_object = new_node(faq6(y_el->literal), y_value);
+
+                /* the X value from current namespace */
+                if (is_belonged(namespace, node)) {
+                    x_el->origin = namespace_object;
+                    complex_value->origin = namespace_object;
+                } else y_value->origin = node;
+            }
+        } else {
+            // if X variable is an simple data like string or numbers
+            y_value = new_constant(x_el->vtype_id, x_el->value);
+            namespace_object = new_node(faq6(y_el->literal), y_value);
+            x_el->origin = namespace_object;
+        }
+        insert_node(namespace, namespace_object);
+    }
+    return x_el;
 }

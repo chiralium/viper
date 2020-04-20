@@ -88,7 +88,7 @@ typedef struct Element {
 #define ARITHMETICA_SYNTAX_EXCEPTION          "syntax error"
 #define ARITHMETICA_NOT_ITERABLE_EXCEPTION    "the object is not iterable"
 #define ARITHMETICA_OBJECT_NOT_ASSIGNABLE     "the object is not assignable"
-#define ARITHMETICA_OBJECT_NOT_HASHABLE    "the object is not hashable"
+#define ARITHMETICA_OBJECT_NOT_HASHABLE       "the object is not hashable"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -101,9 +101,21 @@ void * _less(void * x, void * y);
 void * _moreeq(void * x, void * y);
 void * _lesseq(void * x, void * y);
 void * _equal(void * x, void * y);
-void * _asg(void * x, void * y);
 void * _asc(void * x, void * y);
 void * _tmp(void * x, void * y);
+void * _asg(void * x, void * y);
+
+/* Some sort of assignments functions */
+
+    /* assignment new variable to simple data */
+void _asg_from_data_to_data(Element * y, Element * x);
+    /* assignment new varialbe to pointer */
+void _asg_from_data_to_pointer(Element * y, Element * x);
+    /* assignment pointer to simple data */
+void _asg_from_pointer_to_data(Element * y, Element * x);
+    /* assignment pointer to pointer */
+void _asg_from_pointer_to_pointer(Element * y, Element *x);
+
 
 
 /* Main entry point to the module */
@@ -172,4 +184,5 @@ int is_simple_data(char type_id);
 /* Return a true if the element has type CONSTANT */
 int is_constant(char type_id);
 
+void * _asg_old(void * x, void * y);
 #endif //VIPER_V4_ARITHMETICA_H
