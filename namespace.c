@@ -13,6 +13,7 @@ Node * new_node(int key, void * value) {
 }
 
 void * remove_node(Node * removed_node) {
+    if (removed_node == NULL) return NULL;
     void * removed_node_val = removed_node->value;
     Node * parent = removed_node->parent;
     if (removed_node->right != NULL) {
@@ -138,7 +139,7 @@ int namespace_destructor(Node * root) {
 }
 
 int is_belonged(Node * root, Node * node) {
-    if (node == NULL) return 1;
+    if (node == NULL || root == NULL) return 1;
     Node * potential = find_node(root, node->key);
     if (potential == node) return 1;
     return 0;

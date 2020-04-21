@@ -706,10 +706,39 @@ void * _asc(void * x, void * y) {
 
 void _asg_from_pointer_to_data(Element * y, Element * x) {
     Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal)); Constant * old_value = old_namespace_object->value;
+    if (!is_simple_data(old_value->type_id)) {
+        /* if the simple data of X is a part of complex data of Y */
+        if (is_belonged(old_value->value, x->origin)) {
+            free(remove_node(x->origin)); // remove the X from Y
+            x->origin = NULL; // set the NULL for origin of X
+        }
+    }
+
     constant_destructor(old_value);
 
     Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
     old_namespace_object->value = new_value;
+}
+
+void _asg_from_pointer_to_pointer(Element * y, Element * x) {
+    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal)); Constant * old_value = old_namespace_object->value;
+    if (!is_simple_data(old_value->type_id)) {
+        /* if the simple data of X is a part of complex data of Y */
+        if (is_belonged(old_value->value, x->origin) && old_value->value != NULL) {
+            free(remove_node(x->origin)); // remove the X from Y
+            x->origin = NULL; // set the NULL for origin of X
+        }
+    }
+
+    constant_destructor(old_value);
+
+    Constant * new_value = new_constant(x->vtype_id, x->value);
+    old_namespace_object->value = new_value;
+
+    int is_belonged_locally = is_belonged(namespace, x->origin);
+    if (x->origin != NULL && is_belonged_locally) ( (Constant *)( (Node *)x->origin )->value )->origin = old_namespace_object; // if the X value from current namespace & extracted from heap, set the origin for Constant that in Node from namespace (for defend the destruction)
+    else if (!is_belonged_locally) new_value->origin = x->origin; // if the X value from global namespace, or input params (functions) set the Y value origin of X value, for defened the X
+    else x->origin = old_namespace_object; // if the X value if lvalue
 }
 
 void _asg_from_data_to_data(Element * y, Element * x) {
@@ -748,18 +777,6 @@ void _asg_from_data_to_pointer(Element * y, Element * x) {
         else x->origin = new_namespace_object;
         insert_node(namespace, new_namespace_object);
     }
-}
-
-void _asg_from_pointer_to_pointer(Element * y, Element * x) {
-    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal)); Constant * old_value = old_namespace_object->value;
-    constant_destructor(old_value);
-    Constant * new_value = new_constant(x->vtype_id, x->value);
-    old_namespace_object->value = new_value;
-
-    int is_belonged_locally = is_belonged(namespace, x->origin);
-    if (x->origin != NULL && is_belonged_locally) ( (Constant *)( (Node *)x->origin )->value )->origin = old_namespace_object; // if the X value from current namespace & extracted from heap, set the origin for Constant that in Node from namespace (for defend the destruction)
-    else if (!is_belonged_locally) new_value->origin = x->origin; // if the X value from global namespace, or input params (functions) set the Y value origin of X value, for defened the X
-    else x->origin = old_namespace_object; // if the X value if lvalue
 }
 
 void * _asg(void * x, void * y) {
