@@ -27,8 +27,8 @@ Node * new_viarray(Array ** array) {
                 Node * pointer_node = new_node(index, viarray_element);
                 (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
                 if (array_element->origin != NULL) {
-                    Constant * complex_value = ( (Node *)(array_element->origin) )->value;
-                    complex_value->origin = pointer_node;
+                    ( (Constant *)( (Node *)array_element->origin )->value)->origin = pointer_node;
+                    viarray_element->origin = array_element->origin;
                 }
             }
             free(array_element);
