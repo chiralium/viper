@@ -26,13 +26,13 @@ Constant * main_entry(char * input_stream) {
     Array ** parsed = main_parsing(input_stream);
 
     /* initialization the namespace of interpreter */
-    Node * current_namespace = meta_data();
+    Node * global_namespace = meta_data();
 
-    /* interpreting the program in a globa_namespace */
-    result = interpreter(parsed, current_namespace); (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
+    /* interpreting the program in a global_namespace */
+    result = interpreter(parsed, global_namespace); (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
 
     constant_destructor(result);
-    namespace_destructor(current_namespace);
+    namespace_destructor(global_namespace);
     return result;
 }
 
