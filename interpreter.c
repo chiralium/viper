@@ -28,7 +28,7 @@ Constant * main_entry(char * input_stream) {
     /* initialization the namespace of interpreter */
     Node * current_namespace = meta_data();
 
-    /* interpreting the program in a current_namespace */
+    /* interpreting the program in a globa_namespace */
     result = interpreter(parsed, current_namespace); (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
 
     constant_destructor(result);
