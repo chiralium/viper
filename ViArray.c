@@ -25,11 +25,14 @@ Node * new_viarray(Array ** array) {
                 node = array_element->value;
                 viarray_element = new_constant(array_element->type_id, node);
                 Node * pointer_node = new_node(index, viarray_element);
-                (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
+
+                viarray_element->origin = array_element->origin;
                 if (array_element->origin != NULL) {
-                    ( (Constant *)( (Node *)array_element->origin )->value)->origin = pointer_node;
-                    viarray_element->origin = array_element->origin;
+                    Constant * value = ((Node *)(array_element->origin))->value;
+                    value->pointer = pointer_node;
                 }
+
+                (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
             }
             free(array_element);
         }
