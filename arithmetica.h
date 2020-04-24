@@ -54,7 +54,6 @@ typedef struct Constant {
     char type_id;
     void * value;
     void * origin;
-    void * pointer;
 } Constant;
 
 /* The data-structure like ExpressionToken but with extra fields */

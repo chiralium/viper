@@ -1,10 +1,10 @@
 #include "ViArray.h"
 #include "exception.h"
-#include "types.h"
 #include "fread.h"
 #include "display.h"
 
 extern char * expression_as_string;
+extern Array ** heap_table;
 
 Node * new_viarray(Array ** array) {
     Node * root = (_get_len(array) == 0) ? new_node(0, new_constant(UNDEFINED, NULL)) : NULL;
@@ -25,13 +25,6 @@ Node * new_viarray(Array ** array) {
                 node = array_element->value;
                 viarray_element = new_constant(array_element->type_id, node);
                 Node * pointer_node = new_node(index, viarray_element);
-
-                viarray_element->origin = array_element->origin;
-                if (array_element->origin != NULL) {
-                    Constant * value = ((Node *)(array_element->origin))->value;
-                    value->pointer = pointer_node;
-                }
-
                 (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
             }
             free(array_element);
@@ -40,6 +33,8 @@ Node * new_viarray(Array ** array) {
         index++;
     }
     free(array);
+    /* allocate create the address into heap_table for allocated memory */
+    heap_table = append(heap_table, VIARRAY, root);
     return root;
 }
 

@@ -98,7 +98,6 @@ Node * insert_node(Node * root, Node * node) {
                 root->right = node;
             } else insert_node(root->right, node);
         } else if (root->key == node->key) {
-            constant_destructor(root->value);
             root->value = node->value;
             free(node);
         }
@@ -131,7 +130,10 @@ int faq6(const char * str) {
 int namespace_destructor(Node * root) {
     if (root == NULL) return 0;
     else {
-        constant_destructor(root->value); // if the current node is a pointer to existed value don't free it
+        Constant * value = root->value;
+        if (is_simple_data(value->type_id)) {
+            free(value->value); free(value);
+        }
         if (root->left != NULL) namespace_destructor(root->left);
         if (root->right != NULL) namespace_destructor(root->right);
         free(root);

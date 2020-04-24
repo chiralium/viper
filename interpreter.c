@@ -4,6 +4,13 @@
 #include "functions.h"
 
 extern Array ** call_stack;
+extern Array ** heap_table;
+
+/*
+ * Entire simple data should be stored in NameSpace,
+ * entire complex data stored into heap. NameSpace just stored the pointers to this data.
+ * Heap freed by garbage_destructor.
+ */
 
 Array ** main_parsing(char * input_stream) {
     Array ** literals = recursive_descent(input_stream); free(input_stream);
@@ -33,64 +40,7 @@ Constant * main_entry(char * input_stream) {
 
     constant_destructor(result);
     namespace_destructor(global_namespace);
-    return result;
-}
-
-/* The function will be parse the function code and store it into namespace */
-void function_declaration(Function * function_object, Node * current_namespace) {
-    Array ** function_code = function_object->body;
-    /* parsing the function code */
-    Array ** tokens = lexer(function_code);  // extracting simple tokens
-    Array ** parsed_tokens = parser(tokens); // extracting complex statements
-    Array ** expression_tokens = expression_lexer(parsed_tokens); // extracting tokens from expressions (if exists)
-
-    array_destructor(function_code); array_destructor(tokens);
-
-    /* now, function object has a parsed code */
-    function_object->body = expression_tokens;
-
-    /* store the function object with parsed code into namespace by function name */
-    char * function_name = function_object->name;
-    Constant * node_value = new_constant(FUNCTION, function_object);
-    Node * function = new_node(faq6(function_name), node_value);
-    insert_node(current_namespace, function);
-}
-
-/* The main entry point of local function */
-Constant * function_exec(Array ** function_code, Node * local_namespace) {
-    Constant * returned_value;
-    composer(function_code);
-    returned_value = interpreter(function_code, local_namespace); (returned_value == NULL) ? returned_value = new_constant(NONE, NULL) : NULL;
-
-    /* if value having origin, remove node from namespace by origin and free the node value wrapper (Constant *) */
-    if (returned_value->origin != NULL) {
-        if (is_belonged(local_namespace, returned_value->origin)) {
-            free(remove_node(returned_value->origin));
-            returned_value->origin = NULL;
-        }
-    }
-
-    Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
-    namespace_destructor(local_namespace);
-    return returned_value;
-}
-
-/* The entry point of return statement */
-Constant * return_exec(char * return_expression, Node * local_namespace) {
-    call_stack = append(call_stack, STRING, alloc_string("return"));
-
-    Constant * result;
-    Array ** literals = recursive_descent(return_expression); free(return_expression);
-    Array ** tokens = lexer(literals);
-    Array ** parsed_tokens = parser(tokens);
-    Array ** expression_tokens = expression_lexer(parsed_tokens);
-
-    composer(expression_tokens);
-
-    result = interpreter(expression_tokens, local_namespace);
-    array_destructor(literals); array_destructor(tokens);
-
-    Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+    display_heap_table(heap_table);
     return result;
 }
 
@@ -137,6 +87,64 @@ Constant * calculate_expression(Array ** expression, Node * current_namespace) {
     return value;
 }
 
+/* The function will be parse the function code and store it into namespace */
+void function_declaration(Function * function_object, Node * current_namespace) {
+    Array ** function_code = function_object->body;
+    /* parsing the function code */
+    Array ** tokens = lexer(function_code);  // extracting simple tokens
+    Array ** parsed_tokens = parser(tokens); // extracting complex statements
+    Array ** expression_tokens = expression_lexer(parsed_tokens); // extracting tokens from expressions (if exists)
+
+    array_destructor(function_code); array_destructor(tokens);
+
+    /* now, function object has a parsed code */
+    function_object->body = expression_tokens;
+
+    /* store the function object with parsed code into namespace by function name */
+    char * function_name = function_object->name;
+    Constant * node_value = new_constant(FUNCTION, function_object);
+    Node * function = new_node(faq6(function_name), node_value);
+    insert_node(current_namespace, function); heap_table = append(heap_table, FUNCTION, function_object);
+}
+
+/* The main entry point of local function */
+Constant * function_exec(Array ** function_code, Node * local_namespace) {
+    Constant * returned_value;
+    composer(function_code);
+    returned_value = interpreter(function_code, local_namespace); (returned_value == NULL) ? returned_value = new_constant(NONE, NULL) : NULL;
+
+    /* if value having origin, remove node from namespace by origin and free the node value wrapper (Constant *) */
+    if (returned_value->origin != NULL) {
+        if (is_belonged(local_namespace, returned_value->origin)) {
+            free(remove_node(returned_value->origin));
+            returned_value->origin = NULL;
+        }
+    }
+
+    Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+    namespace_destructor(local_namespace);
+    return returned_value;
+}
+
+/* The entry point of return statement */
+Constant * return_exec(char * return_expression, Node * local_namespace) {
+    call_stack = append(call_stack, STRING, alloc_string("return"));
+
+    Constant * result;
+    Array ** literals = recursive_descent(return_expression); free(return_expression);
+    Array ** tokens = lexer(literals);
+    Array ** parsed_tokens = parser(tokens);
+    Array ** expression_tokens = expression_lexer(parsed_tokens);
+
+    composer(expression_tokens);
+
+    result = interpreter(expression_tokens, local_namespace);
+    array_destructor(literals); array_destructor(tokens);
+
+    Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+    return result;
+}
+
 Node * meta_data() {
     char * ver = calloc(sizeof(char), 10); strcpy(ver, "VIPER.v4");
     Constant * version = new_constant(STRING, ver);
@@ -172,3 +180,34 @@ void display_callstack(Array ** points) {
     }
 }
 
+void display_heap_table(Array ** heap_table) {
+    printf("\n*--------------------------------- HEAP ---------------------------------------* \n");
+    printf("|           TYPE             |   ADDRESS    |                META              |\n");
+    printf("*------------------------------------------------------------------------------* \n");
+    int total = 0;
+    while (*heap_table) {
+        char meta[255]= "\0"; char spaces[255] = "\0";
+        if ( (*heap_table)->type_id == VIARRAY ) {
+            Node *viarray = (*heap_table)->element;
+            sprintf(meta, "%d", viarray->key);
+            int length = strlen(meta);
+            while (length++ < 33) strcat(spaces, " ");
+            printf("| <VIARRAY>                  |");
+        } else if ( (*heap_table)->type_id == KEYPAIR ) {
+            Node *viarray = (*heap_table)->element;
+            sprintf(meta, "%d", viarray->key);
+            int length = strlen(meta);
+            while (length++ < 33) strcat(spaces, " ");
+            printf("| <KEYPAIR>                  |");
+        } else if ( (*heap_table)->type_id == FUNCTION ) {
+            Function * function = (*heap_table)->element; strcpy(meta, function->name);
+            int length = strlen(meta);
+            while (length++ < 33) strcat(spaces, " ");
+            printf("| <FUNCTION>                 |");
+        }
+        printf(" [0x%p] | %s%s|\n", (*heap_table)->element, meta, spaces);
+        heap_table++; total++;
+    }
+    printf("*------------------------------------------------------------------------------* \n");
+    printf("TOTAL: %d\n", total);
+}

@@ -1,6 +1,7 @@
 #include "run.h"
 
 Array ** call_stack;
+Array ** heap_table;
 
 void run(void) {
     // Read the source file
@@ -8,6 +9,9 @@ void run(void) {
 
     // Initialize the call stack array
     call_stack = new_array(); call_stack = append(call_stack, STRING, alloc_string("__MAIN__"));
+
+    // Initialize the heap array, that contained the addresses */
+    heap_table = new_array();
 
     // Start the program
     main_entry(input_stream);
