@@ -50,15 +50,12 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
-
-            printf("\nRUNTIME: "); display_callstack(call_stack); display_constant(result); printf("\n");
-
+            printf("RUNTIME: "); display_callstack(call_stack); display_constant(result); printf("\n");
             /* destroy the result if the is not return statement */
             if (!is_return_call(call_stack)) {
                 constant_destructor(result);
                 result = NULL;
             }
-
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_IF) {
             if_destructor(code[code_counter]->element);
