@@ -39,4 +39,7 @@ Node * meta_data();
 /* The function will return 1 if the current call is return-statement */
 int is_return_call(Array ** call_stack);
 
+/* The function does freed the allocated memory of program */
+void gargbage_destructor(Array ** heap_table);
+
 #endif //VIPER_V4_INTERPRETER_H

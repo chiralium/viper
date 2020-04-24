@@ -40,6 +40,8 @@ Constant * main_entry(char * input_stream) {
 
     constant_destructor(result);
     namespace_destructor(global_namespace);
+
+    gargbage_destructor(heap_table);
     display_heap_table(heap_table);
     return result;
 }
@@ -177,6 +179,18 @@ void display_callstack(Array ** points) {
     }
 }
 
+void gargbage_destructor(Array ** heap_table) {
+    while (*heap_table) {
+        Array * element = *heap_table;
+        if (element->type_id == FUNCTION) {
+            Function * function = element->element;
+            function_destructor(function);
+            element->type_id = FREED; element->element = NULL;
+        }
+        heap_table++;
+    }
+}
+
 void display_heap_table(Array ** heap_table) {
     printf("\n*--------------------------------- HEAP ---------------------------------------* \n");
     printf("|           TYPE             |   ADDRESS    |                META              |\n");
@@ -184,26 +198,34 @@ void display_heap_table(Array ** heap_table) {
     int total = 0;
     while (*heap_table) {
         char meta[255]= "\0"; char spaces[255] = "\0";
-        if ( (*heap_table)->type_id == VIARRAY ) {
+        if ( (*heap_table)->type_id == FREED) {
+            strcat(meta, "#FREED#");
+            int length = strlen(meta);
+            while (length++ < 33) strcat(spaces, " ");
+            printf("| #FREED#                    |");
+        } else if ( (*heap_table)->type_id == VIARRAY ) {
             Node *viarray = (*heap_table)->element;
             sprintf(meta, "%d", viarray->key);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
             printf("| <VIARRAY>                  |");
+            total++;
         } else if ( (*heap_table)->type_id == KEYPAIR ) {
             Node *viarray = (*heap_table)->element;
             sprintf(meta, "%d", viarray->key);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
             printf("| <KEYPAIR>                  |");
+            total++;
         } else if ( (*heap_table)->type_id == FUNCTION ) {
             Function * function = (*heap_table)->element; strcpy(meta, function->name);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
             printf("| <FUNCTION>                 |");
+            total++;
         }
         printf(" [0x%p] | %s%s|\n", (*heap_table)->element, meta, spaces);
-        heap_table++; total++;
+        heap_table++;
     }
     printf("*------------------------------------------------------------------------------* \n");
     printf("TOTAL: %d\n", total);
