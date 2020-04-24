@@ -192,7 +192,7 @@ void gargbage_destructor(Array ** heap_table) {
 }
 
 void display_heap_table(Array ** heap_table) {
-    printf("\n*--------------------------------- HEAP ---------------------------------------* \n");
+    printf("\n\x1b[30m*--------------------------------- HEAP ---------------------------------------* \n");
     printf("|           TYPE             |   ADDRESS    |                META              |\n");
     printf("*------------------------------------------------------------------------------* \n");
     int total = 0;
@@ -202,31 +202,31 @@ void display_heap_table(Array ** heap_table) {
             strcat(meta, "#FREED#");
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
-            printf("| #FREED#                    |");
+            printf("\x1b[32m| #FREED#                    |");
         } else if ( (*heap_table)->type_id == VIARRAY ) {
             Node *viarray = (*heap_table)->element;
             sprintf(meta, "%d", viarray->key);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
-            printf("| <VIARRAY>                  |");
+            printf("\x1b[30m|\x1b[35m <VIARRAY>                  \x1b[30m|");
             total++;
         } else if ( (*heap_table)->type_id == KEYPAIR ) {
             Node *viarray = (*heap_table)->element;
             sprintf(meta, "%d", viarray->key);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
-            printf("| <KEYPAIR>                  |");
+            printf("\x1b[30m|\x1b[33m <KEYPAIR>                  \x1b[30m|");
             total++;
         } else if ( (*heap_table)->type_id == FUNCTION ) {
             Function * function = (*heap_table)->element; strcpy(meta, function->name);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
-            printf("| <FUNCTION>                 |");
+            printf("\x1b[30m|\x1b[34m <FUNCTION>                 \x1b[30m|");
             total++;
         }
         printf(" [0x%p] | %s%s|\n", (*heap_table)->element, meta, spaces);
         heap_table++;
     }
-    printf("*------------------------------------------------------------------------------* \n");
-    printf("TOTAL: %d\n", total);
+    printf("\x1b[30m*------------------------------------------------------------------------------* \n");
+    printf("\x1b[31mTOTAL: %d\n", total);
 }
