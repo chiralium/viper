@@ -186,6 +186,10 @@ void gargbage_destructor(Array ** heap_table) {
             Function * function = element->element;
             function_destructor(function);
             element->type_id = FREED; element->element = NULL;
+        } else if (element->type_id == VIARRAY) {
+            Node * viarray = element->element;
+            namespace_destructor(viarray);
+            element->type_id = FREED; element->element = NULL;
         }
         heap_table++;
     }
@@ -210,19 +214,17 @@ void display_heap_table(Array ** heap_table) {
             while (length++ < 33) strcat(spaces, " ");
             printf("\x1b[30m|\x1b[35m <VIARRAY>                  \x1b[30m|");
             total++;
-        } else if ( (*heap_table)->type_id == KEYPAIR ) {
-            Node *viarray = (*heap_table)->element;
-            sprintf(meta, "%d", viarray->key);
-            int length = strlen(meta);
-            while (length++ < 33) strcat(spaces, " ");
-            printf("\x1b[30m|\x1b[33m <KEYPAIR>                  \x1b[30m|");
-            total++;
         } else if ( (*heap_table)->type_id == FUNCTION ) {
             Function * function = (*heap_table)->element; strcpy(meta, function->name);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
             printf("\x1b[30m|\x1b[34m <FUNCTION>                 \x1b[30m|");
             total++;
+        } else {
+            strcat(meta, "SUBDATA");
+            int length = strlen(meta);
+            while (length++ < 33) strcat(spaces, " ");
+            printf("\x1b[30m|\x1b[36m <SUBDATA>                  \x1b[30m|");
         }
         printf(" [0x%p] | %s%s|\n", (*heap_table)->element, meta, spaces);
         heap_table++;

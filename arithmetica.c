@@ -692,13 +692,13 @@ void * _asc(void * x, void * y) {
 }
 
 void _asg_from_pointer_to_data(Element * y, Element * x) {
-    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal)); Constant * old_value = old_namespace_object->value;
+    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal));
     Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
     old_namespace_object->value = new_value;
 }
 
 void _asg_from_pointer_to_pointer(Element * y, Element * x) {
-    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal)); Constant * old_value = old_namespace_object->value;
+    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal));
     if (x->origin == NULL) x->origin = old_namespace_object;
     Constant  * new_value = new_constant(x->vtype_id, x->value);
     old_namespace_object->value = new_value;

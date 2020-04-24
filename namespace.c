@@ -133,7 +133,7 @@ int namespace_destructor(Node * root) {
         Constant * value = root->value;
         if (is_simple_data(value->type_id)) {
             free(value->value); free(value);
-        }
+        } else free(value);
         if (root->left != NULL) namespace_destructor(root->left);
         if (root->right != NULL) namespace_destructor(root->right);
         free(root);

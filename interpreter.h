@@ -40,6 +40,8 @@ Node * meta_data();
 int is_return_call(Array ** call_stack);
 
 /* The function does freed the allocated memory of program */
+/* Memory will be allocated only for complex data structure.
+ * Other will be stored into namespace */
 void gargbage_destructor(Array ** heap_table);
 
 #endif //VIPER_V4_INTERPRETER_H
