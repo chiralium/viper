@@ -43,7 +43,7 @@ Constant * get_substr(Constant * object, Constant * start, Constant * end) {
     char * sub_string = calloc(end_indx - start_indx + 1, sizeof(char));
     memcpy(sub_string, string + start_indx, end_indx - start_indx);
     sub_element = new_constant(STRING, sub_string);
-    if (object->origin == NULL) free(string);
+    free(string);
     return sub_element;
 }
 
@@ -59,6 +59,6 @@ Constant * get_substr_step(Constant * object, Constant * start, Constant * end, 
         start_indx += step_val;
     }
     sub_element = new_constant(STRING, sub_string);
-    if (object->origin == NULL) free(string);
+    free(string);
     return sub_element;
 }

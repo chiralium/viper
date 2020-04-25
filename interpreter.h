@@ -32,7 +32,7 @@ Constant * return_exec(char * return_expression, Node * local_namespace);
 /* Display the callstack */
 void display_callstack(Array ** points);
 /* The function will be display the heap table */
-void display_heap_table(Array ** heap_table);
+void display_memory_table(Array ** memory_table);
 
 /* The function will be create the meta-data in namespace */
 Node * meta_data();
@@ -42,6 +42,6 @@ int is_return_call(Array ** call_stack);
 /* The function does freed the allocated memory of program */
 /* Memory will be allocated only for complex data structure.
  * Other will be stored into namespace */
-void gargbage_destructor(Array ** heap_table);
+void gargbage_destructor(Array ** memory_table);
 
 #endif //VIPER_V4_INTERPRETER_H

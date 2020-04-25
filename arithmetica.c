@@ -2,13 +2,14 @@
 #include "arithmetica.h"
 #include "functions.h"
 #include "interpreter.h"
+#include "memory.h"
 
 /* Main Viper's modules */
 #include "ViArray.h"
 #include "ViString.h"
 
 extern Array ** call_stack;
-extern Array ** heap_table;
+extern Array ** memory_table;
 
 Node * namespace;
 char * expression_as_string;
@@ -660,7 +661,7 @@ void * _asc(void * x, void * y) {
     if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if (y_el->vtype_id == INTEGER) {
         Constant * node_value = new_constant( x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id) ); node_value->origin = x_el->origin;
-        Node * result = new_node( get_int_value(y_el), node_value ); heap_table = append(heap_table, KEYPAIR, result);
+        Node * result = new_node( get_int_value(y_el), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c"));
         result_el = malloc(sizeof(Element));
         result_el->origin = NULL;
         result_el->type_id = x_el->type_id;
@@ -675,7 +676,7 @@ void * _asc(void * x, void * y) {
         // if the key is a float type value, convert it to string for get hash
         char float_in_str[EXPRESSION_MAX_LEN];
         gcvt(get_float_value(y_el), 10, float_in_str);
-        Node * result = new_node( faq6(float_in_str), node_value ); heap_table = append(heap_table, KEYPAIR, result);
+        Node * result = new_node( faq6(float_in_str), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c"));
         result_el = malloc(sizeof(Element));
         result_el->origin = NULL;
         result_el->type_id = x_el->type_id;
@@ -687,7 +688,7 @@ void * _asc(void * x, void * y) {
         element_destructor(x_el);
     } else if (y_el->vtype_id == STRING) {
         Constant * node_value = new_constant( x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id) );
-        Node * result = new_node( faq6(y_el->value), node_value ); heap_table = append(heap_table, KEYPAIR, result);
+        Node * result = new_node( faq6(y_el->value), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c"));
         result_el = malloc(sizeof(Element));
         result_el->origin = NULL;
         result_el->type_id = x_el->type_id;

@@ -2,9 +2,10 @@
 #include "expression.h"
 #include "composer.h"
 #include "functions.h"
+#include "memory.h"
 
 extern Array ** call_stack;
-extern Array ** heap_table;
+extern Array ** memory_table;
 
 /*
  * Entire simple data should be stored in NameSpace,
@@ -41,8 +42,8 @@ Constant * main_entry(char * input_stream) {
     free(result);
     namespace_destructor(global_namespace);
 
-    gargbage_destructor(heap_table);
-    display_heap_table(heap_table);
+    //gargbage_destructor(memory_table);
+    display_memory_table(memory_table);
     return result;
 }
 
@@ -52,7 +53,7 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
-            printf("RUNTIME: "); display_callstack(call_stack); display_constant(result); printf("\n");
+            printf("RUNTIME: "); display_callstack(call_stack); printf(">>> "); display_constant(result); printf("\n");
             /* destroy the result if the is not return statement */
             if (!is_return_call(call_stack)) {
                 (is_simple_data(result->type_id)) ?
@@ -106,7 +107,7 @@ void function_declaration(Function * function_object, Node * current_namespace) 
     char * function_name = function_object->name;
     Constant * node_value = new_constant(FUNCTION, function_object);
     Node * function = new_node(faq6(function_name), node_value);
-    insert_node(current_namespace, function); heap_table = append(heap_table, FUNCTION, function_object);
+    insert_node(current_namespace, function); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(FUNCTION, function_object, "interpreter.c"));
 }
 
 /* The main entry point of local function */
@@ -180,56 +181,4 @@ void display_callstack(Array ** points) {
         printf("-> %s ", (*points)->element);
         points++;
     }
-}
-
-void gargbage_destructor(Array ** heap_table) {
-    while (*heap_table) {
-        Array * element = *heap_table;
-        if (element->type_id == FUNCTION) {
-            Function * function = element->element;
-            function_destructor(function);
-            element->element = NULL;
-        } else if (element->type_id == VIARRAY) {
-            Node * viarray = element->element;
-            namespace_destructor(viarray);
-            element->element = NULL;
-        }
-        heap_table++;
-    }
-}
-
-void display_heap_table(Array ** heap_table) {
-    printf("*--------------------------------- HEAP ---------------------------------------* \n");
-    printf("|           TYPE             |   ADDRESS    |                META              |\n");
-    printf("*------------------------------------------------------------------------------* \n");
-    int total = 0;
-    while (*heap_table) {
-        char meta[255]= "\0"; char spaces[255] = "\0";
-         if ( (*heap_table)->type_id == VIARRAY ) {
-            Node *viarray = (*heap_table)->element;
-            if (viarray != NULL) sprintf(meta, "%d", viarray->key);
-            else strcat(meta, "#FREED#");
-            int length = strlen(meta);
-            while (length++ < 33) strcat(spaces, " ");
-            printf("| <VIARRAY>                  |");
-            total++;
-        } else if ( (*heap_table)->type_id == FUNCTION ) {
-            Function * function = (*heap_table)->element;
-            if (function != NULL) strcpy(meta, function->name);
-            else strcat(meta, "#FREED#");
-            int length = strlen(meta);
-            while (length++ < 33) strcat(spaces, " ");
-            printf("| <FUNCTION>                 |");
-            total++;
-        } else {
-            strcat(meta, "SUBDATA");
-            int length = strlen(meta);
-            while (length++ < 33) strcat(spaces, " ");
-            printf("| <SUBDATA>                  |");
-        }
-        printf(" [0x%p] | %s%s|\n", (*heap_table)->element, meta, spaces);
-        heap_table++;
-    }
-    printf("*------------------------------------------------------------------------------* \n");
-    printf("TOTAL: %d\n", total);
 }

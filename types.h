@@ -33,6 +33,6 @@
 #define ARRAY_EL             'e'
 #define ELEMENT               6
 #define CONSTANT              7
-#define FREED                13
+#define MEMORY_ELEMENT       13
 
 #endif //VIPER_V4_TYPES_H

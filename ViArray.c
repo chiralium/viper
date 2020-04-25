@@ -2,9 +2,10 @@
 #include "exception.h"
 #include "fread.h"
 #include "display.h"
+#include "memory.h"
 
 extern char * expression_as_string;
-extern Array ** heap_table;
+extern Array ** memory_table;
 
 Node * new_viarray(Array ** array) {
     Node * root = (_get_len(array) == 0) ? new_node(0, new_constant(UNDEFINED, NULL)) : NULL;
@@ -33,8 +34,8 @@ Node * new_viarray(Array ** array) {
         index++;
     }
     free(array);
-    /* allocate create the address into heap_table for allocated memory */
-    heap_table = append(heap_table, VIARRAY, root);
+    /* allocate create the address into memory_table for allocated memory */
+    memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(VIARRAY, root, "ViArray.c"));
     return root;
 }
 
@@ -189,6 +190,7 @@ Node * copy_viarray(Node * viarray) {
         (copied_viarray == NULL) ? copied_viarray = insert_node(copied_viarray, copied_node) : insert_node(copied_viarray, copied_node);
         viarray = viarray->right;
     }
+    (copied_viarray != NULL) ? memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(VIARRAY, copied_viarray, "ViArray.c")) : NULL;
     return copied_viarray;
 }
 
