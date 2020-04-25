@@ -437,7 +437,7 @@ int get_from_namespace(void * elexpr) {
     } else {
         el->value = value->value;
         el->vtype_id = value->type_id;
-        el->origin = (value->origin != NULL) ? value->origin : node;
+        el->origin = node;
     }
 }
 
@@ -692,14 +692,16 @@ void * _asc(void * x, void * y) {
 }
 
 void _asg_from_pointer_to_data(Element * y, Element * x) {
-    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal));
+    Node * old_namespace_object = y->origin;
     Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
+    free(old_namespace_object->value); y->origin = NULL;
     old_namespace_object->value = new_value;
 }
 
 void _asg_from_pointer_to_pointer(Element * y, Element * x) {
-    Node * old_namespace_object = (!is_name(y->literal)) ? y->origin : find_node(namespace, faq6(y->literal));
+    Node * old_namespace_object = y->origin;
     if (x->origin == NULL) x->origin = old_namespace_object;
+    free(old_namespace_object->value); y->origin = NULL;
     Constant  * new_value = new_constant(x->vtype_id, x->value);
     old_namespace_object->value = new_value;
 }

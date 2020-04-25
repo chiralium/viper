@@ -38,7 +38,7 @@ Constant * main_entry(char * input_stream) {
     /* interpreting the program in a global_namespace */
     result = interpreter(parsed, global_namespace); (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
 
-    constant_destructor(result);
+    free(result);
     namespace_destructor(global_namespace);
 
     gargbage_destructor(heap_table);
@@ -55,7 +55,7 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             printf("RUNTIME: "); display_callstack(call_stack); display_constant(result); printf("\n");
             /* destroy the result if the is not return statement */
             if (!is_return_call(call_stack)) {
-                constant_destructor(result);
+                free(result);
                 result = NULL;
             }
             free(code[code_counter]);
@@ -196,7 +196,7 @@ void gargbage_destructor(Array ** heap_table) {
 }
 
 void display_heap_table(Array ** heap_table) {
-    printf("\n\x1b[30m*--------------------------------- HEAP ---------------------------------------* \n");
+    printf("*--------------------------------- HEAP ---------------------------------------* \n");
     printf("|           TYPE             |   ADDRESS    |                META              |\n");
     printf("*------------------------------------------------------------------------------* \n");
     int total = 0;
@@ -206,29 +206,29 @@ void display_heap_table(Array ** heap_table) {
             strcat(meta, "#FREED#");
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
-            printf("\x1b[32m| #FREED#                    |");
+            printf("| #FREED#                    |");
         } else if ( (*heap_table)->type_id == VIARRAY ) {
             Node *viarray = (*heap_table)->element;
             sprintf(meta, "%d", viarray->key);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
-            printf("\x1b[30m|\x1b[35m <VIARRAY>                  \x1b[30m|");
+            printf("| <VIARRAY>                  |");
             total++;
         } else if ( (*heap_table)->type_id == FUNCTION ) {
             Function * function = (*heap_table)->element; strcpy(meta, function->name);
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
-            printf("\x1b[30m|\x1b[34m <FUNCTION>                 \x1b[30m|");
+            printf("| <FUNCTION>                 |");
             total++;
         } else {
             strcat(meta, "SUBDATA");
             int length = strlen(meta);
             while (length++ < 33) strcat(spaces, " ");
-            printf("\x1b[30m|\x1b[36m <SUBDATA>                  \x1b[30m|");
+            printf("| <SUBDATA>                  |");
         }
         printf(" [0x%p] | %s%s|\n", (*heap_table)->element, meta, spaces);
         heap_table++;
     }
-    printf("\x1b[30m*------------------------------------------------------------------------------* \n");
-    printf("\x1b[31mTOTAL: %d\n", total);
+    printf("*------------------------------------------------------------------------------* \n");
+    printf("TOTAL: %d\n", total);
 }
