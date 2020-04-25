@@ -55,6 +55,9 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             printf("RUNTIME: "); display_callstack(call_stack); display_constant(result); printf("\n");
             /* destroy the result if the is not return statement */
             if (!is_return_call(call_stack)) {
+                (is_simple_data(result->type_id)) ?
+                    free(result->value) :
+                    NULL;
                 free(result);
                 result = NULL;
             }

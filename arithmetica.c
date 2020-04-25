@@ -123,7 +123,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
                 Index * index = elexpr->value;
                 Constant * result = index_precalc(index);
                 elexpr->vtype_id = result->type_id;
-                elexpr->value = result->value; //copy_data(result->value, result->type_id);
+                elexpr->value = copy_data(result->value, result->type_id);
                 elexpr->origin = result->origin;
                 free(result);
             }
@@ -155,10 +155,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
 
     if (get_from_namespace(result_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
 
-    Constant * value = malloc(sizeof(Constant));
-    value->type_id = result_el->vtype_id;
-    value->value = result_el->value;
-    value->origin = result_el->origin;
+    Constant * value = new_constant(result_el->vtype_id, result_el->value);
 
     free(result_el->literal); free(result_el);
 
@@ -457,6 +454,7 @@ void * _add(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_el) + get_int_value(x_el);
@@ -469,6 +467,7 @@ void * _add(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else if (y_el->vtype_id == STRING) {
         if (x_el->vtype_id != STRING) throw_typecasting_exception(expression_as_string,  ARITHMETICA_STRING_CONCATE_EXCEPTION);
@@ -485,6 +484,7 @@ void * _add(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return result_el;
@@ -507,6 +507,7 @@ void * _sub(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_el) - get_int_value(x_el);
@@ -519,6 +520,7 @@ void * _sub(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return result_el;
@@ -540,6 +542,7 @@ void * _mul(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_el) * get_int_value(x_el);
@@ -551,6 +554,7 @@ void * _mul(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return result_el;
@@ -571,6 +575,7 @@ void * _div(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = get_int_value(y_el) / get_int_value(x_el);
@@ -582,6 +587,7 @@ void * _div(void * x, void * y) {
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return result_el;
@@ -602,6 +608,7 @@ void * _pow(void * x, void * y){
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else if (y_el->vtype_id == INTEGER) {
         int * result = malloc(sizeof(int)); *result = pow(get_int_value(y_el), get_int_value(x_el));
@@ -613,6 +620,7 @@ void * _pow(void * x, void * y){
         if (x_el->literal != NULL) result_el->literal = alloc_string(x_el->literal);
         else result_el->literal = NULL;
 
+        y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
     } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
     return result_el;
@@ -692,15 +700,17 @@ void * _asc(void * x, void * y) {
 }
 
 void _asg_from_pointer_to_data(Element * y, Element * x) {
-    Node * old_namespace_object = y->origin;
+    Node * old_namespace_object = y->origin; Constant * old_value = old_namespace_object->value;
     Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
+    (is_simple_data(old_value->type_id)) ? free(old_value->value) : NULL;
     free(old_namespace_object->value); y->origin = NULL;
     old_namespace_object->value = new_value;
 }
 
 void _asg_from_pointer_to_pointer(Element * y, Element * x) {
-    Node * old_namespace_object = y->origin;
+    Node * old_namespace_object = y->origin; Constant * old_value = old_namespace_object->value;
     if (x->origin == NULL) x->origin = old_namespace_object;
+    (is_simple_data(old_value->type_id)) ? free(old_value->value) : NULL;
     free(old_namespace_object->value); y->origin = NULL;
     Constant  * new_value = new_constant(x->vtype_id, x->value);
     old_namespace_object->value = new_value;
