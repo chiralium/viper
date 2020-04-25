@@ -25,9 +25,9 @@ void gargbage_destructor(Array ** memory_table) {
 }
 
 void display_memory_table(Array ** memory_table) {
-    printf("*------------------------------------- MEM. ---------------------------------------* \n");
-    printf("|       TYPE       |   ADDRESS    |                META               |    OWNER   |\n");
-    printf("*----------------------------------------------------------------------------------* \n");
+    printf("*------------------------------------- MEM. -----------------------------------------* \n");
+    printf("|       TYPE       |   ADDRESS    |                META               |     OWNER    |\n");
+    printf("*------------------------------------------------------------------------------------* \n");
     int total = 0; int total_freed = 0;
     while (*memory_table) {
         MemoryElement * memel = (*memory_table)->element;
@@ -70,6 +70,6 @@ void display_memory_table(Array ** memory_table) {
         printf(" [0x%p] | %s%s|%s%s|\n", memel->address, meta, spaces, owner, owner_spaces);
         memory_table++;
     }
-    printf("*---------------------------------------------------------------------------------------* \n");
+    printf("*------------------------------------------------------------------------------------* \n");
     printf("TOTAL: %d, FREED: %d", total, total_freed);
 }
