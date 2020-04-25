@@ -1,8 +1,11 @@
 #include "expression.h"
 #include "arithmetica.h"
 #include "functions.h"
-#include "ViArray.h"
 #include "interpreter.h"
+
+/* Main Viper's modules */
+#include "ViArray.h"
+#include "ViString.h"
 
 extern Array ** call_stack;
 extern Array ** heap_table;
@@ -87,9 +90,8 @@ Constant * index_precalc(Index * index) {
         calculated_object->type_id != VIARRAY &&
         calculated_object->type_id != KEYPAIR) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
 
-    void * result = get_by_index(calculated_object, calculated_index_parameters);
-    array_destructor(calculated_index_parameters);
-    free(index);
+    void * result = (calculated_object->type_id == STRING) ? get_char_by_index(calculated_object, calculated_index_parameters) : get_by_index(calculated_object, calculated_index_parameters);
+    array_destructor(calculated_index_parameters); free(index);
     return result;
 }
 

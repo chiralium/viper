@@ -80,17 +80,6 @@ Constant * get_subviarray_step(Constant * object, Constant * start, Constant * e
             start_indx += step_val; current_node = find_node(viarray, start_indx);
         }
         sub_element = new_constant(VIARRAY, subviarray);
-    } else if (object->type_id == STRING) {
-        char * string = object->value;
-        if (start_indx >= strlen(string) || end_indx >= strlen(string)) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
-        char * sub_string = calloc( ( (end_indx - start_indx) / step_val ) + 2, sizeof(char));
-        int index = 0;
-        while (start_indx <= end_indx) {
-            sub_string[index++] = string[start_indx];
-            start_indx += step_val;
-        }
-        sub_element = new_constant(STRING, sub_string);
-        if (object->origin == NULL) free(string);
     }
     return sub_element;
 }
@@ -116,13 +105,6 @@ Constant * get_subviarray(Constant * object, Constant * start, Constant * end) {
             else throw_internal_error(expression_as_string);
         }
         sub_element = new_constant(VIARRAY, subviarray);
-    } else if (object->type_id == STRING) {
-        char * string = object->value;
-        if (start_indx >= strlen(string) || end_indx >= strlen(string)) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
-        char * sub_string = calloc(end_indx - start_indx + 1, sizeof(char));
-        memcpy(sub_string, string + start_indx, end_indx - start_indx);
-        sub_element = new_constant(STRING, sub_string);
-        if (object->origin == NULL) free(string);
     }
     return sub_element;
 }
@@ -173,13 +155,6 @@ Constant * get_single(Constant * object, Constant * index) {
         array_element = element_node->value;
         element = new_constant(array_element->type_id, array_element->value);
         element->origin = element_node;
-    } else if (object->type_id == STRING) {
-        int index_value = *(int *)(index->value);
-        char * string = object->value;
-        if (strlen(string) <= index_value) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
-        char stack_tmp[2] = "\0"; stack_tmp[0] = string[index_value];
-        element = new_constant(STRING, alloc_string(stack_tmp));
-        if (object->origin == NULL) free(string);
     } else if (object->type_id == KEYPAIR) {
         int index_value;
         if (index->type_id == INTEGER) index_value = *(int *)(index->value);
