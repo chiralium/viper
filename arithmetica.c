@@ -778,9 +778,9 @@ int is_simple_data(char type_id) {
     switch (type_id) {
         case INTEGER:
         case FLOAT:
+        case STRING:
             return 1;
         case VIARRAY:
-        case STRING:
             return 0;
         default:
             return 0;
