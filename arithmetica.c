@@ -91,7 +91,8 @@ Constant * index_precalc(Index * index) {
         calculated_object->type_id != VIARRAY &&
         calculated_object->type_id != KEYPAIR) throw_arithmetical_exception(expression_as_string, ARITHMETICA_NOT_ITERABLE_EXCEPTION);
 
-    void * result = (calculated_object->type_id == STRING) ? get_char_by_index(calculated_object, calculated_index_parameters) : get_by_index(calculated_object, calculated_index_parameters);
+    void * result = (calculated_object->type_id == STRING) ? get_char_by_index(calculated_object, calculated_index_parameters)
+                                                           : get_by_index(calculated_object, calculated_index_parameters);
     array_destructor(calculated_index_parameters); free(index);
     return result;
 }
@@ -661,7 +662,7 @@ void * _asc(void * x, void * y) {
     if (get_from_namespace(x_el) == -1 || get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
     if (y_el->vtype_id == INTEGER) {
         Constant * node_value = new_constant( x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id) ); node_value->origin = x_el->origin;
-        Node * result = new_node( get_int_value(y_el), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c"));
+        Node * result = new_node( get_int_value(y_el), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c/_asc"));
         result_el = malloc(sizeof(Element));
         result_el->origin = NULL;
         result_el->type_id = x_el->type_id;
@@ -676,7 +677,7 @@ void * _asc(void * x, void * y) {
         // if the key is a float type value, convert it to string for get hash
         char float_in_str[EXPRESSION_MAX_LEN];
         gcvt(get_float_value(y_el), 10, float_in_str);
-        Node * result = new_node( faq6(float_in_str), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c"));
+        Node * result = new_node( faq6(float_in_str), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c/_asc"));
         result_el = malloc(sizeof(Element));
         result_el->origin = NULL;
         result_el->type_id = x_el->type_id;
@@ -688,7 +689,7 @@ void * _asc(void * x, void * y) {
         element_destructor(x_el);
     } else if (y_el->vtype_id == STRING) {
         Constant * node_value = new_constant( x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id) );
-        Node * result = new_node( faq6(y_el->value), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c"));
+        Node * result = new_node( faq6(y_el->value), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c/_asc"));
         result_el = malloc(sizeof(Element));
         result_el->origin = NULL;
         result_el->type_id = x_el->type_id;
@@ -777,9 +778,9 @@ int is_simple_data(char type_id) {
     switch (type_id) {
         case INTEGER:
         case FLOAT:
-        case STRING:
             return 1;
         case VIARRAY:
+        case STRING:
             return 0;
         default:
             return 0;

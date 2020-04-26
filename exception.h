@@ -9,13 +9,13 @@
 #ifndef VIPER_V4_EXCEPTION_H
 #define VIPER_V4_EXCEPTION_H
 
-#define EXCEPTION_CODE_STRUCTURE_ERROR "-> StructureError: at line %d (%s)\n"
-#define EXCEPTION_STATEMENT_ERROR      "-> StatementError: at line `%s` (%s)\n"
-#define EXCEPTION_ARITHMETICAL_ERROR   "-> ArithmeticalError: at line `%s` (%s)\n"
-#define EXCEPTION_TYPECASTING_ERROR    "-> TypeError: at line `%s` (%s)\n"
-#define EXCEPTION_FUNCTION_CALL_ERROR  "-> FunctionCallError: at line `%s` (%s)\n"
-#define EXCEPTION_INTERNAL_ERROR       "-> SystemError: at line `%s`"
-#define EXCEPTION_COMPOSER_ERROR       "-> ComposerError: at line `%s` (%s)\n"
+#define EXCEPTION_CODE_STRUCTURE_ERROR ":: StructureError: at line %d (%s)\n"
+#define EXCEPTION_STATEMENT_ERROR      ":: StatementError: at line `%s` (%s)\n"
+#define EXCEPTION_ARITHMETICAL_ERROR   ":: ArithmeticalError: at line `%s` (%s)\n"
+#define EXCEPTION_TYPECASTING_ERROR    ":: TypeError: at line `%s` (%s)\n"
+#define EXCEPTION_FUNCTION_CALL_ERROR  ":: FunctionCallError: at line `%s` (%s)\n"
+#define EXCEPTION_INTERNAL_ERROR       ":: SystemError: at line `%s`"
+#define EXCEPTION_COMPOSER_ERROR       ":: ComposerError: at line `%s` (%s)\n"
 
 /* Something gonna be really wrong. What is happening? */
 void throw_internal_error(char * broken_line);
