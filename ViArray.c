@@ -35,7 +35,7 @@ Node * new_viarray(Array ** array) {
     }
     free(array);
     /* allocate create the address into memory_table for allocated memory */
-    memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(VIARRAY, root, "ViArray.c"));
+    memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(VIARRAY, root, "ViArray.c/new_viarray"));
     return root;
 }
 
@@ -190,7 +190,7 @@ Node * copy_viarray(Node * viarray) {
         (copied_viarray == NULL) ? copied_viarray = insert_node(copied_viarray, copied_node) : insert_node(copied_viarray, copied_node);
         viarray = viarray->right;
     }
-    (copied_viarray != NULL) ? memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(VIARRAY, copied_viarray, "ViArray.c")) : NULL;
+    (copied_viarray != NULL) ? memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(VIARRAY, copied_viarray, "ViArray.c/copy_viarray")) : NULL;
     return copied_viarray;
 }
 

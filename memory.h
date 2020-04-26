@@ -10,9 +10,12 @@
 
 /* Memory table element */
 typedef struct MemoryElement {
-    char type_id;
     void * address;
+    char type_id;
+    char * type;
     char * owner;
+    char * meta;
+    int is_freed;
 } MemoryElement;
 
 /* Create new memory element */

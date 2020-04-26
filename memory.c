@@ -2,74 +2,71 @@
 
 MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
     MemoryElement * memel = malloc(sizeof(MemoryElement));
+    if (type_id == VIARRAY) {
+        Node * viarray = address;
+        char meta[255]; sprintf(meta, "%d", viarray->key);
+        memel->meta = alloc_string(meta);
+        memel->type = alloc_string("<viarray>");
+    } else if (type_id == FUNCTION) {
+        Function *function = address;
+        char meta[255];
+        strcpy(meta, function->name);
+        memel->meta = alloc_string(meta);
+        memel->type = alloc_string("<function>");
+    } else if (type_id == KEYPAIR) {
+        Node *keypair = address;
+        char meta[255]; sprintf(meta, "%d", keypair->key);
+        memel->meta = alloc_string(meta);
+        memel->type = alloc_string("<keypair>");
+    } else {
+        memel->meta = alloc_string("<subdata>");
+        memel->type = alloc_string("<subdata>");
+    }
     memel->type_id = type_id;
-    memel->address = address;
     memel->owner = owner;
+    memel->address = address;
+    memel->is_freed = 0;
     return  memel;
 }
 
 void gargbage_destructor(Array ** memory_table) {
     while (*memory_table) {
-        Array * element = *memory_table;
-        if (element->type_id == FUNCTION) {
-            Function * function = element->element;
+        Array * element = *memory_table; MemoryElement * memel = element->element;
+        if (memel->type_id == FUNCTION) {
+            Function * function = memel->address;
             function_destructor(function);
-            element->element = NULL;
-        } else if (element->type_id == VIARRAY) {
-            Node * viarray = element->element;
+            memel->is_freed = 1;
+        } else if (memel->type_id == VIARRAY) {
+            Node * viarray = memel->address;
             namespace_destructor(viarray);
-            element->element = NULL;
+            memel->is_freed = 1;
         }
         memory_table++;
     }
 }
 
 void display_memory_table(Array ** memory_table) {
-    printf("*------------------------------------- MEM. -----------------------------------------* \n");
-    printf("|       TYPE       |   ADDRESS    |                META               |     OWNER    |\n");
-    printf("*------------------------------------------------------------------------------------* \n");
-    int total = 0; int total_freed = 0;
-    while (*memory_table) {
-        MemoryElement * memel = (*memory_table)->element;
-        char meta[255] = "\0"; char spaces[255] = "\0";
-        char owner[255] = "\0"; char owner_spaces[255] = "\0";
-        if ( memel->type_id == VIARRAY ) {
-            Node *viarray = memel->address;
-            if (viarray != NULL) sprintf(meta, "%d", viarray->key);
-            else {
-                strcat(meta, "#FREED#");
-                total_freed++;
-            }
-            strcpy(owner, memel->owner);
-            int length = strlen(meta); int owner_length = strlen(owner);
-            while (owner_length++ < 15) strcat(owner_spaces, " ");
-            while (length++ < 33) strcat(spaces, " ");
-            printf("| <VIARRAY>        |");
-            total++;
-        } else if ( memel->type_id == FUNCTION ) {
-            Function * function = memel->address;
-            if (function != NULL) strcpy(meta, function->name);
-            else {
-                strcat(meta, "#FREED#");
-                total_freed++;
-            }
-            strcpy(owner, memel->owner);
-            int length = strlen(meta); int owner_length = strlen(owner);
-            while (owner_length++ < 15) strcat(owner_spaces, " ");
-            while (length++ < 33) strcat(spaces, " ");
-            printf("| <FUNCTION>       |");
-            total++;
-        } else {
-            strcat(meta, "SUBDATA");
-            strcpy(owner, memel->owner);
-            int length = strlen(meta); int owner_length = strlen(owner);
-            while (owner_length++ < 15) strcat(owner_spaces, " ");
-            while (length++ < 33) strcat(spaces, " ");
-            printf("| <SUBDATA>        |");
-        }
-        printf(" [0x%p] | %s%s|%s%s|\n", memel->address, meta, spaces, owner, owner_spaces);
-        memory_table++;
+    printf("*---------------------------------------------------- MEM. ----------------------------------------------------* \n");
+    printf("|       TYPE       |   ADDRESS    |               META               |                OWNER             | free |\n");
+    printf("*--------------------------------------------------------------------------------------------------------------* \n");
+    int total = 0;
+    int counter = 0;
+    while (memory_table[counter]) {
+        MemoryElement * memel = memory_table[counter]->element;
+        char spaces[255] = "\0"; int length = strlen(memel->type); while (length++ < 17) strcat(spaces, " ");
+        printf("| %s%s|", memel->type, spaces);
+
+        printf(" [0x%p] |", memel->address);
+
+        *spaces = '\0'; length = strlen(memel->meta); while (length++ < 33) strcat(spaces, " ");
+        printf(" %s%s|", memel->meta, spaces);
+
+        *spaces = '\0'; length = strlen(memel->owner); while (length++ < 33) strcat(spaces, " ");
+        printf(" %s%s|", memel->owner, spaces);
+
+        printf((memel->is_freed) ? " yes  |" : "  no  |");
+        printf("\n");
+        counter++;
     }
-    printf("*------------------------------------------------------------------------------------* \n");
-    printf("TOTAL: %d, FREED: %d", total, total_freed);
+    printf("*--------------------------------------------------------------------------------------------------------------* \n");
 }
