@@ -88,25 +88,24 @@ Constant * get_subviarray_step(Constant * object, Constant * start, Constant * e
 Constant * get_subviarray(Constant * object, Constant * start, Constant * end) {
     Constant * sub_element;
     int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value);
-    if (object->type_id == VIARRAY) {
-        Node * viarray = object->value; Node * subviarray = NULL;
-        Node * start_node = find_node(viarray, start_indx); Node * end_node = find_node(viarray, end_indx);
-        if (start_node == NULL || end_node == NULL) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
+    Node * viarray = object->value; Node * subviarray = NULL;
+    Node * start_node = find_node(viarray, start_indx); Node * end_node = find_node(viarray, end_indx);
+    if (start_node == NULL || end_node == NULL) throw_arithmetical_exception(expression_as_string, VIARRAY_RANGE_EXCEPTION);
 
-        Node * current_node = start_node; int index = 0; Constant * copied_element;
-        while (current_node->key <= end_indx) {
-            Constant * element = current_node->value;
+    Node * current_node = start_node; int index = 0; Constant * copied_element;
+    while (current_node->key <= end_indx) {
+        Constant * element = current_node->value;
 
-            if (element->type_id == VIARRAY) copied_element = new_constant(VIARRAY, copy_viarray(element->value));
-            else copied_element = new_constant(element->type_id, copy_data(element->value, element->type_id));
+        if (element->type_id == VIARRAY) copied_element = new_constant(VIARRAY, copy_viarray(element->value));
+        else copied_element = new_constant(element->type_id, copy_data(element->value, element->type_id));
 
-            Node * subviarray_node = new_node(index++, copied_element);
-            (subviarray == NULL) ? subviarray = insert_node(subviarray, subviarray_node) : insert_node(subviarray, subviarray_node);
-            if (current_node->right != NULL) current_node = current_node->right;
-            else throw_internal_error(expression_as_string);
-        }
-        sub_element = new_constant(VIARRAY, subviarray);
+        Node * subviarray_node = new_node(index++, copied_element);
+        (subviarray == NULL) ? subviarray = insert_node(subviarray, subviarray_node) : insert_node(subviarray, subviarray_node);
+        if (current_node->right != NULL) current_node = current_node->right;
+        else throw_internal_error(expression_as_string);
     }
+    sub_element = new_constant(VIARRAY, subviarray);
+    memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(VIARRAY, subviarray, "ViArray.c/get_subviarray"));
     return sub_element;
 }
 
@@ -211,13 +210,13 @@ void display_viarray(Node * root) {
     if (root != NULL) {
         Constant * array_element = root->value;
         if (array_element->type_id == VIARRAY) {
-            printf("$%d => ", root->key);
-            printf("[");
+            printf("[%d] => ", root->key);
+            printf("{");
             display_viarray(array_element->value);
-            printf("], ");
+            printf("}, ");
         }
         else {
-            printf("$%d => ", root->key);
+            printf("[%d] => ", root->key);
             display_constant(array_element);
             printf(", ");
         }
