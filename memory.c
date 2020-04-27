@@ -10,7 +10,7 @@ MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
         memel->type = alloc_string("<viarray>");
     } else if (type_id == FUNCTION) {
         Function *function = address;
-        char meta[255]; char signature[255]; sprintf(signature, ", sg. %d", get_function_signature(function->arg_list));
+        char meta[255]; char signature[255]; sprintf(signature, ", [%d]", get_function_signature(function->arg_list));
         strcpy(meta, function->name); strcat(meta, signature);
         memel->meta = alloc_string(meta);
         memel->type = alloc_string("<function>");

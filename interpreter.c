@@ -90,6 +90,7 @@ Constant * calculate_expression(Array ** expression, Node * current_namespace) {
     return value;
 }
 
+// TODO: declaration the functions through a container in which overloaded functions are stored
 /* The function will be parse the function code and store it into namespace */
 void function_declaration(Function * function_object, Node * current_namespace) {
     Array ** function_code = function_object->body;
