@@ -15,5 +15,5 @@ void run(void) {
 
     // Start the program
     main_entry(input_stream);
-    array_destructor(call_stack);
+    array_destructor(call_stack); memory_table_destructor(memory_table);
 }

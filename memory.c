@@ -29,7 +29,7 @@ MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
     return  memel;
 }
 
-void gargbage_destructor(Array ** memory_table) {
+void garbage_destructor(Array ** memory_table) {
     while (*memory_table) {
         Array * element = *memory_table; MemoryElement * memel = element->element;
         if (memel->type_id == FUNCTION) {
@@ -49,7 +49,6 @@ void display_memory_table(Array ** memory_table) {
     printf("*---------------------------------------------------- MEM. ----------------------------------------------------* \n");
     printf("|       TYPE       |   ADDRESS    |               META               |                OWNER             | free |\n");
     printf("*--------------------------------------------------------------------------------------------------------------* \n");
-    int total = 0;
     int counter = 0;
     while (memory_table[counter]) {
         MemoryElement * memel = memory_table[counter]->element;
@@ -69,4 +68,15 @@ void display_memory_table(Array ** memory_table) {
         counter++;
     }
     printf("*--------------------------------------------------------------------------------------------------------------* \n");
+}
+
+void memory_table_destructor(Array ** memory_table) {
+    int counter = 0;
+    while (memory_table[counter]) {
+        MemoryElement * memel = memory_table[counter]->element;
+        free(memel->type); free(memel->meta); free(memel);
+        free(memory_table[counter]);
+        counter++;
+    }
+    free(memory_table);
 }

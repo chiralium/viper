@@ -27,7 +27,6 @@ void display_memory_table(Array ** memory_table);
 /* Destroy the all allocated data */
 void garbage_destructor(Array ** memory_table);
 
-
 /* Memory element destructor */
-void memory_elemeny_destructor(MemoryElement * memel);
+void memory_table_destructor(Array ** memory_table);
 #endif //VIPER_V4_MEMORY_H

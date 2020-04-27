@@ -42,7 +42,7 @@ Constant * main_entry(char * input_stream) {
     free(result);
     namespace_destructor(global_namespace);
 
-    gargbage_destructor(memory_table);
+    garbage_destructor(memory_table);
     display_memory_table(memory_table);
     return result;
 }
