@@ -1,3 +1,11 @@
-function foo(x, y, z, x) : {
+function foo(x) : {
   return x;
 }
+
+"first function:"; foo(pi);
+
+function foo(y) : {
+  return y * y;
+}
+
+"second function:"; foo(pi);

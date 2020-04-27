@@ -102,12 +102,30 @@ void function_declaration(Function * function_object, Node * current_namespace) 
 
     /* now, function object has a parsed code */
     function_object->body = expression_tokens;
-
-    /* store the function object with parsed code into namespace by function name */
     char * function_name = function_object->name;
-    Constant * node_value = new_constant(FUNCTION, function_object);
-    Node * function = new_node(faq6(function_name), node_value);
-    insert_node(current_namespace, function); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(FUNCTION, function_object, "interpreter.c"));
+
+    Node * declared_function_node = find_node(current_namespace, faq6(function_name));
+    if (declared_function_node == NULL) {
+        /* create the node with function object */
+        Constant *node_value = new_constant(FUNCTION, function_object);
+        Node *function = new_node(faq6(function_name), node_value);
+
+        /* store the function object with parsed code into namespace by function name */
+        insert_node(current_namespace, function);
+        memory_table = append(memory_table, MEMORY_ELEMENT,new_memory_element(FUNCTION, function_object, "interpreter.c"));
+    } else {
+        /* if function already declared */
+        Constant * declared_function = declared_function_node->value;
+        Function * function = declared_function->value;
+        array_destructor(function->arg_list); // free the old function arg_list
+        array_destructor(function->body); // free the old body of function
+        free(function->name);
+
+        function->name = function_object->name;
+        function->arg_list = function_object->arg_list;
+        function->body = function_object->body;
+        free(function_object);
+    }
 }
 
 /* The main entry point of local function */
