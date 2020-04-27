@@ -9,7 +9,7 @@
 #ifndef VIPER_V4_INTERPRETER_H
 #define VIPER_V4_INTERPRETER_H
 
-#define INTERPRETER_FUNCTION_REDEFINITION_WARNING "the function be already defined"
+#define INTERPRETER_FUNCTION_REDEFINITION_WARNING "the function was overloaded"
 
 /* Main entry point to program executing */
 Constant * main_entry(char * input_stream);
@@ -40,10 +40,5 @@ void display_memory_table(Array ** memory_table);
 Node * meta_data();
 /* The function will return 1 if the current call is return-statement */
 int is_return_call(Array ** call_stack);
-
-/* The function does freed the allocated memory of program */
-/* Memory will be allocated only for complex data structure.
- * Other will be stored into namespace */
-void gargbage_destructor(Array ** memory_table);
 
 #endif //VIPER_V4_INTERPRETER_H
