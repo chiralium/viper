@@ -421,7 +421,16 @@ float get_float_value(void * elexpr) {
 int get_from_namespace(void * elexpr) {
     Element * el = elexpr;
     if (el->vtype_id != UNDEFINED && el->vtype_id != FUNCTION_RES) return 0;
-    Node * node = find_node(namespace, faq6(el->literal));
+    Node * node = NULL;
+
+    if (el->vtype_id != FUNCTION_RES) node = find_node(namespace, faq6(el->literal));
+    else {
+        /* if the element is a function call, calculate signature of function also */
+        FuncCall * function_call = el->value;
+        int function_signature = get_function_signature(function_call->arg_list);
+        node = find_node(namespace, faq6(el->literal) + function_signature);
+    }
+
     if (node == NULL) return -1;
     Constant * value = node->value;
 

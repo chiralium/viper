@@ -23,4 +23,7 @@ Array ** copy_function_code(Array ** function_code);
 /* The function for destruction the function code from start position */
 void function_code_destructor(Array ** function_code, int start_position);
 
+/* The function does calculating the function signature by input arguments */
+int get_function_signature(Array ** arg_list);
+
 #endif //VIPER_V4_FUNCTIONS_H

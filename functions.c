@@ -66,3 +66,10 @@ void function_code_destructor(Array ** function_code, int start_position) {
     }
     free(function_code);
 }
+
+int get_function_signature(Array ** arg_list) {
+    /* get count arguments as signature */
+    int signature = _get_len(arg_list);
+    /* get types of arguments as signature */
+    return signature;
+}

@@ -107,8 +107,9 @@ void function_declaration(Function * function_object, Node * current_namespace) 
     Node * declared_function_node = find_node(current_namespace, faq6(function_name));
     if (declared_function_node == NULL) {
         /* create the node with function object */
-        Constant *node_value = new_constant(FUNCTION, function_object);
-        Node *function = new_node(faq6(function_name), node_value);
+        int function_signature = get_function_signature(function_object->arg_list);
+        Constant * node_value = new_constant(FUNCTION, function_object);
+        Node * function = new_node(faq6(function_name) + function_signature, node_value);
 
         /* store the function object with parsed code into namespace by function name */
         insert_node(current_namespace, function);
