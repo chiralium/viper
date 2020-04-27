@@ -29,8 +29,8 @@ Constant * get_single_char(Constant * object, Constant * index) {
     int index_value = *(int *)(index->value);
     char * string = object->value;
     if (strlen(string) <= index_value) throw_arithmetical_exception(expression_as_string, VISTRING_RANGE_EXCEPTION);
-    char stack_tmp[2] = "\0"; stack_tmp[0] = string[index_value];
-    element = new_constant(STRING, alloc_string(stack_tmp));
+    static char stack_tmp[2] = "\0"; stack_tmp[0] = string[index_value];
+    element = new_constant(STRING, stack_tmp);
     free(string);
     return element;
 }
@@ -40,7 +40,7 @@ Constant * get_substr(Constant * object, Constant * start, Constant * end) {
     int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value);
     char * string = object->value;
     if (start_indx >= strlen(string) || end_indx >= strlen(string)) throw_arithmetical_exception(expression_as_string, VISTRING_RANGE_EXCEPTION);
-    char * sub_string = calloc(end_indx - start_indx + 1, sizeof(char));
+    static char sub_string[ARITHMETICA_MAX_STRING_LEN];
     memcpy(sub_string, string + start_indx, end_indx - start_indx);
     sub_element = new_constant(STRING, sub_string);
     free(string);
@@ -52,7 +52,7 @@ Constant * get_substr_step(Constant * object, Constant * start, Constant * end, 
     int start_indx = *(int *)(start->value); int end_indx = *(int *)(end->value); int step_val = *(int *)(step->value);
     char * string = object->value;
     if (start_indx >= strlen(string) || end_indx >= strlen(string)) throw_arithmetical_exception(expression_as_string, VISTRING_RANGE_EXCEPTION);
-    char * sub_string = calloc( ( (end_indx - start_indx) / step_val ) + 2, sizeof(char));
+    static char sub_string[ARITHMETICA_MAX_STRING_LEN];
     int index = 0;
     while (start_indx <= end_indx) {
         sub_string[index++] = string[start_indx];
