@@ -20,9 +20,14 @@
 #define PARSER_MISSING_FUNC_ARGS_BRACKET     "the argument list of function should start on `(` and end on `)`"
 #define PARSER_MISSING_FUNC_ARGS             "the enumerations argument error"
 #define PARSER_MISSING_FUNC_PARAMS           "the function parameters is not defined"
+#define PARSER_TOO_MUCH_FUNC_ARGS            "the function parameters count is too big (check the PARSER_MAX_FUNCTION_ARGS)"
+#define PARSER_DUPLICATED_FUNC_ARGS          "the duplicate argument in function definition"
 #define PARSER_MISSING_WHILE_CONDITION       "the expression of `while` statement is not defined"
 #define PARSER_MISSING_WHILE_BODY            "the body of `while` statement is not defined"
 #define PARSER_COMMON_SYNTAX_EXCEPTION       "undefined block"
+
+/* Parameters */
+#define PARSER_MAX_FUNCTION_ARGS 50
 
 /* The structure function will contained the information of function. Then this structure stored in NameSpace */
 typedef struct Function {
@@ -76,6 +81,9 @@ Array ** extract_args(char * literal);
 /* The function will extract the name from literal */
 char * extract_name(char * literal);
 
+/* The function will checking for the duplicate argument declarations */
+int is_duplicated_args(Array ** arg_list);
+
 /* The function will create the new structure of While */
 While * make_while(char * condition, Array ** body);
 
@@ -85,7 +93,7 @@ While * get_while_statement(Array ** tokens);
 /* Return the next token from token list */
 Token * next_token(Array ** tokens);
 
-/* Return the current token from token list (without increase the static counter)*/
+/* Return the current token from token list (without increase the static counter) */
 Token * get_token(Array ** tokens);
 
 /* The function will cut the space from start and end of the literal */

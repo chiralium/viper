@@ -129,6 +129,7 @@ Array ** extract_args(char * literal) {
         arg_list = append(arg_list, STRING, arg);
         pop_first(literal);
     }
+    if (is_duplicated_args(arg_list)) throw_statement_exception("<function>", PARSER_DUPLICATED_FUNC_ARGS);
     if (*arg_list) return arg_list;
     else return 0;
 }
@@ -138,6 +139,35 @@ char * extract_name(char * literal) {
     char * name = cut_token(literal, OP_OPEN_CBRACK);
     if (*name) return name;
     else throw_statement_exception("function", PARSER_MISSING_FUNC_NAME);
+}
+
+int is_duplicated_args(Array ** arg_list) {
+    int args_count = _get_len(arg_list);
+    if (args_count > PARSER_MAX_FUNCTION_ARGS) throw_statement_exception("<function>", PARSER_TOO_MUCH_FUNC_ARGS);
+    else if (args_count == 0) return 1;
+
+    /* get faq6 hash for each arg name and create the array */
+    int hash[PARSER_MAX_FUNCTION_ARGS];
+    for (int i = 0; i < args_count; i++) hash[i] = faq6(arg_list[i]->element);
+
+    /* simple bubble sorting */
+    for (int j = 0; j < args_count - 1; j++) {
+        int tmp = 0;
+        for (int i = 0; i < (args_count - j - 1); i++) {
+            if (hash[i] > hash[i + 1]) {
+               tmp = hash[i];
+               hash[i] = hash[i + 1];
+               hash[i + 1] = tmp;
+            }
+        }
+    }
+
+    /* checking for duplicate hashes */
+    int i;
+    for (i = 1; i < args_count; i++) {
+        if (hash[i - 1] == hash[i]) return 1;
+    }
+    return 0;
 }
 
 Token * next_token(Array ** tokens) {
