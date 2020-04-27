@@ -115,6 +115,7 @@ void function_declaration(Function * function_object, Node * current_namespace) 
         memory_table = append(memory_table, MEMORY_ELEMENT,new_memory_element(FUNCTION, function_object, "interpreter.c"));
     } else {
         /* if function already declared */
+        throw_warning_message(function_object->name, INTERPRETER_FUNCTION_REDEFINITION_WARNING);
         Constant * declared_function = declared_function_node->value;
         Function * function = declared_function->value;
         array_destructor(function->arg_list); // free the old function arg_list

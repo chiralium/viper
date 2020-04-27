@@ -9,6 +9,8 @@
 #ifndef VIPER_V4_INTERPRETER_H
 #define VIPER_V4_INTERPRETER_H
 
+#define INTERPRETER_FUNCTION_REDEFINITION_WARNING "the function be already defined"
+
 /* Main entry point to program executing */
 Constant * main_entry(char * input_stream);
 /* Main entry point to program parsing */

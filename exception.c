@@ -47,3 +47,8 @@ void throw_typecasting_exception(char * broken_line, char * message) {
     printf(EXCEPTION_TYPECASTING_ERROR, broken_line, message);
     exit(0);
 }
+
+void throw_warning_message(char * dangerous_line, char * message) {
+    display_callstack(call_stack);
+    printf(EXCEPTION_WARNING, dangerous_line, message);
+}
