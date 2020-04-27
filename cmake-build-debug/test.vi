@@ -6,3 +6,12 @@ function f() : {
     return 3.14;
 }
 f(f() + 3);
+
+function f() : {
+  return 3.14 * 1000;
+}
+
+function f(x) : {
+  return x / 4;
+}
+f(f() + 3);

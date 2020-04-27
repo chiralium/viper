@@ -104,10 +104,10 @@ void function_declaration(Function * function_object, Node * current_namespace) 
     function_object->body = expression_tokens;
     char * function_name = function_object->name;
 
-    Node * declared_function_node = find_node(current_namespace, faq6(function_name));
+    int function_signature = get_function_signature(function_object->arg_list);
+    Node * declared_function_node = find_node(current_namespace, faq6(function_name) + function_signature);
     if (declared_function_node == NULL) {
         /* create the node with function object */
-        int function_signature = get_function_signature(function_object->arg_list);
         Constant * node_value = new_constant(FUNCTION, function_object);
         Node * function = new_node(faq6(function_name) + function_signature, node_value);
 

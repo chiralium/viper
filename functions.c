@@ -69,7 +69,7 @@ void function_code_destructor(Array ** function_code, int start_position) {
 
 int get_function_signature(Array ** arg_list) {
     /* get count arguments as signature */
-    int signature = _get_len(arg_list);
+    int signature = _get_len(arg_list) + 1;
     /* get types of arguments as signature */
     return signature;
 }
