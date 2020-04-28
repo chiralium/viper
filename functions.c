@@ -94,3 +94,9 @@ int get_function_signature(Array ** arg_list) {
     /* get types of arguments as signature */
     return signature;
 }
+
+Function * get_function_from_container(FunctionContainer * function_container, int signature) {
+    Node * functions = function_container->overloaded_functions;
+    Node * function = find_node(functions, signature);
+    return (function != NULL) ? function->value : function;
+}

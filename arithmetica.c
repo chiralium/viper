@@ -434,7 +434,8 @@ int get_from_namespace(void * elexpr) {
     } else if (value->type_id == FUNCTION_CONTAINER) {
         FunctionContainer * function_container = value->value; FuncCall * function_call = el->value;
         int signature = get_function_signature(function_call->arg_list);
-        Function * function_from_container = ( (Node *)(find_node(function_container->overloaded_functions, signature)) )->value;
+        Function * function_from_container = get_function_from_container(function_container, signature);
+        if (function_from_container == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
         Constant * function_result = function_precalc(el->value, function_from_container);
         el->value = function_result->value;
         el->vtype_id = function_result->type_id;

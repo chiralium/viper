@@ -43,4 +43,7 @@ void overloaded_function_tree_destructor(Node * overloaded_function);
 /* The function does calculating the function signature by input arguments */
 int get_function_signature(Array ** arg_list);
 
+/* The function will be returning the function from container by signature */
+Function * get_function_from_container(FunctionContainer * function_container, int signature);
+
 #endif //VIPER_V4_FUNCTIONS_H
