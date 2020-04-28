@@ -27,6 +27,10 @@ Node * new_viarray(Array ** array) {
                 viarray_element = new_constant(array_element->type_id, node);
                 Node * pointer_node = new_node(index, viarray_element);
                 (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
+            } else if (array_element->type_id == FUNCTION_CONTAINER) {
+                viarray_element = new_constant(array_element->type_id, array_element->value);
+                Node * pointer_node = new_node(index, viarray_element);
+                (root == NULL) ? root = insert_node(root, pointer_node) : insert_node(root, pointer_node);
             }
             free(array_element);
         }
