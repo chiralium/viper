@@ -83,6 +83,7 @@ void display_memory_table(Array ** memory_table) {
         counter++;
     }
     printf("*--------------------------------------------------------------------------------------------------------------* \n");
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 
 void memory_table_destructor(Array ** memory_table) {
