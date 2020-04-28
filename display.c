@@ -1,5 +1,6 @@
 #include "display.h"
 #include "ViArray.h"
+#include "functions.h"
 
 void display_array_beauty(Array ** _array, char * tabs) {
     strcat(tabs, "-");
@@ -230,6 +231,11 @@ void display_constant(Constant * constant) {
             break;
         case VIARRAY:
             printf("{"); display_viarray(constant->value); printf("}");
+            break;
+        case FUNCTION_CONTAINER:
+            printf("<function `%s` at [0x%p]>",
+                   ((FunctionContainer *)(constant->value))->name,
+                   constant->value);
             break;
         /* Systems types */
         case ARRAY:

@@ -238,3 +238,11 @@ foo(foo());
 foo(foo(),
     foo(foo()),
     foo(1, 2, 3));
+
+fpointer = foo;
+
+fpointer();
+fpointer(fpointer());
+fpointer(fpointer(),
+    fpointer(fpointer()),
+    fpointer(1, 2, 3));

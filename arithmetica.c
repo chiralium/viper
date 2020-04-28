@@ -431,8 +431,10 @@ int get_from_namespace(void * elexpr) {
         el->value = copy_data(value->value, value->type_id);
         el->vtype_id = value->type_id;
         el->origin = NULL;
-    } else if (value->type_id == FUNCTION_CONTAINER) {
-        FunctionContainer * function_container = value->value; FuncCall * function_call = el->value;
+    } else if (value->type_id == FUNCTION_CONTAINER && el->vtype_id == FUNCTION_RES) {
+        /* if the element is a function call */
+        FunctionContainer *function_container = value->value;
+        FuncCall * function_call = el->value;
         int signature = get_function_signature(function_call->arg_list);
         Function * function_from_container = get_function_from_container(function_container, signature);
         if (function_from_container == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
