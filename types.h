@@ -34,5 +34,6 @@
 #define ELEMENT               6
 #define CONSTANT              7
 #define MEMORY_ELEMENT       13
+#define FUNCTION_CONTAINER   14
 
 #endif //VIPER_V4_TYPES_H

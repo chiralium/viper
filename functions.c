@@ -1,5 +1,26 @@
 #include "functions.h"
 
+FunctionContainer * new_function_container(char * name, Node * functions) {
+    FunctionContainer * function_container = malloc(sizeof(FunctionContainer));
+    function_container->name = name;
+    function_container->overloaded_functions = functions;
+    return function_container;
+}
+
+void function_container_destructor(FunctionContainer * function_container) {
+    free(function_container->name);
+    overloaded_function_tree_destructor(function_container->overloaded_functions);
+    free(function_container);
+}
+
+void overloaded_function_tree_destructor(Node * overloaded_function) {
+    if (overloaded_function != NULL) {
+        if (overloaded_function->left != NULL) overloaded_function_tree_destructor(overloaded_function->left);
+        if (overloaded_function->right != NULL) overloaded_function_tree_destructor(overloaded_function->right);
+        free(overloaded_function);
+    }
+}
+
 Node * performing_local_namespace(Array ** input_arguments, Function * function_object) {
     /*
      * create the function object into local namesapce and set not null origin for function object,

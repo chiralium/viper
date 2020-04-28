@@ -5,12 +5,18 @@ MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
     MemoryElement * memel = malloc(sizeof(MemoryElement));
     if (type_id == VIARRAY) {
         Node * viarray = address;
-        char meta[255]; sprintf(meta, "%d", viarray->key);
+        char meta[255];
+        sprintf(meta, "%d", viarray->key);
         memel->meta = alloc_string(meta);
         memel->type = alloc_string("<viarray>");
+    } else if (type_id == FUNCTION_CONTAINER) {
+        FunctionContainer * function_container = address;
+        char meta[255]; strcpy(meta, function_container->name);
+        memel->meta = alloc_string(meta);
+        memel->type = alloc_string("<function cont.>");
     } else if (type_id == FUNCTION) {
         Function *function = address;
-        char meta[255]; char signature[255]; sprintf(signature, ", [%d]", get_function_signature(function->arg_list));
+        char meta[255]; char signature[255]; sprintf(signature, "[%d]", get_function_signature(function->arg_list) - 1);
         strcpy(meta, function->name); strcat(meta, signature);
         memel->meta = alloc_string(meta);
         memel->type = alloc_string("<function>");
@@ -33,7 +39,11 @@ MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
 void garbage_destructor(Array ** memory_table) {
     while (*memory_table) {
         Array * element = *memory_table; MemoryElement * memel = element->element;
-        if (memel->type_id == FUNCTION) {
+        if (memel->type_id == FUNCTION_CONTAINER) {
+            FunctionContainer * function_container = memel->address;
+            function_container_destructor(function_container);
+            memel->is_freed = 1;
+        } else if (memel->type_id == FUNCTION) {
             Function * function = memel->address;
             function_destructor(function);
             memel->is_freed = 1;

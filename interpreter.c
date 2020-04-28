@@ -90,7 +90,6 @@ Constant * calculate_expression(Array ** expression, Node * current_namespace) {
     return value;
 }
 
-// TODO: declaration the functions through a container in which overloaded functions are stored
 /* The function will be parse the function code and store it into namespace */
 void function_declaration(Function * function_object, Node * current_namespace) {
     Array ** function_code = function_object->body;
@@ -105,29 +104,47 @@ void function_declaration(Function * function_object, Node * current_namespace) 
     function_object->body = expression_tokens;
     char * function_name = function_object->name;
 
-    int function_signature = get_function_signature(function_object->arg_list);
-    Node * declared_function_node = find_node(current_namespace, faq6(function_name) + function_signature);
-    if (declared_function_node == NULL) {
-        /* create the node with function object */
-        Constant * node_value = new_constant(FUNCTION, function_object);
-        Node * function = new_node(faq6(function_name) + function_signature, node_value);
+    /* find the function container by name */
+    Node * function_node = find_node(current_namespace, faq6(function_name)); Constant * node_value = (function_node != NULL) ? function_node->value : NULL ;
+    if (function_node == NULL || node_value->type_id != FUNCTION_CONTAINER) {
+        /* if the node is an simple variable */
+        if (node_value != NULL) {
+            if (is_simple_data(node_value->type_id)) constant_destructor(node_value);
+            else free(node_value);
+        }
 
-        /* store the function object with parsed code into namespace by function name */
-        insert_node(current_namespace, function);
-        memory_table = append(memory_table, MEMORY_ELEMENT,new_memory_element(FUNCTION, function_object, "interpreter.c"));
+        /* if the container is not exist */
+        int signature = get_function_signature(function_object->arg_list); // calculate the function signature
+        Node * function = new_node(signature, function_object); // create node with function by his signature
+        FunctionContainer * function_container = new_function_container(alloc_string(function_name), function); // create container with a function
+        insert_node(current_namespace, new_node(faq6(function_name), new_constant(FUNCTION_CONTAINER, function_container))); // insert the container into current namespace
+        memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(FUNCTION_CONTAINER, function_container, "interpreter.c")); // add container to a memory table
+        memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(FUNCTION, function_object, "interpreter.c")); // add the function to a memory table
     } else {
-        /* if function already declared */
-        throw_warning_message(function_object->name, INTERPRETER_FUNCTION_REDEFINITION_WARNING);
-        Constant * declared_function = declared_function_node->value;
-        Function * function = declared_function->value;
-        array_destructor(function->arg_list); // free the old function arg_list
-        array_destructor(function->body); // free the old body of function
-        free(function->name);
+        /* if the container is already exist */
+        Constant * node_value = function_node->value; FunctionContainer * function_container = node_value->value;
+        Node * overloaded_function_tree = function_container->overloaded_functions;
+        int signature = get_function_signature(function_object->arg_list); Node * overloaded_functions = NULL;
+        if ( (overloaded_functions = find_node(overloaded_function_tree, signature)) == NULL ) {
+            /* if it is a new function */
+            throw_warning_message(function_name, FUNCTIONS_OVERLOADING_WARNING);
+            Node * function = new_node(signature, function_object); insert_node(function_container->overloaded_functions, function); // add a new function to a container
+            memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(FUNCTION, function_object, "interpreter.c")); // add a new function to a memory table
+        } else {
+            /* if the function with this signature is exist */
+            throw_warning_message(function_name, FUNCTIONS_REDEFINITION_WARNING);
+            Function * old_function = overloaded_functions->value;
+            /* destroy the old function */
+            array_destructor(old_function->arg_list);
+            array_destructor(old_function->body);
+            free(old_function->name);
 
-        function->name = function_object->name;
-        function->arg_list = function_object->arg_list;
-        function->body = function_object->body;
-        free(function_object);
+            /* set a new function to exist pointer */
+            old_function->name = function_object->name;
+            old_function->arg_list = function_object->arg_list;
+            old_function->body = function_object->body;
+            free(function_object);
+        }
     }
 }
 

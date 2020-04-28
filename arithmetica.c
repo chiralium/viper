@@ -423,14 +423,7 @@ int get_from_namespace(void * elexpr) {
     if (el->vtype_id != UNDEFINED && el->vtype_id != FUNCTION_RES) return 0;
     Node * node = NULL;
 
-    if (el->vtype_id != FUNCTION_RES) node = find_node(namespace, faq6(el->literal));
-    else {
-        /* if the element is a function call, calculate signature of function also */
-        FuncCall * function_call = el->value;
-        int function_signature = get_function_signature(function_call->arg_list);
-        node = find_node(namespace, faq6(el->literal) + function_signature);
-    }
-
+    node = find_node(namespace, faq6(el->literal));
     if (node == NULL) return -1;
     Constant * value = node->value;
 
@@ -438,8 +431,11 @@ int get_from_namespace(void * elexpr) {
         el->value = copy_data(value->value, value->type_id);
         el->vtype_id = value->type_id;
         el->origin = NULL;
-    } else if (value->type_id == FUNCTION) {
-        Constant * function_result = function_precalc(el->value, value->value);
+    } else if (value->type_id == FUNCTION_CONTAINER) {
+        FunctionContainer * function_container = value->value; FuncCall * function_call = el->value;
+        int signature = get_function_signature(function_call->arg_list);
+        Function * function_from_container = ( (Node *)(find_node(function_container->overloaded_functions, signature)) )->value;
+        Constant * function_result = function_precalc(el->value, function_from_container);
         el->value = function_result->value;
         el->vtype_id = function_result->type_id;
         el->origin = function_result->origin;
