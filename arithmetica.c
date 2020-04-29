@@ -21,11 +21,23 @@ Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namesp
     return result;
 }
 
-Constant * function_precalc(FuncCall * function_call, Function * function_object) {
-    if (!validate_function_call(function_call, function_object)) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_object->name);
+Constant * function_precalc(FuncCall * function_call) {
+    Array ** input_args = function_call->arg_list; Array ** function_pointer_expression = function_call->function_pointer;
+
+    // calculate the function pointer explression
+    Constant * function_pointer = arithmetica(function_pointer_expression, namespace);
+    FunctionContainer * function_container = function_pointer->value;
+    free(function_pointer);
+
+    // calculate the function signature
+    int signature = get_function_signature(input_args);
+
+    // get function from container by signature
+    Function * function_object = get_function_from_container(function_container, signature);
+    if (function_object == NULL) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_container->name);
+
     call_stack = append(call_stack, STRING, alloc_string(function_object->name));// add function name into call stack
 
-    Array ** input_args = function_call->arg_list;
     Array ** function_code; function_code = copy_function_code(function_object->body); // copy the function code cause the code should be destroyed by lexers, parser and expression parser
 
     // calculate the input arguments
@@ -37,8 +49,7 @@ Constant * function_precalc(FuncCall * function_call, Function * function_object
         free(input_args[counter]);
         counter++;
     }
-    free(input_args);
-    free(function_call);
+    free(input_args); free(function_call);
 
     // performing the local name space
     Node * local_namespace = performing_local_namespace(calculated_args, function_object);
@@ -130,6 +141,13 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
                 elexpr->value = copy_data(result->value, result->type_id);
                 elexpr->origin = result->origin;
                 free(result);
+            } else if (elexpr->vtype_id == FUNCTION_RES) {
+                FuncCall * function_call = elexpr->value;
+                Constant * result = function_precalc(function_call);
+                elexpr->vtype_id = result->type_id;
+                elexpr->value = result->value;
+                elexpr->origin = result->origin;
+                free(result);
             }
             constant_stack = append(constant_stack, ELEMENT, elexpr); free(postfixed_expression[counter]);
         } else {
@@ -215,7 +233,7 @@ Array ** postfix(Array ** expression_tokens) {
     Array * stack_el;
     while (stack_el = pop_last_el(tokens_stack)) {
         ExpressionToken * token = stack_el->element;
-        if (token->type_id == OP_OPEN_CBRACK || token->type_id == OP_CLOSE_CBRACK) throw_arithmetical_exception(expression, ARITHMETICA_BRACES_NOT_BALANCED);
+        if (token->type_id == OP_OPEN_CBRACK || token->type_id == OP_CLOSE_CBRACK) throw_arithmetical_exception(expression_as_string, ARITHMETICA_BRACES_NOT_BALANCED);
         output = append(output, ELEMENT, token); free(stack_el);
     }
 
@@ -430,18 +448,6 @@ int get_from_namespace(void * elexpr) {
         el->value = copy_data(value->value, value->type_id);
         el->vtype_id = value->type_id;
         el->origin = NULL;
-    } else if (value->type_id == FUNCTION_CONTAINER && el->vtype_id == FUNCTION_RES) {
-        /* if the element is a function call */
-        FunctionContainer *function_container = value->value;
-        FuncCall * function_call = el->value;
-        int signature = get_function_signature(function_call->arg_list);
-        Function * function_from_container = get_function_from_container(function_container, signature);
-        if (function_from_container == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
-        Constant * function_result = function_precalc(el->value, function_from_container);
-        el->value = function_result->value;
-        el->vtype_id = function_result->type_id;
-        el->origin = function_result->origin;
-        free(function_result);
     } else {
         el->value = value->value;
         el->vtype_id = value->type_id;

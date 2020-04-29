@@ -273,7 +273,7 @@ void token_composer(Array ** exp_tokens) {
             function_tk->type_id = EXPRESSION_CONSTANT_FUNC_TK;
             function_tk->vtype_id = FUNCTION_RES;
             function_tk->value = function_call;
-            function_tk->literal = alloc_string("<function call>");
+            function_tk->literal = as_string(function_pointer);
             exp_token_destructor(exp_tokens[counter]->element);
             exp_tokens[counter]->element = function_tk;
         } else allocate_token_value(token);

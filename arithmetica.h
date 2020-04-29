@@ -142,7 +142,7 @@ Array ** array_precalc(Array ** array);
 Constant * index_precalc(Index * index);
 
 /* The function will calculated the function */
-Constant * function_precalc(FuncCall * function_call, Function * function_object);
+Constant * function_precalc(FuncCall * function_call);
 
 /* The function will crate the zero-token */
 void * make_zero_tk();

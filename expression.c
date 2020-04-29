@@ -24,7 +24,7 @@ Array ** expression_lexer(Array ** tokens) {
 }
 
 Array ** extract_exp_token(char * literal) {
-    Array ** expression_token = new_array(); char prev_token_type;
+    Array ** expression_token = new_array(); char prev_token_type = -1;
     while (*literal) {
         if (*literal == OP_SPACE) pop_first(literal);
         else if (*literal == OP_QUOTE) {
@@ -161,7 +161,7 @@ int is_name(char * literal) {
     int is_name = 0;
     if (isdigit(*literal)) return 0;
     while (*literal) {
-        if (!(is_name = isdigit(*literal) || isalpha(*literal))) break;
+        if (!(is_name = isdigit(*literal) || isalpha(*literal) || *literal == '_')) break;
         literal++;
     }
     return is_name;
