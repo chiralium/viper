@@ -26,6 +26,7 @@ Constant * function_precalc(FuncCall * function_call) {
 
     // calculate the function pointer explression
     Constant * function_pointer = arithmetica(function_pointer_expression, namespace);
+    if (function_pointer->type_id != FUNCTION_CONTAINER) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_CALLABLE);
     FunctionContainer * function_container = function_pointer->value;
     free(function_pointer);
 

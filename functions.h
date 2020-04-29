@@ -15,10 +15,9 @@ typedef struct FunctionContainer {
 } FunctionContainer;
 
 /* Exception message */
-#define FUNCTIONS_INVALID_ARG_LIST     "invalid input arguments list for function <%s>"
-#define FUNCTIONS_REDEFINITION_WARNING "the function was redefine"
-#define FUNCTIONS_OVERLOADING_WARNING  "the function was overloaded"
-#define FUNCTIONS_
+#define FUNCTIONS_INVALID_ARG_LIST       "invalid input arguments list for function <%s>"
+#define FUNCTIONS_REDEFINITION_WARNING   "the function was redefine"
+#define FUNCTIONS_OVERLOADING_WARNING    "the function was overloaded"
 
 /* The function will be create new function container by name */
 FunctionContainer * new_function_container(char * name, Node * functions);

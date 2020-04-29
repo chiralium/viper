@@ -89,6 +89,7 @@ typedef struct Element {
 #define ARITHMETICA_NOT_ITERABLE_EXCEPTION    "the object is not iterable"
 #define ARITHMETICA_OBJECT_NOT_ASSIGNABLE     "the object is not assignable"
 #define ARITHMETICA_OBJECT_NOT_HASHABLE       "the object is not hashable"
+#define ARITHMETICA_OBJECT_NOT_CALLABLE       "the object is not callable"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
