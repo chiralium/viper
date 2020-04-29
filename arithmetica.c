@@ -38,7 +38,7 @@ Constant * function_precalc(FuncCall * function_call, Function * function_object
         counter++;
     }
     free(input_args);
-    free(function_call->name); free(function_call);
+    free(function_call);
 
     // performing the local name space
     Node * local_namespace = performing_local_namespace(calculated_args, function_object);
@@ -307,17 +307,16 @@ void index_destructor(Index * index) {
     free(index);
 }
 
-FuncCall * new_func_call(char * name, Array ** arg_list) {
+FuncCall * new_func_call(Array ** function_pointer, Array ** arg_list) {
     FuncCall * funccall = malloc(sizeof(FuncCall));
-    char * function_name = alloc_string(name);
-    funccall->name = function_name;
+    funccall->function_pointer = function_pointer;
     funccall->arg_list = arg_list;
     return funccall;
 }
 
 void func_call_destructor(FuncCall * funccall) {
     array_destructor(funccall->arg_list);
-    free(funccall->name);
+    array_destructor(funccall->function_pointer);
     free(funccall);
 }
 

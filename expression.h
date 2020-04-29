@@ -32,6 +32,7 @@
 #define EXPRESSION_INVALID_ESCAPE_CHAR        "invalid escape character"
 #define EXPRESSION_INVALID_FUNCTION_CALL      "invalid arguments definition (braces is not balanced)"
 #define EXPRESSION_INVALID_FUNCTION_ARGLIST   "invalid arguments definition (empty arguments position after coma)"
+#define EXPRESSION_INVALID_FUNCTION_NAME      "invalid function name"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {
@@ -64,6 +65,9 @@ int is_in(char symbol, char * stop_symbols);
 
 /* The function will return 1, if the literal is exactly variable name */
 int is_name(char * literal);
+
+/* The function will return 1, if the current open circle brack is a function call */
+int is_function_call(char prev_token_type, char current_bracket);
 
 /* Function will return the type of non-symbolic and non-numeric literal */
 char get_token_type(char symbol);

@@ -61,8 +61,11 @@ void display_array_beauty(Array ** _array, char * tabs) {
                     printf("%s%s{`%f`:<%c>(0x%p)}, \n", tabs, tabs, *(float *)token_value, token_value_type_id, token_value);
                     break;
                 case FUNCTION_RES:
-                    printf("%s%s{`function`:<%s>}: arg_list: \n", tabs, tabs, ((FuncCall *)token_value)->name);
+                    printf("%s%s{`function`}:\n", tabs,tabs);
                     char child_tabs_function_call[512]; strcpy(child_tabs_function_call, tabs); strcat(child_tabs_function_call, tabs);
+                    display_array_beauty(((FuncCall *)token_value)->function_pointer, child_tabs_function_call);
+                    printf("%s%sarg_list:\n", tabs, tabs);
+                    *child_tabs_function_call = '\0'; strcpy(child_tabs_function_call, tabs); strcat(child_tabs_function_call, tabs);
                     display_array_beauty(((FuncCall *)token_value)->arg_list, child_tabs_function_call);
                     break;
                 default:
@@ -254,6 +257,7 @@ void display_constant(Constant * constant) {
 }
 
 void display_function(FuncCall * function, char tabs[512]) {
-    printf("%s(", function->name);
+    printf("<function>: \n");
+    display_array_beauty(function->function_pointer, tabs);
     display_array_beauty(function->arg_list, tabs);
 }

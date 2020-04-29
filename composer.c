@@ -161,9 +161,8 @@ Array ** cut_arglist_body(Array ** exp_tokens, int position) {
     Array ** arglist_body = new_array(); ExpressionToken * token;
     int o = 1; int c = 0;
     _next = position;
-    exp_token_destructor(pop_next_exp_token(exp_tokens));
     while (token = get_curr_exp_token(exp_tokens)) {
-        (token->type_id == OP_OPEN_CBRACK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
+        (token->type_id == OP_OPEN_CBRACK || token->type_id == EXPRESSION_CONSTANT_FUNC_TK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
         if (token->type_id == OP_CLOSE_CBRACK && o == c) {
             exp_token_destructor(pop_next_exp_token(exp_tokens));
             break;
@@ -182,7 +181,7 @@ Array ** cut_argument(Array ** exp_tokens) {
     int co = 0; int cc= 0; int so = 0; int sc = 0;
     while (token = get_curr_exp_token(exp_tokens)) {
         (token->type_id == OP_OPEN_SBRACK) ? so++ : (token->type_id == OP_CLOSE_SBRACK) ? sc++ : 0;
-        (token->type_id == OP_OPEN_CBRACK) ? co++ : (token->type_id == OP_CLOSE_CBRACK) ? cc++ : 0;
+        (token->type_id == OP_OPEN_CBRACK || token->type_id == EXPRESSION_CONSTANT_FUNC_TK) ? co++ : (token->type_id == OP_CLOSE_CBRACK) ? cc++ : 0;
         if (token->type_id == OP_COMA && co == cc && so == sc) {
             exp_token_destructor(pop_next_exp_token(exp_tokens));
             break;
@@ -215,6 +214,27 @@ Array ** cut_function_arglist(Array ** exp_tokens, int position) {
     return arglist;
 }
 
+Array ** cut_function_pointer(Array ** exp_tokens, int * position) {
+    int pos = *position;
+    Array ** index_object = new_array(); ExpressionToken * token = exp_tokens[pos]->element;
+    int c = 0; int o = 0; int is_bracket_start = token->type_id == OP_CLOSE_CBRACK;
+    while (exp_tokens[pos]) {
+        token = exp_tokens[pos]->element;
+        (token->type_id == OP_OPEN_CBRACK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
+        if (token->type_id == EXPRESSION_OPERATOR_TK && !is_bracket_start && o == c) break;
+        else if (!is_bracket_start && c + o != 0) break;
+        else {
+            token = pop_exp_token(exp_tokens, pos);
+            index_object = insert(index_object, EXP_TK, token, 0);
+        }
+        pos--;
+        if (pos < 0) break;
+    }
+    if (is_empty(index_object)) throw_composer_exception(expression_as_string, EXPRESSION_INVALID_FUNCTION_NAME);
+    *position = pos >= 0 ? pos + 1 : 0;
+    return index_object;
+}
+
 void token_composer(Array ** exp_tokens) {
     int counter = 0;
     while (exp_tokens[counter]) {
@@ -244,15 +264,16 @@ void token_composer(Array ** exp_tokens) {
             exp_token_destructor(exp_tokens[counter]->element);
             exp_tokens[counter]->element = index_tk;
         } else if (token->type_id == EXPRESSION_CONSTANT_FUNC_TK) {
-            /* foo(x1, x2, ... , xN) */
-            char * function_name = token->literal;
+            /* <pointer expr.>(x1, x2, ... , xN) */
+            counter--;
+            Array ** function_pointer = cut_function_pointer(exp_tokens, &counter);
             Array ** function_arglist = cut_function_arglist(exp_tokens, counter + 1);
-            FuncCall * function_call = new_func_call(function_name, function_arglist);
+            FuncCall * function_call = new_func_call(function_pointer, function_arglist);
             ExpressionToken * function_tk = malloc(sizeof(ExpressionToken));
             function_tk->type_id = EXPRESSION_CONSTANT_FUNC_TK;
             function_tk->vtype_id = FUNCTION_RES;
             function_tk->value = function_call;
-            function_tk->literal = alloc_string(function_name);
+            function_tk->literal = alloc_string("<function call>");
             exp_token_destructor(exp_tokens[counter]->element);
             exp_tokens[counter]->element = function_tk;
         } else allocate_token_value(token);

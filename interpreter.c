@@ -20,6 +20,8 @@ Array ** main_parsing(char * input_stream) {
     Array ** expression_tokens = expression_lexer(parsed_tokens);
 
     composer(expression_tokens); // compose the token list into objects
+    char tabs[256] = "\0"; display_array_beauty(expression_tokens, tabs);
+    exit(0);
 
     array_destructor(literals);
     array_destructor(tokens);

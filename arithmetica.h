@@ -45,7 +45,7 @@ typedef struct Index {
 /* The struct of call of function */
 /* The tokens sequence like CONSTANT(...) -- is a function call */
 typedef struct FuncCall {
-    char * name;
+    Array ** function_pointer;
     Array ** arg_list;
 } FuncCall;
 
@@ -157,7 +157,7 @@ void * assign_function(char * literal);
 Index * new_index(void * object, Array ** params);
 
 /* The function will compose the FuncCall-structure by input params */
-FuncCall * new_func_call(char * name, Array ** arg_list);
+FuncCall * new_func_call(Array ** function_pointer, Array ** arg_list);
 
 /* The function will copy data into heap */
 void * copy_data(void * src, char type_id);

@@ -24,7 +24,7 @@ Array ** expression_lexer(Array ** tokens) {
 }
 
 Array ** extract_exp_token(char * literal) {
-    Array ** expression_token = new_array();
+    Array ** expression_token = new_array(); char prev_token_type;
     while (*literal) {
         if (*literal == OP_SPACE) pop_first(literal);
         else if (*literal == OP_QUOTE) {
@@ -36,15 +36,17 @@ Array ** extract_exp_token(char * literal) {
             string_token->vtype_id = STRING;
             string_token->value = string_literal;
             expression_token = append(expression_token, EXP_TK, string_token);
+            prev_token_type = string_token->type_id;
         } else if (!is_in(*literal, EXPRESSION_TERMINATE_OPERATORS) && !is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
             // this if-statement means the first symbol of literal is not an operator and is not a any kind of bracket
             char * constant_literal = cut_constant(literal);
             ExpressionToken * constant_token = malloc(sizeof(ExpressionToken));
-            constant_token->type_id = (*literal != OP_OPEN_CBRACK) ? EXPRESSION_CONSTANT_TK : EXPRESSION_CONSTANT_FUNC_TK; // if the next symbol is a '(' and current token is a constant, then this token is function call
+            constant_token->type_id = EXPRESSION_CONSTANT_TK;
             constant_token->literal = constant_literal;
             constant_token->vtype_id = UNDEFINED;
             constant_token->value = NULL;
             expression_token = append(expression_token, EXP_TK, constant_token);
+            prev_token_type = constant_token->type_id;
         } else if (is_in(*literal, EXPRESSION_TERMINATE_OPERATORS)) {
             char * operator_literal = cut_operator(literal);
             ExpressionToken * operator_token = malloc(sizeof(ExpressionToken));
@@ -53,15 +55,20 @@ Array ** extract_exp_token(char * literal) {
             operator_token->vtype_id = UNDEFINED;
             operator_token->value = NULL;
             expression_token = append(expression_token, EXP_TK, operator_token);
+            prev_token_type = operator_token->type_id;
         } else if (is_in(*literal, EXPRESSION_TERMINATE_BRACKETS)) {
             char stack_tmp[2]; stack_tmp[0] = pop_first(literal); stack_tmp[1] = '\0';
-            char * bracket_literal = alloc_string(stack_tmp);
+            char bracket_type = (is_function_call(prev_token_type, stack_tmp[0]) ?
+                                 EXPRESSION_CONSTANT_FUNC_TK :
+                                 get_token_type(stack_tmp[0]));
+
             ExpressionToken *bracket_token = malloc(sizeof(ExpressionToken));
-            bracket_token->type_id = get_token_type(stack_tmp[0]);
-            bracket_token->literal = bracket_literal;
+            bracket_token->type_id = bracket_type;
+            bracket_token->literal = alloc_string(stack_tmp);;
             bracket_token->vtype_id = SYS;
             bracket_token->value = NULL;
             expression_token = append(expression_token, EXP_TK, bracket_token);
+            prev_token_type = bracket_token->type_id;
         }
     }
     return expression_token;
@@ -112,6 +119,17 @@ char * cut_string(char * token) {
     stack_tmp[tmp_counter] = '\0';
     char * string_literal = alloc_string(stack_tmp);
     return string_literal;
+}
+
+int is_function_call(char prev_token_type, char current_bracket) {
+    /*
+     * Function call is a open bracket only after ']', ')' & CONSTANT:
+     * A[0](x), F()(), F()
+     */
+    if ( (prev_token_type == OP_CLOSE_CBRACK ||
+          prev_token_type == OP_CLOSE_SBRACK ||
+          prev_token_type == EXPRESSION_CONSTANT_TK) && current_bracket == OP_OPEN_CBRACK) return 1;
+    else return 0;
 }
 
 int is_in(char symbol, char * stop_symbols) {

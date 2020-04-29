@@ -1,14 +1,1 @@
-function f(x) : {
-    return x;
-}
-
-function f() : {
-    return "no arguments :)";
-}
-
-function f(x, y, z) : {
-    return x + y + z;
-}
-
-overloaded = {1, 2, f};
-overloaded[2](3);
+f(x, f(x));

@@ -11,6 +11,9 @@
 /* Main entry point into composer */
 void composer(Array ** token_list);
 
+/* The function will be cut the function pointer expression */
+Array ** cut_function_pointer(Array ** exp_tokens, int * position);
+
 /* The function will be cut arg-list of function */
 Array ** cut_function_arglist(Array ** exp_tokens, int position);
 
