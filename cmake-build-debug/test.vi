@@ -259,3 +259,5 @@ function get_pointer(pointer) : {
 }
 
 get_pointer(foo)(get_pointer(foo)(), get_pointer(foo)(2.7), get_pointer(foo)(1, 2, 3));
+pointers = {get_pointer(foo), get_pointer(F), get_pointer(inc)};
+pointers[0](pointers[1](pointers[0](), pointers[0]()));
