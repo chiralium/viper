@@ -12,6 +12,19 @@ Node * new_node(int key, void * value) {
     node->parent = NULL;
 }
 
+Node * extending(Node * root) {
+    static Node * extended_namespace;
+    if (root != NULL) {
+        Constant * node_value = root->value;
+        Constant * extended_value = new_constant(node_value->type_id, copy_data(node_value->value, node_value->type_id));
+        Node * extended_node = new_node(root->key, extended_value);
+        (extended_namespace == NULL) ? extended_namespace = insert_node(extended_namespace, extended_node) : insert_node(extended_namespace, extended_node);
+        if (root->left != NULL) extending(root->left);
+        if (root->right != NULL) extending(root->right);
+        return extended_node;
+    } else return NULL;
+}
+
 void * remove_node(Node * removed_node) {
     if (removed_node == NULL) return NULL;
     void * removed_node_val = removed_node->value;
@@ -149,4 +162,13 @@ int is_belonged(Node * root, Node * node) {
 
 void display_node(Node * node) {
     printf("%d => ", node->key); display_constant(node->value);
+}
+
+void display_namespace(Node * root) {
+    if (root != NULL) {
+        printf("*----------------------------------------------------------------------------*\n");
+        printf("|hash: %d | value: ", root->key); display_constant(root->value); printf("|\n");
+        display_namespace(root->left);
+        display_namespace(root->right);
+    }
 }

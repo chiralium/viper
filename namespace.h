@@ -15,6 +15,9 @@ typedef struct Node {
     struct Node * parent;
 } Node;
 
+/* Create new namespace that extending the another namespace */
+Node * extending(Node * root);
+
 /* The function will create the new node of tree */
 Node * new_node(int key, void * value);
 
@@ -39,9 +42,12 @@ int is_belonged(Node * root, Node * node);
 /* The hash-function FAQ6 */
 int faq6(const char * str);
 
+/* Display */
+void display_node(Node * node);
+void display_namespace(Node * node);
+
 /* Destructor */
 int namespace_destructor(Node * root);
-void display_node(Node * node);
 
 /* USAGE
     int * hello = malloc(sizeof(int)); *hello = 6996;
