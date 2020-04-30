@@ -17,8 +17,6 @@ Array ** main_parsing(char * input_stream) {
     Array ** literals = recursive_descent(input_stream); free(input_stream);
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
-    char tabs[512] = "\0"; display_array_beauty(parsed_tokens, tabs); exit(0);
-
 
     Array ** expression_tokens = expression_lexer(parsed_tokens);
 
@@ -71,6 +69,9 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_WHILE) {
             free(code[code_counter]->element);
+            free(code[code_counter]);
+        } else if (code[code_counter]->type_id == STMT_NAMESPACE) {
+            namespace_destructor_stmt(code[code_counter]->element);
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_FUNC) {
             Function * function_object = code[code_counter]->element;
