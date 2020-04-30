@@ -153,15 +153,6 @@ Constant * function_exec(Array ** function_code, Node * local_namespace) {
     Constant * returned_value;
     composer(function_code);
     returned_value = interpreter(function_code, local_namespace); (returned_value == NULL) ? returned_value = new_constant(NONE, NULL) : NULL;
-
-    /* if value having origin, remove node from namespace by origin and free the node value wrapper (Constant *) */
-    if (returned_value->origin != NULL) {
-        if (is_belonged(local_namespace, returned_value->origin)) {
-            free(remove_node(returned_value->origin));
-            returned_value->origin = NULL;
-        }
-    }
-
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
     namespace_destructor(local_namespace);
     return returned_value;
