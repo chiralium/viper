@@ -30,6 +30,10 @@ void display_array_beauty(Array ** _array, char * tabs) {
         } else if (_array[array_counter] -> type_id == STMT_RETURN) {
             printf("\n%s%s{STMT_RETURN; `%s`}: \n", tabs, tabs, ((Return *) (_array[array_counter]->element))->expression);
             printf("\n\n");
+        } else if (_array[array_counter] -> type_id == STMT_NAMESPACE) {
+            printf("\n%s%s{STMT_NAMESPACE; `%s`: \n", tabs, tabs, ((NameSpace *)(_array[array_counter]->element))->name);
+            display_statements(_array[array_counter]->element, 5, tabs);
+            printf("\n\n");
         } else if (_array[array_counter] -> type_id == EXP_TK) {
             char token_type_id = ((ExpressionToken *)(_array[array_counter] -> element)) -> type_id;
             char * token_literal = ((ExpressionToken *)(_array[array_counter] -> element)) -> literal;
@@ -145,6 +149,7 @@ void display_statements(void * statement, char type_id, char tabs[512]) {
     If * if_statement;
     Function * function_statement;
     While * while_statement;
+    NameSpace * namespace_statement;
     switch (type_id) {
         case 1:
             /* if-else statement */
@@ -183,6 +188,14 @@ void display_statements(void * statement, char type_id, char tabs[512]) {
             }
 
             if (if_statement->else_condition) display_statements(if_statement->else_condition, 4, tabs);
+            break;
+        case 5:
+            /* namespace */
+            namespace_statement = statement;
+            printf("%s%s%sNAMESPACE `%s`", tabs, tabs, tabs, namespace_statement->name);
+            printf("\n%s%s%sBODY:\n", tabs, tabs, tabs);
+            char child_tabs_ns[512]; strcpy(child_tabs_ns, tabs); strcat(child_tabs_ns, tabs);
+            display_array_beauty(namespace_statement->body, child_tabs_ns);
             break;
     }
 }

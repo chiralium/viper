@@ -17,6 +17,9 @@ Array ** main_parsing(char * input_stream) {
     Array ** literals = recursive_descent(input_stream); free(input_stream);
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
+    char tabs[512] = "\0"; display_array_beauty(parsed_tokens, tabs); exit(0);
+
+
     Array ** expression_tokens = expression_lexer(parsed_tokens);
 
     composer(expression_tokens); // compose the token list into objects

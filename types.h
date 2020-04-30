@@ -30,6 +30,7 @@
 #define STMT_FUNC             2
 #define STMT_WHILE            3
 #define STMT_RETURN          10
+#define STMT_NAMESPACE       15
 #define ARRAY_EL             'e'
 #define ELEMENT               6
 #define CONSTANT              7

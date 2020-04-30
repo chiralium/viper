@@ -21,12 +21,38 @@ Array ** parser(Array ** tokens) {
             token = next_token(tokens);
             return_statement->expression = alloc_string(token->value);
             parsed_tokens = append(parsed_tokens, STMT_RETURN, return_statement);
+        } else if (token->type_id == LEXER_NAMESPACE_TK) {
+            NameSpace * namespace_statement = get_namespace_statement(tokens);
+            parsed_tokens = append(parsed_tokens, STMT_NAMESPACE, namespace_statement);
         } else if (token->type_id == LEXER_EXPRESSION_TK) {
             parsed_tokens = append(parsed_tokens, TOKEN, token);
         } else throw_statement_exception("<complex>", PARSER_COMMON_SYNTAX_EXCEPTION);
     }
     _next = 0;
     return parsed_tokens;
+}
+
+NameSpace * get_namespace_statement(Array ** tokens) {
+    char * name; Array ** body;
+
+    Token * token = next_token(tokens);
+
+    if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
+        name = alloc_string(trim(token->value));
+        if (!is_statement_name_valid(name)) throw_statement_exception(name, PARSER_INVALID_STATEMENT_NAME);
+        token = next_token(tokens);
+        if (token && token->type_id == LEXER_COMPLEX_TK) body = copy_array(body, token->value);
+        else throw_statement_exception(name, PARSER_MISSING_NAMESPACE_BODY);
+    } else throw_statement_exception("namespace", PARSER_MISSING_NAMESPACE_NAME);
+    NameSpace * namespace_statement = make_namespace(name, body);
+    return namespace_statement;
+}
+
+NameSpace * make_namespace(char * name, Array ** body) {
+    NameSpace * namespace = malloc(sizeof(NameSpace));
+    namespace->name = name;
+    namespace->body = body;
+    return namespace;
 }
 
 If * get_if_statement(Array ** tokens) {
@@ -96,6 +122,7 @@ Function * get_function_statement(Array ** tokens) {
 
     if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
         name = extract_name(token->value);
+        if (!is_statement_name_valid(name)) throw_statement_exception(name, PARSER_INVALID_STATEMENT_NAME);
         arg_list = extract_args(token->value);
         token = next_token(tokens);
         if (token && token->type_id == LEXER_COMPLEX_TK) {
@@ -170,6 +197,17 @@ int is_duplicated_args(Array ** arg_list) {
     return 0;
 }
 
+int is_statement_name_valid(char * name) {
+    if (name == NULL) return 0;
+    int is_name = 0;
+    if (isdigit(*name)) return 0;
+    while (*name) {
+        if (!(is_name = isdigit(*name) || isalpha(*name) || *name == '_')) break;
+        name++;
+    }
+    return is_name;
+}
+
 Token * next_token(Array ** tokens) {
     if (tokens[_next]) return (Token *)(tokens[_next++] -> element);
     else return 0;
@@ -207,6 +245,12 @@ void while_destructor(While * statement) {
 
 void return_destructor(Return * statement) {
     free(statement->expression);
+    free(statement);
+}
+
+void namespace_destructor_stmt(NameSpace * statement) {
+    array_destructor(statement->body);
+    free(statement->name);
     free(statement);
 }
 

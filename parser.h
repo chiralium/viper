@@ -25,9 +25,18 @@
 #define PARSER_MISSING_WHILE_CONDITION       "the expression of `while` statement is not defined"
 #define PARSER_MISSING_WHILE_BODY            "the body of `while` statement is not defined"
 #define PARSER_COMMON_SYNTAX_EXCEPTION       "undefined block"
+#define PARSER_MISSING_NAMESPACE_BODY        "the body of `namespace` statement is not defined"
+#define PARSER_MISSING_NAMESPACE_NAME        "the namespace name is not defined"
+#define PARSER_INVALID_STATEMENT_NAME        "the name of the statement is not valid"
 
 /* Parameters */
 #define PARSER_MAX_FUNCTION_ARGS 50
+
+/* The structure namespace */
+typedef struct NameSpace {
+    char * name;
+    Array ** body;
+} NameSpace;
 
 /* The structure function will contained the information of function. Then this structure stored in NameSpace */
 typedef struct Function {
@@ -62,6 +71,12 @@ typedef struct Return {
 
 /* The function will parse the input token list and return the array with structures */
 Array ** parser(Array ** tokens);
+
+/* The function will create the new structure of NameSpace */
+NameSpace * make_namespace(char * name, Array ** body);
+
+/* The function will collect the elements of NameSpace-statement */
+NameSpace * get_namespace_statement(Array ** tokens);
 
 /* The function will create the new structure of If */
 If * make_if(char * condition, Array ** body, If * else_condition);
@@ -99,11 +114,15 @@ Token * get_token(Array ** tokens);
 /* The function will cut the space from start and end of the literal */
 char * trim(char * literal);
 
+/* The function will validate the statement name */
+int is_statement_name_valid(char * name);
+
 /* Destructors */
 void function_destructor(Function * statement);
 void if_destructor(If * statement);
 void while_destructor(While * statement);
 void return_destructor(Return * statement);
+void namespace_destructor_stmt(NameSpace * statement);
 
 /* Copy */
 Return * copy_return(Return * return_statement);
