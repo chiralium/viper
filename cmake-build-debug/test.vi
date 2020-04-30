@@ -139,15 +139,15 @@ NORET = non_returned_function(1);
 NORET;
 
 function get_array(x) : {
-r = {x + 1, x +  2, x + 3};
-return r;
+    r = {x + 1, x +  2, x + 3};
+    return r;
 }
 a = get_array(3.14);
 a;
 function change_array(array) : {
-array[0] = array[0] - 1;
-array[1] = array[1] - 1;
-array[2] = array[2] - 1;
+    array[0] = array[0] - 1;
+    array[1] = array[1] - 1;
+    array[2] = array[2] - 1;
 }
 
 array = {1, 2, 3, 4};
