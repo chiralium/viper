@@ -16,7 +16,7 @@ typedef struct Node {
 } Node;
 
 /* Create new namespace that extending the another namespace */
-Node * extending(Node * root);
+Node * extending(Node * root, Node * extended_namespace);
 
 /* The function will create the new node of tree */
 Node * new_node(int key, void * value);

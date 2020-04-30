@@ -53,7 +53,7 @@ Constant * function_precalc(FuncCall * function_call) {
     free(input_args); free(function_call);
 
     // performing the local name space
-    Node * local_namespace = performing_local_namespace(calculated_args, function_object);
+    Node * local_namespace = performing_local_namespace(calculated_args, function_object, namespace);
 
     // starting executing the function
     char * previous_statement_expression = expression_as_string; // save the previous debug string

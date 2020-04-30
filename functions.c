@@ -21,25 +21,21 @@ void overloaded_function_tree_destructor(Node * overloaded_function) {
     }
 }
 
-Node * performing_local_namespace(Array ** input_arguments, Function * function_object) {
-    /*
-     * create the function object into local namesapce and set not null origin for function object,
-     * cause the origin of this object is an parent namespace
-     * */
-    Constant * function = new_constant(FUNCTION, function_object);
-    Node * root = new_node(faq6(function_object->name), function);
-    function->origin = root;
-
-    /*
-     * create the local namespace by input parameters
-     */
+Node * performing_local_namespace(Array ** input_arguments, Function * function_object, Node * global_namespace) {
+    Node * root = extending(global_namespace, NULL);
     if (_get_len(function_object->arg_list) > 0) {
-        Array ** arguments = function_object->arg_list;
-        int counter = 0;
+        Array ** arguments = function_object->arg_list; int counter = 0;
         while (input_arguments[counter]) {
             char * arg_name = arguments[counter]->element;
-            Node * node = new_node(faq6(arg_name), input_arguments[counter]->element);
-            (root == NULL) ? root = insert_node(root, node) : insert_node(root, node);
+            Node * same_node = find_node(root, faq6(arg_name));
+            if (same_node == NULL) {
+                Node *node = new_node(faq6(arg_name), input_arguments[counter]->element);
+                (root == NULL) ? root = insert_node(root, node) : insert_node(root, node);
+            } else {
+                Constant * value = same_node->value;
+                is_simple_data(value->type_id) ? constant_destructor(value) : free(value);
+                same_node->value = input_arguments[counter]->element;
+            }
             free(input_arguments[counter]);
             counter++;
         }

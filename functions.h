@@ -23,7 +23,7 @@ typedef struct FunctionContainer {
 FunctionContainer * new_function_container(char * name, Node * functions);
 
 /* The function will be performing the local namespace by function object & function call */
-Node * performing_local_namespace(Array ** input_arguments, Function * function_object);
+Node * performing_local_namespace(Array ** input_arguments, Function * function_object, Node * global_namespace);
 
 /* The function will be validate function call by function object that stored in namespace */
 int validate_function_call(FuncCall * function_call, Function * function_object);

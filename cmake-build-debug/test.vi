@@ -1,20 +1,20 @@
 function inc(x, y) : {
-a = {1, 2, 3, 4};
-return x + y * a[3];
+    a = {1, 2, 3, 4};
+    return x + y * a[3];
 }
 
 function concat(string1, string2) : {
-resultString = string1 + string2;
-return resultString;
+    resultString = string1 + string2;
+    return resultString;
 }
 
 function non_argument_function() : {
-return "this is the returned value of non-arugment function. it is looks like";
+    return "this is the returned value of non-arugment function. it is looks like";
 }
 
 function non_returned_function(x) : {
-x = x + 1;
-"so, this is the function that not returning any values";
+    x = x + 1;
+    "so, this is the function that not returning any values";
 }
 
 a = {1, {"this is an", "array"}, 3, 4};
@@ -148,14 +148,14 @@ array;
 
 A = {1, 2}; B = {3, 4};
 function append_with_return(A, B) : {
-A[] = B;
-return A;
+    A[] = B;
+    return A;
 }
 
 function append_not_return(A, B) : {
-r = {"hello world", "this is local variale R"};
-B[1] = r;
-A[] = B;
+    r = {"hello world", "this is local variale R"};
+    B[1] = r;
+    A[] = B;
 }
 
 append_with_return(A, B); A;
@@ -163,8 +163,8 @@ C = {1, 2, 3};
 append_not_return(A[2], C); A;
 
 function t(A) : {
-F = A;
-return A;
+    F = A;
+    return A;
 }
 
 a = {1, 2, 3};
@@ -172,8 +172,8 @@ t(a);
 a;
 
 function t(A) : {
-F = {"another", "pointer"};
-F = A;
+    F = {"another", "pointer"};
+    F = A;
 return A;
 }
 
@@ -183,8 +183,8 @@ a = {{1, 2}, 2, 3};
 a = a[0];
 a;
 function get_string(x) : {
-A = {x + 1, x + 2, x + 3, x + 4};
-return A;
+    A = {x + 1, x + 2, x + 3, x + 4};
+    return A;
 }
 D = get_string(pi);
 D[0] = {3.14};
@@ -192,45 +192,45 @@ c = D; c = c[0, 3, 2];
 c;
 
 function foo(x) : {
-return x;
+    return x;
 }
 
 "first function:"; foo(pi);
 
 function foo(y) : {
-return y * y;
+    return y * y;
 }
 
 "second function:"; foo(pi);
 
 function f(x) : {
-return x;
+    return x;
 }
 
 function f() : {
-return 3.14;
+    return 3.14;
 }
 f(f() + 3);
 
 function f() : {
-return 3.14 * 1000;
+    return 3.14 * 1000;
 }
 
 function f(x) : {
-return x / 4;
+    return x / 4;
 }
 f(f() + 3);
 
 function foo(x)  : {
-return x;
+    return x;
 }
 
 function foo() : {
-return 3.14;
+    return 3.14;
 }
 
 function foo(x, y, z) : {
-return  1 / (x + y + z);
+    return  1 / (x + y + z);
 }
 
 foo();
@@ -261,3 +261,52 @@ function get_pointer(pointer) : {
 get_pointer(foo)(get_pointer(foo)(), get_pointer(foo)(2.7), get_pointer(foo)(1, 2, 3));
 pointers = {get_pointer(foo), get_pointer(F), get_pointer(inc)};
 pointers[0](pointers[1](pointers[0](), pointers[0]()));
+
+function f(x) : {
+    return pi + x;
+}
+
+function f(x, y) : {
+    return pi / (x + y);
+}
+
+function foo() : {
+    return f(pi);
+}
+
+function foo(x) : {
+    x = pi ^ 2;
+    return f(x, 2);
+}
+
+foo(1); pi;
+
+A = {1, 2, 3, 4, 5};
+function add(x) : {
+    A[] = foo(x);
+}
+add(foo());
+A;
+
+function add_by_arg(x) : {
+    x[] = "new value";
+}
+add_by_arg(A); A;
+
+function get_function_pointer(function_pointer) : {
+    return foo;
+}
+X = get_function_pointer(foo)(2.6); X;
+
+function add_by_arg_return(x) : {
+    x[] = "new value by return";
+    return x;
+}
+A = add_by_arg_return(A); A;
+
+function add_ret(x) : {
+    A[] = x;
+    return A;
+}
+A = add_ret({"hello world" => foo(777)});
+A;
