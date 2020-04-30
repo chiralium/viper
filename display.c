@@ -253,6 +253,11 @@ void display_constant(Constant * constant) {
                    ((FunctionContainer *)(constant->value))->name,
                    constant->value);
             break;
+        case NAMESPACE:
+            printf("<namespace `%s` at [0x%p]>",
+                   ((NameSpaceObject *)(constant->value))->name,
+                   constant->value);
+            break;
         /* Systems types */
         case ARRAY:
             printf("\n<array>: "); display_array(constant->value); printf("\n");

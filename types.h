@@ -9,6 +9,7 @@
 #define KEYPAIR       9
 #define FUNCTION     11
 #define NONE         12
+#define NAMESPACE    13
 
 /* Basic information types */
 #define INTEGER      'i'

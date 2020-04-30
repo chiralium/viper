@@ -71,7 +71,9 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             free(code[code_counter]->element);
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_NAMESPACE) {
-            namespace_destructor_stmt(code[code_counter]->element);
+            NameSpace * namespace_stmt = code[code_counter]->element;
+            result = namespace_exec(namespace_stmt, current_namespace);
+            namespace_declaration(result->value, current_namespace);
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_FUNC) {
             Function * function_object = code[code_counter]->element;
@@ -92,6 +94,31 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
 Constant * calculate_expression(Array ** expression, Node * current_namespace) {
     Constant * value = arithmetica_wrapper(expression, current_namespace);
     return value;
+}
+
+/* The calculated namespace must be declared into current namespace by his name */
+void namespace_declaration(NameSpaceObject * namespace, Node * current_namespace) {
+    Constant * namespace_constant = new_constant(NAMESPACE, namespace);
+    Node * namespace_node = new_node(faq6(namespace->name), namespace_constant);
+    insert_node(current_namespace, namespace_node);
+}
+
+/* The function will be execute the namespace body and store the namespace */
+Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) {
+    call_stack = append(call_stack, STRING, alloc_string(namespace_stmt->name));
+    Array ** namespace_code = namespace_stmt->body;
+    /* parsing the namespace code */
+    Array ** tokens = lexer(namespace_code);
+    Array ** parsed_tokens = parser(tokens);
+    Array ** expression_tokens = expression_lexer(parsed_tokens);
+    composer(expression_tokens);
+    array_destructor(namespace_code); array_destructor(tokens);
+    Node * local_namespace = extending(current_namespace, NULL); // extend the global namespace values
+    interpreter(expression_tokens, local_namespace);
+    NameSpaceObject * calculated_namespace_object = new_namespace_object(alloc_string(namespace_stmt->name), local_namespace);
+    Constant * namespace = new_constant(NAMESPACE, calculated_namespace_object);
+    Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+    return namespace;
 }
 
 /* The function will be parse the function code and store it into namespace */

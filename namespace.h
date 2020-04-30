@@ -7,6 +7,11 @@
 #ifndef VIPER_V4_NAMESPACE_H
 #define VIPER_V4_NAMESPACE_H
 
+typedef struct NameSpaceObject {
+    char * name;
+    struct Node * namespace;
+} NameSpaceObject;
+
 typedef struct Node {
     int key;
     void * value;
@@ -14,6 +19,9 @@ typedef struct Node {
     struct Node * right;
     struct Node * parent;
 } Node;
+
+/* Create new namespace object */
+NameSpaceObject * new_namespace_object(char * name, Node * value);
 
 /* Create new namespace that extending the another namespace */
 Node * extending(Node * root, Node * extended_namespace);
@@ -48,6 +56,7 @@ void display_namespace(Node * node);
 
 /* Destructor */
 int namespace_destructor(Node * root);
+int namespace_object_destructor(NameSpaceObject * namespace_object);
 
 /* USAGE
     int * hello = malloc(sizeof(int)); *hello = 6996;

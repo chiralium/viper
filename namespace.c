@@ -2,6 +2,13 @@
 #include "arithmetica.h"
 #include "display.h"
 
+NameSpaceObject * new_namespace_object(char * name, Node * value) {
+    NameSpaceObject * namespace_object = malloc(sizeof(NameSpaceObject));
+    namespace_object->name = name;
+    namespace_object->namespace = value;
+    return namespace_object;
+}
+
 Node * new_node(int key, void * value) {
     Node * node = malloc(sizeof(Node));
     node->key = key;
@@ -150,6 +157,12 @@ int namespace_destructor(Node * root) {
         if (root->right != NULL) namespace_destructor(root->right);
         free(root);
     }
+}
+
+int namespace_object_destructor(NameSpaceObject * namespace_object) {
+    free(namespace_object->name);
+    namespace_destructor(namespace_object->namespace);
+    free(namespace_object);
 }
 
 int is_belonged(Node * root, Node * node) {

@@ -20,6 +20,10 @@ Constant * interpreter(Array ** code, Node * current_namespace);
 /* The function will be send expression to arithmetica-module */
 Constant * calculate_expression(Array ** expression, Node * current_namespace);
 
+/* The declaration of calculated namespace */
+void namespace_declaration(NameSpaceObject * namespace, Node * current_namespace);
+/* The namespace will be execute after declared, but namespace is not destroying */
+Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace);
 
 /* The function will be store declared function into namespace */
 void function_declaration(Function * function_object, Node * current_namespace);
