@@ -23,9 +23,15 @@ MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
         memel->type = alloc_string("<function>");
     } else if (type_id == KEYPAIR) {
         Node *keypair = address;
-        char meta[255]; sprintf(meta, "%d", keypair->key);
+        char meta[255];
+        sprintf(meta, "%d", keypair->key);
         memel->meta = alloc_string(meta);
         memel->type = alloc_string("<keypair>");
+    } else if (type_id == NAMESPACE) {
+        NameSpaceObject * namespace = address;
+        char meta[255]; strcpy(meta, namespace->name);
+        memel->meta = alloc_string(meta);
+        memel->type = alloc_string("<namespace>");
     } else {
         memel->meta = alloc_string("<subdata>");
         memel->type = alloc_string("<subdata>");
@@ -51,6 +57,10 @@ void garbage_destructor(Array ** memory_table) {
         } else if (memel->type_id == VIARRAY) {
             Node * viarray = memel->address;
             namespace_destructor(viarray);
+            memel->is_freed = 1;
+        } else if (memel->type_id == NAMESPACE) {
+            NameSpaceObject * namespace = memel->address;
+            namespace_object_destructor(namespace);
             memel->is_freed = 1;
         }
         memory_table++;

@@ -100,6 +100,7 @@ Constant * calculate_expression(Array ** expression, Node * current_namespace) {
 void namespace_declaration(NameSpaceObject * namespace, Node * current_namespace) {
     Constant * namespace_constant = new_constant(NAMESPACE, namespace);
     Node * namespace_node = new_node(faq6(namespace->name), namespace_constant);
+    memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(NAMESPACE, namespace, "interpreter.c"));
     insert_node(current_namespace, namespace_node);
 }
 
@@ -118,6 +119,7 @@ Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) 
     NameSpaceObject * calculated_namespace_object = new_namespace_object(alloc_string(namespace_stmt->name), local_namespace);
     Constant * namespace = new_constant(NAMESPACE, calculated_namespace_object);
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+    free(namespace_stmt->name); free(namespace_stmt);
     return namespace;
 }
 

@@ -4,5 +4,4 @@ namespace CustomNameSpace : {
     }
     __name__ = "CustomNameSpace";
     __id__ = 123;
-    get_name();
 }
