@@ -34,6 +34,7 @@
 #define ARITHMETICA_CSB  "]"
 #define ARITHMETICA_COMA ","
 #define ARITHMETICA_ASC  "=>"
+#define ARITHMETICA_EXT  "->"
 
 /* The struct of index */
 typedef struct Index {
@@ -90,6 +91,8 @@ typedef struct Element {
 #define ARITHMETICA_OBJECT_NOT_ASSIGNABLE     "the object is not assignable"
 #define ARITHMETICA_OBJECT_NOT_HASHABLE       "the object is not hashable"
 #define ARITHMETICA_OBJECT_NOT_CALLABLE       "the object is not callable"
+#define ARITHMETICA_OBJECT_NOT_EXTRACTABLE    "the object is not extractable"
+#define ARITHMETICA_INVALID_NAME              "invalid name of attribute"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -103,6 +106,7 @@ void * _moreeq(void * x, void * y);
 void * _lesseq(void * x, void * y);
 void * _equal(void * x, void * y);
 void * _asc(void * x, void * y);
+void * _ext(void * x, void * y);
 void * _tmp(void * x, void * y);
 void * _asg(void * x, void * y);
 

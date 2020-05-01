@@ -4,6 +4,8 @@ namespace CustomNameSpace : {
     }
     __name__ = "CustomNameSpace";
     __id__ = 123;
+    array = {1, 2, 3, 4};
     get_name();
 }
-CustomNameSpace;
+f = CustomNameSpace->get_name;
+f();

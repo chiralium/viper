@@ -24,7 +24,7 @@ Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namesp
 Constant * function_precalc(FuncCall * function_call) {
     Array ** input_args = function_call->arg_list; Array ** function_pointer_expression = function_call->function_pointer;
 
-    // calculate the function pointer explression
+    // calculate the function pointer expression
     Constant * function_pointer = arithmetica(function_pointer_expression, namespace);
     if (function_pointer->type_id != FUNCTION_CONTAINER) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_CALLABLE);
     FunctionContainer * function_container = function_pointer->value;
@@ -275,14 +275,15 @@ Array ** fixing_unary_operators(Array ** expression_tokens) {
 
 int _get_priority(char * operator) {
     if (strcmp(operator, ARITHMETICA_ASG) == 0) return 0;
-    else if (strcmp(operator, ARITHMETICA_ASC) == 0) return 1;
+    else if (strcmp(operator, ARITHMETICA_EXT) == 0) return 1;
+    else if (strcmp(operator, ARITHMETICA_ASC) == 0) return 2;
     else if (strcmp(operator, ARITHMETICA_LESS) == 0 ||
              strcmp(operator, ARITHMETICA_MORE) == 0 ||
              strcmp(operator, ARITHMETICA_MEQ) ==  0 ||
-             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 2;
-    else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 3;
-    else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 4;
-    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 5;
+             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 3;
+    else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 4;
+    else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 5;
+    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 6;
     return -1;
 }
 
@@ -301,6 +302,7 @@ void * assign_function(char * literal) {
     else if (strcmp(literal, ARITHMETICA_POW) == 0) function_pointer = _pow;
     else if (strcmp(literal, ARITHMETICA_ASG) == 0) function_pointer = _asg;
     else if (strcmp(literal, ARITHMETICA_ASC) == 0) function_pointer = _asc;
+    else if (strcmp(literal, ARITHMETICA_EXT) == 0) function_pointer = _ext;
     else if (strcmp(literal, ARITHMETICA_OCB) == 0 ||
              strcmp(literal, ARITHMETICA_CCB) == 0 ||
              strcmp(literal, ARITHMETICA_OBB) == 0 ||
@@ -669,6 +671,29 @@ void * _lesseq(void * x, void * y) {
 
 void * _equal(void * x, void * y) {
     return NULL;
+}
+
+void * _ext(void * x, void * y) {
+    /* Extract the name from namespace */
+    // y->x
+    Element * result_el = NULL;
+    Element * x_el = x; Element * y_el = y;
+    if (get_from_namespace(y_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
+    if (y_el->vtype_id == NAMESPACE) {
+        char * name = x_el->literal;
+        if (!is_name(name)) throw_arithmetical_exception(expression_as_string, ARITHMETICA_INVALID_NAME);
+        NameSpaceObject * namespace_object = y_el->value;
+        Node * attribute = find_node(namespace_object->namespace, faq6(name));
+        if (attribute == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
+        Constant * attr_value = attribute->value;
+        result_el = malloc(sizeof(Element));
+        result_el->origin = attribute;
+        result_el->type_id = x_el->type_id;
+        result_el->vtype_id = attr_value->type_id;
+        result_el->value = copy_data(attr_value->value, attr_value->type_id);
+        element_destructor(x_el);
+    } else throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_EXTRACTABLE);
+    return result_el;
 }
 
 void * _asc(void * x, void * y) {

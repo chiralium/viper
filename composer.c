@@ -319,6 +319,7 @@ char get_operator_type(char * operator) {
     else if (strcmp(operator, ARITHMETICA_EQ) == 0) return OPERATOR_EQ;
     else if (strcmp(operator, ARITHMETICA_ASG) == 0) return OPERATOR_ASG;
     else if (strcmp(operator, ARITHMETICA_ASC) == 0) return OPERATOR_ASC;
+    else if (strcmp(operator, ARITHMETICA_EXT) == 0) return OPERATOR_EXT;
     return 0;
 }
 
