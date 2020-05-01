@@ -24,7 +24,7 @@
 #define LEXER_NAMESPACE_TK    11
 
 /* Lexer parameters */
-#define LEXER_MAX_VALUE  255
+#define LEXER_MAX_VALUE  1024
 
 /*
  * The structure Token having type_id -- the define and value -- the literals

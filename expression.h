@@ -16,14 +16,13 @@
 #define EXPRESSION_CONSTANT_TK        1
 #define EXPRESSION_OPERATOR_TK        2
 #define EXPRESSION_CONSTANT_FUNC_TK   3
-#define EXPRESSION_OPERATOR_EXT_TK    4
 
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS "!^+-*/=<>\\\0"
 #define EXPRESSION_TERMINATE_BRACKETS  ",{}()[]\0"
 
 /* Module parameters */
-#define EXPRESSION_MAX_LEN 255
+#define EXPRESSION_MAX_LEN 1024
 
 /* Expression exception messages */
 #define EXPRESSION_UNDEFINED_TOKEN            "undefined token"

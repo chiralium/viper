@@ -10,7 +10,10 @@ namespace CustomNameSpace : {
     __name__ = "CustomNameSpace";
     __id__ = 123;
     array = {1, 2, 3, 4};
-    get_name()();
+    get_name();
+    namespace innerSpace : {
+        __name__ = "innerSpace";
+    }
 }
-CustomNameSpace->array[0] = 3.14;
-CustomNameSpace->array;
+CustomNameSpace->innerSpace->__name__;
+CustomNameSpace->__name__;
