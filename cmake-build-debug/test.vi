@@ -1,11 +1,16 @@
 namespace CustomNameSpace : {
-    function get_name() : {
-        return pi;
+    function f() : {
+        return "im a pointer";
     }
+
+    function get_name() : {
+        return f;
+    }
+
     __name__ = "CustomNameSpace";
     __id__ = 123;
     array = {1, 2, 3, 4};
-    get_name();
+    get_name()();
 }
-f = CustomNameSpace->get_name;
-f();
+CustomNameSpace->array[0] = 3.14;
+CustomNameSpace->array;

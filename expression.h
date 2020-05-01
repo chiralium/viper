@@ -16,6 +16,7 @@
 #define EXPRESSION_CONSTANT_TK        1
 #define EXPRESSION_OPERATOR_TK        2
 #define EXPRESSION_CONSTANT_FUNC_TK   3
+#define EXPRESSION_OPERATOR_EXT_TK    4
 
 /* Terminate symbols */
 #define EXPRESSION_TERMINATE_OPERATORS "!^+-*/=<>\\\0"

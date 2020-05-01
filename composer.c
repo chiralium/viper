@@ -143,7 +143,7 @@ Array ** cut_index_object(Array ** exp_tokens, int * position) {
     while (exp_tokens[pos]) {
         token = exp_tokens[pos]->element;
         (token->type_id == OP_OPEN_CBRACK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
-        if (token->type_id == EXPRESSION_OPERATOR_TK && !is_bracket_start && o == c) break;
+        if (token->type_id == EXPRESSION_OPERATOR_TK && token->vtype_id != OPERATOR_EXT &&!is_bracket_start && o == c) break;
         else if (!is_bracket_start && c + o != 0) break;
         else {
             token = pop_exp_token(exp_tokens, pos);
@@ -221,7 +221,7 @@ Array ** cut_function_pointer(Array ** exp_tokens, int * position) {
     while (exp_tokens[pos]) {
         token = exp_tokens[pos]->element;
         (token->type_id == OP_OPEN_CBRACK) ? o++ : (token->type_id == OP_CLOSE_CBRACK) ? c++ : 0;
-        if (token->type_id == EXPRESSION_OPERATOR_TK && !is_bracket_start && o == c) break;
+        if (token->type_id == EXPRESSION_OPERATOR_TK && token->vtype_id != OPERATOR_EXT && !is_bracket_start && o == c) break;
         else if (!is_bracket_start && c + o != 0) break;
         else {
             token = pop_exp_token(exp_tokens, pos);
