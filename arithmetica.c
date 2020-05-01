@@ -275,15 +275,15 @@ Array ** fixing_unary_operators(Array ** expression_tokens) {
 
 int _get_priority(char * operator) {
     if (strcmp(operator, ARITHMETICA_ASG) == 0) return 0;
-    else if (strcmp(operator, ARITHMETICA_EXT) == 0) return 1;
-    else if (strcmp(operator, ARITHMETICA_ASC) == 0) return 2;
+    else if (strcmp(operator, ARITHMETICA_ASC) == 0) return 1;
     else if (strcmp(operator, ARITHMETICA_LESS) == 0 ||
              strcmp(operator, ARITHMETICA_MORE) == 0 ||
              strcmp(operator, ARITHMETICA_MEQ) ==  0 ||
-             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 3;
-    else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 4;
-    else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 5;
-    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 6;
+             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 2;
+    else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 3;
+    else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 4;
+    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 5;
+    else if (strcmp(operator, ARITHMETICA_EXT) == 0) return 6;
     return -1;
 }
 
@@ -691,6 +691,7 @@ void * _ext(void * x, void * y) {
         result_el->type_id = x_el->type_id;
         result_el->vtype_id = attr_value->type_id;
         result_el->value = copy_data(attr_value->value, attr_value->type_id);
+        result_el->literal = NULL;
         element_destructor(x_el);
     } else throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_EXTRACTABLE);
     return result_el;
