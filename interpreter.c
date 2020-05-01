@@ -74,6 +74,11 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             NameSpace * namespace_stmt = code[code_counter]->element;
             result = namespace_exec(namespace_stmt, current_namespace);
             namespace_declaration(result->value, current_namespace);
+            if (!is_return_call(call_stack)) {
+                (is_simple_data(result->type_id)) ? free(result->value) : NULL;
+                free(result);
+                result = NULL;
+            }
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_FUNC) {
             Function * function_object = code[code_counter]->element;

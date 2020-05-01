@@ -359,6 +359,9 @@ void constant_destructor(Constant * constant) {
             case KEYPAIR:
                 namespace_destructor(constant->value);
                 break;
+            case NAMESPACE:
+                namespace_object_destructor(constant->value);
+                break;
             case ARRAY:
             case ARRAY_EL:
                 array_destructor(constant->value);
@@ -794,8 +797,6 @@ int is_simple_data(char type_id) {
         case FLOAT:
         case STRING:
             return 1;
-        case VIARRAY:
-            return 0;
         default:
             return 0;
     }

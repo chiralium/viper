@@ -1,7 +1,9 @@
 namespace CustomNameSpace : {
     function get_name() : {
-        return __name__;
+        return pi;
     }
     __name__ = "CustomNameSpace";
     __id__ = 123;
+    get_name();
 }
+CustomNameSpace;
