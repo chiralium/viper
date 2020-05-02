@@ -168,10 +168,10 @@ void function_declaration(Function * function_object, Node * current_namespace) 
         Node * namespace_object = find_node(current_namespace, faq6(function_object->namespace));
         if (namespace_object == NULL) throw_arithmetical_exception(function_object->namespace, ARITHMETICA_UNDEFINED_NAME);
         else {
-            free(function_object->namespace);
             Constant * node_value = namespace_object->value;
+            if (node_value->type_id != NAMESPACE) throw_function_exception(function_object->namespace, FUNCTIONS_INVALID_NAMESPACE_TYPE, function_object->name);
             NameSpaceObject * specified_namespace = node_value->value;
-            function_object->namespace = specified_namespace->namespace;
+            free(function_object->namespace); function_object->namespace = specified_namespace->namespace;
         }
     }
 

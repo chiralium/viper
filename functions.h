@@ -19,6 +19,7 @@ typedef struct FunctionContainer {
 #define FUNCTIONS_INVALID_ARG_LIST       "invalid input arguments list for function <%s>"
 #define FUNCTIONS_REDEFINITION_WARNING   "the function was redefine"
 #define FUNCTIONS_OVERLOADING_WARNING    "the function was overloaded"
+#define FUNCTIONS_INVALID_NAMESPACE_TYPE "the function <%s> namespace having invalid type"
 
 /* The function will be create new function container by name */
 FunctionContainer * new_function_container(char * name, Node * functions, Node * namespace);
