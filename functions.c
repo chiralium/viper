@@ -62,6 +62,9 @@ Array ** copy_function_code(Array ** function_code) {
             /* If the element has type array it is means current part of code is an expressions */
             Array ** tokens; tokens = copy_array(tokens, function_code[counter]->element);
             copied_code = append(copied_code, ARRAY, tokens);
+        } else if (function_code[counter]->type_id == STMT_NAMESPACE) {
+            NameSpace * copied_namespace_statement = copy_namespace_statement(function_code[counter]->element);
+            copied_code = append(copied_code, STMT_NAMESPACE, copied_namespace_statement);
         } else if (function_code[counter]->type_id == STMT_RETURN) {
             Return * copied_return_statement = copy_return(function_code[counter]->element);
             copied_code = append(copied_code, STMT_RETURN, copied_return_statement);

@@ -277,3 +277,10 @@ Return * copy_return(Return * return_statement) {
     copied_statement->expression = alloc_string(return_statement->expression);
     return copied_statement;
 }
+
+NameSpace * copy_namespace_statement(NameSpace * namespace_statement) {
+    NameSpace * copied_statement = malloc(sizeof(NameSpace));
+    copied_statement->name = alloc_string(namespace_statement->name);
+    copied_statement->body = copy_array(copied_statement->body, namespace_statement->body);
+    return copied_statement;
+}

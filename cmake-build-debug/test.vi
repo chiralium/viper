@@ -370,3 +370,30 @@ function B f() : {
     return __name__;
 }
 f();
+
+function create_namespace(name) : {
+    namespace generic : {
+        function f() : {
+            return __name__;
+        }
+        string = "hello";
+        float = 3.14;
+        int = 3;
+        fp = f;
+        array = {string, float, int, fp, 1, 2, 3};
+    }
+    return generic;
+}
+A = create_namespace("new");
+A->array[3]();
+
+function A f() : {
+    return array;
+}
+
+function foo() : {
+    return A->__name__;
+}
+
+f()[3]();
+foo();
