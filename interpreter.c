@@ -104,8 +104,12 @@ Constant * calculate_expression(Array ** expression, Node * current_namespace) {
 /* The calculated namespace must be declared into current namespace by his name */
 void namespace_declaration(NameSpaceObject * namespace, Node * current_namespace) {
     char * namespace_name = namespace->name;
-    Node * namespace_node = find_node(current_namespace, faq6(namespace_name));
-    if (namespace_node == NULL) {
+    Node * namespace_node = find_node(current_namespace, faq6(namespace_name)); Constant * node_value = (namespace_node != NULL) ? namespace_node->value : NULL;
+    if (namespace_node == NULL || node_value->type_id != NAMESPACE) {
+        if (node_value != NULL) {
+            if (is_simple_data(node_value->type_id)) constant_destructor(node_value);
+            else free(node_value);
+        }
         Constant * namespace_constant = new_constant(NAMESPACE, namespace);
         Node * namespace_node = new_node(faq6(namespace->name), namespace_constant);
         memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(NAMESPACE, namespace, "interpreter.c"));
