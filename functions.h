@@ -12,6 +12,7 @@
 typedef struct FunctionContainer {
     char * name;
     Node * overloaded_functions;
+    Node * namespace;
 } FunctionContainer;
 
 /* Exception message */
@@ -20,10 +21,10 @@ typedef struct FunctionContainer {
 #define FUNCTIONS_OVERLOADING_WARNING    "the function was overloaded"
 
 /* The function will be create new function container by name */
-FunctionContainer * new_function_container(char * name, Node * functions);
+FunctionContainer * new_function_container(char * name, Node * functions, Node * namespace);
 
 /* The function will be performing the local namespace by function object & function call */
-Node * performing_local_namespace(Array ** input_arguments, Function * function_object, Node * global_namespace);
+Node * performing_local_namespace(Array ** input_arguments, Function * function_object);
 
 /* The function will be validate function call by function object that stored in namespace */
 int validate_function_call(FuncCall * function_call, Function * function_object);

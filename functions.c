@@ -1,9 +1,10 @@
 #include "functions.h"
 
-FunctionContainer * new_function_container(char * name, Node * functions) {
+FunctionContainer * new_function_container(char * name, Node * functions, Node * namespace) {
     FunctionContainer * function_container = malloc(sizeof(FunctionContainer));
     function_container->name = name;
     function_container->overloaded_functions = functions;
+    function_container->namespace = namespace;
     return function_container;
 }
 
@@ -21,8 +22,8 @@ void overloaded_function_tree_destructor(Node * overloaded_function) {
     }
 }
 
-Node * performing_local_namespace(Array ** input_arguments, Function * function_object, Node * global_namespace) {
-    Node * root = extending(global_namespace, NULL);
+Node * performing_local_namespace(Array ** input_arguments, Function * function_object) {
+    Node * root = extending(function_object->namespace, NULL);
     if (_get_len(function_object->arg_list) > 0) {
         Array ** arguments = function_object->arg_list; int counter = 0;
         while (input_arguments[counter]) {

@@ -321,7 +321,6 @@ namespace CustomNameSpace : {
     }
     __id__ = 123;
     array = {1, 2, 3, 4};
-    get_name();
     namespace innerSpace : {
         __id__ = 123;
     }

@@ -3,6 +3,7 @@
 #include "array.h"
 #include "operators.h"
 #include "keywords.h"
+#include "namespace.h"
 
 /*
  * The tools for parsing the token-list from lexer-module and create special structures for keyword-tokens.
@@ -43,6 +44,7 @@ typedef struct Function {
     char * name;
     Array ** arg_list;
     Array ** body;
+    Node * namespace;
 } Function;
 
 /* The structure If will contained the information about the if-statement */

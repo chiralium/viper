@@ -140,6 +140,9 @@ void function_declaration(Function * function_object, Node * current_namespace) 
 
     /* now, function object has a parsed code */
     function_object->body = expression_tokens;
+
+    /* if the function have no namespace, set it as default */
+    (function_object->namespace == NULL) ? function_object->namespace = current_namespace : NULL;
     char * function_name = function_object->name;
 
     /* find the function container by name */
@@ -154,7 +157,7 @@ void function_declaration(Function * function_object, Node * current_namespace) 
         /* if the container is not exist */
         int signature = get_function_signature(function_object->arg_list); // calculate the function signature
         Node * function = new_node(signature, function_object); // create node with function by his signature
-        FunctionContainer * function_container = new_function_container(alloc_string(function_name), function); // create container with a function
+        FunctionContainer * function_container = new_function_container(alloc_string(function_name), function, function_object->namespace); // create container with a function
         insert_node(current_namespace, new_node(faq6(function_name), new_constant(FUNCTION_CONTAINER, function_container))); // insert the container into current namespace
         memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(FUNCTION_CONTAINER, function_container, "interpreter.c")); // add container to a memory table
         memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(FUNCTION, function_object, "interpreter.c")); // add the function to a memory table

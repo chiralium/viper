@@ -138,7 +138,7 @@ Function * make_function(char * name, Array ** arg_list, Array ** body) {
     function_statement->name = name;
     function_statement->body = body;
     function_statement->arg_list = arg_list;
-
+    function_statement->namespace = NULL;
     return function_statement;
 }
 
