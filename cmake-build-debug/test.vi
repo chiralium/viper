@@ -395,7 +395,7 @@ function foo() : {
     return A->__name__;
 }
 
-f()[-3]();
+f()[3]();
 foo();
 
 namespace A : {

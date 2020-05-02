@@ -290,8 +290,9 @@ int is_return_call(Array ** call_stack) {
 void display_callstack(Array ** points) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
     GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE);
     printf("CallStack: ");
+    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
     while (*points) {
         printf("-> %s ", (*points)->element);
         points++;
