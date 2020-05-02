@@ -7,6 +7,9 @@
 #ifndef VIPER_V4_NAMESPACE_H
 #define VIPER_V4_NAMESPACE_H
 
+/* Exceptions & warnings */
+#define NAMESPACE_REDEFINED_WARNING "the namespace was be redefined"
+
 typedef struct NameSpaceObject {
     char * name;
     struct Node * namespace;

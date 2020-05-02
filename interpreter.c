@@ -72,7 +72,7 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_NAMESPACE) {
             NameSpace * namespace_stmt = code[code_counter]->element;
-            result = namespace_exec(namespace_stmt, current_namespace);
+            result = namespace_exec(namespace_stmt);
             namespace_declaration(result->value, current_namespace);
             if (!is_return_call(call_stack)) {
                 (is_simple_data(result->type_id)) ? free(result->value) : NULL;
@@ -103,14 +103,26 @@ Constant * calculate_expression(Array ** expression, Node * current_namespace) {
 
 /* The calculated namespace must be declared into current namespace by his name */
 void namespace_declaration(NameSpaceObject * namespace, Node * current_namespace) {
-    Constant * namespace_constant = new_constant(NAMESPACE, namespace);
-    Node * namespace_node = new_node(faq6(namespace->name), namespace_constant);
-    memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(NAMESPACE, namespace, "interpreter.c"));
-    insert_node(current_namespace, namespace_node);
+    char * namespace_name = namespace->name;
+    Node * namespace_node = find_node(current_namespace, faq6(namespace_name));
+    if (namespace_node == NULL) {
+        Constant * namespace_constant = new_constant(NAMESPACE, namespace);
+        Node * namespace_node = new_node(faq6(namespace->name), namespace_constant);
+        memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(NAMESPACE, namespace, "interpreter.c"));
+        insert_node(current_namespace, namespace_node);
+    } else {
+        throw_warning_message(namespace_name, NAMESPACE_REDEFINED_WARNING);
+        Constant * node_value = namespace_node->value;
+        NameSpaceObject * old_object = node_value->value;
+        namespace_destructor(old_object->namespace);
+        old_object->namespace = namespace->namespace;
+        free(namespace->name);
+        free(namespace);
+    }
 }
 
 /* The function will be execute the namespace body and store the namespace */
-Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) {
+Constant * namespace_exec(NameSpace * namespace_stmt) {
     call_stack = append(call_stack, STRING, alloc_string(namespace_stmt->name));
     Array ** namespace_code = namespace_stmt->body;
     /* parsing the namespace code */
@@ -119,11 +131,15 @@ Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) 
     Array ** expression_tokens = expression_lexer(parsed_tokens);
     composer(expression_tokens);
     array_destructor(namespace_code); array_destructor(tokens);
+
     Node * local_namespace = new_node(faq6("__name__"), new_constant(STRING, alloc_string(namespace_stmt->name)));
     interpreter(expression_tokens, local_namespace);
+
     NameSpaceObject * calculated_namespace_object = new_namespace_object(alloc_string(namespace_stmt->name), local_namespace);
     Constant * namespace = new_constant(NAMESPACE, calculated_namespace_object);
+
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+
     free(namespace_stmt->name); free(namespace_stmt);
     return namespace;
 }
