@@ -119,7 +119,7 @@ Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) 
     Array ** expression_tokens = expression_lexer(parsed_tokens);
     composer(expression_tokens);
     array_destructor(namespace_code); array_destructor(tokens);
-    Node * local_namespace = extending(current_namespace, NULL); // extend the global namespace values
+    Node * local_namespace = new_node(faq6("__name__"), new_constant(STRING, alloc_string(namespace_stmt->name)));
     interpreter(expression_tokens, local_namespace);
     NameSpaceObject * calculated_namespace_object = new_namespace_object(alloc_string(namespace_stmt->name), local_namespace);
     Constant * namespace = new_constant(NAMESPACE, calculated_namespace_object);

@@ -312,22 +312,20 @@ A = add_ret({"hello world" => foo(777)});
 A;
 
 namespace CustomNameSpace : {
-    function local_f() : {
+    function f() : {
         return "im a pointer";
     }
 
     function get_name() : {
-        return local_f;
+        return f;
     }
-
-    __name__ = "CustomNameSpace";
     __id__ = 123;
-    local_array = {1, 2, 3, 4};
+    array = {1, 2, 3, 4};
     get_name();
     namespace innerSpace : {
-        __name__ = "innerSpace";
-        local_f();
+        __id__ = 123;
     }
 }
-CustomNameSpace->innerSpace->__name__;
+CustomNameSpace->innerSpace->__name__[0];
 CustomNameSpace->__name__;
+CustomNameSpace->get_name()();
