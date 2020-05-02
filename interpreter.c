@@ -212,6 +212,7 @@ void function_declaration(Function * function_object, Node * current_namespace) 
             old_function->name = function_object->name;
             old_function->arg_list = function_object->arg_list;
             old_function->body = function_object->body;
+            old_function->namespace = function_object->namespace;
             free(function_object);
         }
     }
