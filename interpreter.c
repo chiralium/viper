@@ -1,3 +1,4 @@
+#include <windows.h>
 #include "interpreter.h"
 #include "expression.h"
 #include "composer.h"
@@ -54,7 +55,15 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
-            display_callstack(call_stack); printf(">>> "); display_constant(result); printf("\n");
+
+            display_callstack(call_stack);
+            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+            GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE);
+            printf(">>> ");
+            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+            display_constant(result); printf("\n");
+
             /* destroy the result if the is not return statement */
             if (!is_return_call(call_stack)) {
                 (is_simple_data(result->type_id)) ?
@@ -279,9 +288,13 @@ int is_return_call(Array ** call_stack) {
 }
 
 void display_callstack(Array ** points) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
     printf("CallStack: ");
     while (*points) {
         printf("-> %s ", (*points)->element);
         points++;
     }
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }

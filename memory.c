@@ -1,4 +1,4 @@
-#include "windows.h"
+#include <windows.h>
 #include "memory.h"
 #include "functions.h"
 
@@ -68,8 +68,8 @@ void garbage_destructor(Array ** memory_table) {
 }
 
 void display_memory_table(Array ** memory_table) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo; WORD saved_attributes;
-    GetConsoleScreenBufferInfo(hConsole, &consoleInfo); saved_attributes = consoleInfo.wAttributes;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
     SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
     printf("*---------------------------------------------------- MEM. ----------------------------------------------------* \n");
     printf("|       TYPE       |   ADDRESS    |               META               |                OWNER             | free |\n");
