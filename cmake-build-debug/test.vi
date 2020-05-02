@@ -1,30 +1,22 @@
-function create_namespace(name) : {
-    namespace generic : {
-        function f() : {
-            return __name__;
-        }
-        string = "hello";
-        float = 3.14;
-        int = 3;
-        fp = f;
-        array = {string, float, int, fp, 1, 2, 3};
-        asc_array = {"A" => string, "B" => float, "C" => int, "D" => fp, "E" => array};
+namespace A : {
+    "Custom namespace for function";
+    pi = 3.14; g = 9.8; e = 2.7;
+};
+
+function A foo() : {
+    function f(x) : {
+        return x;
     }
-    return generic;
+
+    function f(x, y) : {
+        return 1 + (x / y);
+    }
+
+    function f(x, y, z) : {
+        return x ^ z + 2 * x * y - y ^ z;
+    }
+    f1 = f(pi); f2 = f(f1, g); f3 = f(f1, f2, e);
+    return f1 + f2 + f3;
 }
 
-A = create_namespace("new");
-A->array[] = 4;
-A->array;
-A->asc_array;
-B = A;
-
-function pi f() : {
-    f();
-    return array;
-}
-
-function foo() : {
-    return A->__name__;
-}
-f();
+foo();

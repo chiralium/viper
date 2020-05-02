@@ -131,6 +131,7 @@ void namespace_destructor_stmt(NameSpace * statement);
 
 /* Copy */
 Return * copy_return(Return * return_statement);
+Function * copy_function(Function * function_statement);
 NameSpace * copy_namespace_statement(NameSpace * namespace_statement);
 
 #endif //VIPER_V4_PARSER_H

@@ -284,3 +284,12 @@ NameSpace * copy_namespace_statement(NameSpace * namespace_statement) {
     copied_statement->body = copy_array(copied_statement->body, namespace_statement->body);
     return copied_statement;
 }
+
+Function * copy_function(Function * function_statement) {
+    Function * copied_statement = malloc(sizeof(Function));
+    copied_statement->name = alloc_string(function_statement->name);
+    copied_statement->namespace = (function_statement->namespace != NULL)  ? alloc_string(function_statement->namespace) : NULL;
+    copied_statement->arg_list = copy_array(copied_statement->arg_list, function_statement->arg_list);
+    copied_statement->body = copy_array(copied_statement->body, function_statement->body);
+    return copied_statement;
+}
