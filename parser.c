@@ -116,12 +116,15 @@ While * make_while(char * condition, Array ** body) {
 }
 
 Function * get_function_statement(Array ** tokens) {
-    char * name; Array ** body; Array ** arg_list = NULL;
+    char * name = NULL; char * namespace_name = NULL;
+    Array ** body; Array ** arg_list = NULL;
 
     Token * token = next_token(tokens);
 
     if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
         name = extract_name(token->value);
+        namespace_name = extract_namespace_name(name);
+        if (!is_statement_name_valid(namespace_name) && namespace_name != NULL) throw_statement_exception(namespace_name, PARSER_INVALID_STATEMENT_NAME);
         if (!is_statement_name_valid(name)) throw_statement_exception(name, PARSER_INVALID_STATEMENT_NAME);
         arg_list = extract_args(token->value);
         token = next_token(tokens);
@@ -129,16 +132,16 @@ Function * get_function_statement(Array ** tokens) {
             body = copy_array(body, token->value);
         } else throw_statement_exception(name, PARSER_MISSING_FUNC_BODY);
     } else throw_statement_exception("function", PARSER_MISSING_FUNC_PARAMS);
-    Function * function_statement = make_function(name, arg_list, body);
+    Function * function_statement = make_function(namespace_name, name, arg_list, body);
     return function_statement;
 }
 
-Function * make_function(char * name, Array ** arg_list, Array ** body) {
+Function * make_function(char * namespace_name, char * name, Array ** arg_list, Array ** body) {
     Function * function_statement = malloc(sizeof(Function));
     function_statement->name = name;
     function_statement->body = body;
     function_statement->arg_list = arg_list;
-    function_statement->namespace = NULL;
+    function_statement->namespace = namespace_name;
     return function_statement;
 }
 
@@ -166,6 +169,21 @@ char * extract_name(char * literal) {
     char * name = cut_token(literal, OP_OPEN_CBRACK);
     if (*name) return name;
     else throw_statement_exception("function", PARSER_MISSING_FUNC_NAME);
+}
+
+char * extract_namespace_name(char * literal) {
+    char * namespace_and_function_name = alloc_string(literal);
+    char * name = cut_token(namespace_and_function_name, OP_SPACE);
+    if (*namespace_and_function_name) {
+        free(cut_token(literal, OP_SPACE));
+        literal = trim(literal);
+        free(namespace_and_function_name);
+        return name;
+    } else {
+        free(namespace_and_function_name);
+        free(name);
+        return NULL;
+    }
 }
 
 int is_duplicated_args(Array ** arg_list) {

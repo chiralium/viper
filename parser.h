@@ -44,7 +44,7 @@ typedef struct Function {
     char * name;
     Array ** arg_list;
     Array ** body;
-    Node * namespace;
+    void * namespace;
 } Function;
 
 /* The structure If will contained the information about the if-statement */
@@ -87,7 +87,7 @@ If * make_if(char * condition, Array ** body, If * else_condition);
 If * get_if_statement(Array ** tokens);
 
 /* The function will create the new structure of Function */
-Function * make_function(char * name, Array ** arg_list, Array ** body);
+Function * make_function(char * namespace_name, char * name, Array ** arg_list, Array ** body);
 
 /* The function will collect the elements of function-statement */
 Function * get_function_statement(Array ** tokens);
@@ -97,6 +97,9 @@ Array ** extract_args(char * literal);
 
 /* The function will extract the name from literal */
 char * extract_name(char * literal);
+
+/* The function will extract the namespace name */
+char * extract_namespace_name(char * literal);
 
 /* The function will checking for the duplicate argument declarations */
 int is_duplicated_args(Array ** arg_list);

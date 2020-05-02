@@ -142,7 +142,19 @@ void function_declaration(Function * function_object, Node * current_namespace) 
     function_object->body = expression_tokens;
 
     /* if the function have no namespace, set it as default */
-    (function_object->namespace == NULL) ? function_object->namespace = current_namespace : NULL;
+    if (function_object->namespace == NULL) function_object->namespace = current_namespace;
+    else {
+        /* getting namespace object by name */
+        Node * namespace_object = find_node(current_namespace, faq6(function_object->namespace));
+        if (namespace_object == NULL) throw_arithmetical_exception(function_object->namespace, ARITHMETICA_UNDEFINED_NAME);
+        else {
+            free(function_object->namespace);
+            Constant * node_value = namespace_object->value;
+            NameSpaceObject * specified_namespace = node_value->value;
+            function_object->namespace = specified_namespace->namespace;
+        }
+    }
+
     char * function_name = function_object->name;
 
     /* find the function container by name */

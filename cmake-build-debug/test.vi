@@ -312,19 +312,14 @@ A = add_ret({"hello world" => foo(777)});
 A;
 
 namespace CustomNameSpace : {
-    function f() : {
-        return "im a pointer";
-    }
-
-    function get_name() : {
-        return f;
-    }
-    __id__ = 123;
-    array = {1, 2, 3, 4};
-    namespace innerSpace : {
-        __id__ = 123;
-    }
+    pi = 3.14;
+    e = 2.7;
+    g = 9.8;
 }
-CustomNameSpace->innerSpace->__name__[0];
-CustomNameSpace->__name__;
-CustomNameSpace->get_name()();
+
+function CustomNameSpace fx() : {
+    "The function which using the custom namespace";
+    pi; e; g;
+    return "the namespace name is : " +  __name__;
+}
+fx();

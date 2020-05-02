@@ -160,7 +160,7 @@ void display_statements(void * statement, char type_id, char tabs[512]) {
         case 2:
             /* function statement */
             function_statement = statement;
-            printf("%s%s%sFUNCTION `%s` ARG: ", tabs, tabs, tabs, function_statement->name);
+            printf("%s%s%sFUNCTION `%s` NS `%s` ARG: ", tabs, tabs, tabs, function_statement->name, function_statement->namespace);
             if (function_statement->arg_list) {
                 display_array(function_statement->arg_list);
             }
