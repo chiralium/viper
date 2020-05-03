@@ -55,7 +55,6 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
-
             display_callstack(call_stack);
             HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
             GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
@@ -63,15 +62,8 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             printf(">>> ");
             SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
             display_constant(result); printf("\n");
-
-            /* destroy the result if the is not return statement */
-            if (!is_return_call(call_stack)) {
-                (is_simple_data(result->type_id)) ?
-                    free(result->value) :
-                    NULL;
-                free(result);
-                result = NULL;
-            }
+            (is_simple_data(result->type_id)) ? free(result->value) : NULL;
+            free(result); result = NULL;
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_IF) {
             If * if_statement = code[code_counter]->element;
@@ -84,11 +76,8 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             NameSpace * namespace_stmt = code[code_counter]->element;
             result = namespace_exec(namespace_stmt);
             namespace_declaration(result->value, current_namespace);
-            if (!is_return_call(call_stack)) {
-                (is_simple_data(result->type_id)) ? free(result->value) : NULL;
-                free(result);
-                result = NULL;
-            }
+            (is_simple_data(result->type_id)) ? free(result->value) : NULL;
+            free(result); result = NULL;
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_FUNC) {
             Function * function_object = code[code_counter]->element;
@@ -254,7 +243,17 @@ Constant * return_exec(char * return_expression, Node * local_namespace) {
 
     composer(expression_tokens);
 
-    result = interpreter(expression_tokens, local_namespace);
+    result = calculate_expression(expression_tokens[0]->element, local_namespace);
+
+    display_callstack(call_stack);
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE);
+    printf(">>> ");
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+    display_constant(result); printf("\n");
+
+    free(expression_tokens[0]); free(expression_tokens);
     array_destructor(literals); array_destructor(tokens);
 
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
