@@ -1,3 +1,4 @@
+#include <windows.h>
 #include "display.h"
 #include "ViArray.h"
 #include "functions.h"
@@ -278,4 +279,30 @@ void display_function(FuncCall * function, char tabs[512]) {
     printf("<function>: \n");
     display_array_beauty(function->function_pointer, tabs);
     display_array_beauty(function->arg_list, tabs);
+}
+
+void display_callstack(Array ** points) {
+    set_color_scheme(COLOR_SCHEME_CALL_STACK_HEAD);
+    printf("CallStack: ");
+    set_color_scheme(COLOR_SCHEME_CALL_STACK_TAIL);
+    while (*points) {
+        printf("-> %s ", (*points)->element);
+        points++;
+    }
+    set_color_scheme(-1);
+}
+
+void set_color_scheme(int scheme) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+    switch (scheme) {
+        case COLOR_SCHEME_WARNING: SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE); break;
+        case COLOR_SCHEME_EXCEPTION: SetConsoleTextAttribute(hConsole, FOREGROUND_RED); break;
+        case COLOR_SCHEME_CALL_STACK_HEAD: SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE); break;
+        case COLOR_SCHEME_CALL_STACK_TAIL: SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY); break;
+        case COLOR_SCHEME_INTERPRETER_OUTPUT: SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE); break;
+        case COLOR_SCHEME_MEMORY_TABLE: SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN); break;
+        case COLOR_SCHEME_DEFAULT: SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN); break;
+        default: SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+    }
 }

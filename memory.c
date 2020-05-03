@@ -1,6 +1,6 @@
-#include <windows.h>
 #include "memory.h"
 #include "functions.h"
+#include "display.h"
 
 MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
     MemoryElement * memel = malloc(sizeof(MemoryElement));
@@ -68,9 +68,7 @@ void garbage_destructor(Array ** memory_table) {
 }
 
 void display_memory_table(Array ** memory_table) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+    set_color_scheme(COLOR_SCHEME_MEMORY_TABLE);
     printf("*---------------------------------------------------- MEM. ----------------------------------------------------* \n");
     printf("|       TYPE       |   ADDRESS    |               META               |                OWNER             | free |\n");
     printf("*--------------------------------------------------------------------------------------------------------------* \n");
@@ -93,7 +91,7 @@ void display_memory_table(Array ** memory_table) {
         counter++;
     }
     printf("*--------------------------------------------------------------------------------------------------------------* \n");
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+    set_color_scheme(-1);
 }
 
 void memory_table_destructor(Array ** memory_table) {

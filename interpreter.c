@@ -1,9 +1,9 @@
-#include <windows.h>
 #include "interpreter.h"
 #include "expression.h"
 #include "composer.h"
 #include "functions.h"
 #include "memory.h"
+#include "display.h"
 
 extern Array ** call_stack;
 extern Array ** memory_table;
@@ -56,11 +56,9 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
             display_callstack(call_stack);
-            HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-            GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE);
+            set_color_scheme(COLOR_SCHEME_INTERPRETER_OUTPUT);
             printf(">>> ");
-            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+            set_color_scheme(-1);
             display_constant(result); printf("\n");
             (is_simple_data(result->type_id)) ? free(result->value) : NULL;
             free(result); result = NULL;
@@ -246,12 +244,11 @@ Constant * return_exec(char * return_expression, Node * local_namespace) {
     result = calculate_expression(expression_tokens[0]->element, local_namespace);
 
     display_callstack(call_stack);
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE);
+    set_color_scheme(COLOR_SCHEME_INTERPRETER_OUTPUT);
     printf(">>> ");
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    display_constant(result); printf("\n");
+    set_color_scheme(-1);
+    display_constant(result);
+    printf("\n");
 
     free(expression_tokens[0]); free(expression_tokens);
     array_destructor(literals); array_destructor(tokens);
@@ -322,17 +319,4 @@ int is_return_call(Array ** call_stack) {
     Array * last_call = get_last_el(call_stack);
     char * call_name = last_call->element;
     return strcmp(call_name, "return") == 0;
-}
-
-void display_callstack(Array ** points) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE);
-    printf("CallStack: ");
-    SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-    while (*points) {
-        printf("-> %s ", (*points)->element);
-        points++;
-    }
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
