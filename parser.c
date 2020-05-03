@@ -252,6 +252,7 @@ void function_destructor(Function * statement) {
 
 void if_destructor(If * statement) {
     if (statement->else_condition) if_destructor(statement->else_condition);
+    array_destructor(statement->body);
     free(statement);
 }
 

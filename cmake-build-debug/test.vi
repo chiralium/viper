@@ -428,3 +428,12 @@ function cmp(x, y) : {
     return x == y;
 }
 !cmp("hello world", "hello world!");
+
+a = 0;
+if (a > 0) : {
+    "is positive";
+} else (a < 0) : {
+    "is negative";
+} else : {
+    "is zero";
+}

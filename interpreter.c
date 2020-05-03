@@ -74,8 +74,9 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             }
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_IF) {
-            if_destructor(code[code_counter]->element);
-            free(code[code_counter]);
+            If * if_statement = code[code_counter]->element;
+            if_statement_exec(if_statement, current_namespace);
+            if_destructor(if_statement); free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_WHILE) {
             free(code[code_counter]->element);
             free(code[code_counter]);
@@ -258,6 +259,43 @@ Constant * return_exec(char * return_expression, Node * local_namespace) {
 
     Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
     return result;
+}
+
+Constant * if_condition_exec(char * condition, Node * current_namespace) {
+    Constant * result;
+    Array ** literals = recursive_descent(condition); free(condition);
+    Array ** tokens = lexer(literals);
+    Array ** parsed_tokens = parser(tokens);
+    Array ** expression_tokens = expression_lexer(parsed_tokens);
+
+    composer(expression_tokens);
+
+    result = calculate_expression(expression_tokens[0]->element, current_namespace);
+    free(expression_tokens[0]); free(expression_tokens);
+    array_destructor(literals); array_destructor(tokens);
+    return result;
+}
+
+void if_body_exec(Array ** code, Node * current_namespace) {
+    Array ** tokens = lexer(code);
+    Array ** parsed_tokens = parser(tokens);
+    Array ** expression_tokens = expression_lexer(parsed_tokens);
+
+    composer(expression_tokens);
+
+    interpreter(expression_tokens, current_namespace);
+    array_destructor(tokens);
+}
+
+void if_statement_exec(If * statement, Node * current_namespace) {
+    if (statement->condition != NULL) {
+        char * condition = alloc_string(statement->condition);
+        Constant * condition_value = if_condition_exec(statement->condition, current_namespace); int flag = *(int *)condition_value->value;
+        if (!is_simple_data(condition_value->type_id)) throw_statement_exception(condition, INTERPRETER_INVALID_IF_STATEMENT_VALUE);
+        free(condition); constant_destructor(condition_value);
+        if (flag) if_body_exec(statement->body, current_namespace);
+        else if (statement->else_condition != NULL) if_statement_exec(statement->else_condition, current_namespace);
+    } else if_body_exec(statement->body, current_namespace);
 }
 
 Node * meta_data() {
