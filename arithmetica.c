@@ -260,7 +260,7 @@ Array ** fixing_unary_operators(Array ** expression_tokens) {
     int token_counter = 0;
     while (expression_tokens[token_counter]) {
         Element * token = expression_tokens[token_counter]->element;
-        if (token->vtype_id == OPERATOR_PLUS || token->vtype_id == OPERATOR_MINUS) {
+        if (token->vtype_id == OPERATOR_PLUS || token->vtype_id == OPERATOR_MINUS || token->vtype_id == OPERATOR_NOT) {
             if (!token_counter) expression_tokens = insert(expression_tokens, EXP_TK, make_zero_tk(), token_counter++);
             else if ( ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == OP_OPEN_CBRACK ||
                       ((ExpressionToken *)(expression_tokens[token_counter - 1]->element))->type_id == EXPRESSION_OPERATOR_TK) expression_tokens = insert(expression_tokens,
@@ -276,14 +276,15 @@ Array ** fixing_unary_operators(Array ** expression_tokens) {
 int _get_priority(char * operator) {
     if (strcmp(operator, ARITHMETICA_ASG) == 0) return 0;
     else if (strcmp(operator, ARITHMETICA_ASC) == 0) return 1;
+    else if (strcmp(operator, ARITHMETICA_NOT) == 0) return 2;
     else if (strcmp(operator, ARITHMETICA_LESS) == 0 ||
              strcmp(operator, ARITHMETICA_MORE) == 0 ||
              strcmp(operator, ARITHMETICA_MEQ) ==  0 ||
-             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 2;
-    else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 3;
-    else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 4;
-    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 5;
-    else if (strcmp(operator, ARITHMETICA_EXT) == 0) return 6;
+             strcmp(operator, ARITHMETICA_LEQ) ==  0) return 3;
+    else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 4;
+    else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 5;
+    else if (strcmp(operator, ARITHMETICA_POW) == 0) return 6;
+    else if (strcmp(operator, ARITHMETICA_EXT) == 0) return 7;
     return -1;
 }
 
@@ -650,7 +651,20 @@ void * _pow(void * x, void * y){
 }
 
 void * _not(void * x, void * y) {
-    return NULL;
+    // y!x, where x is 0
+    Element * result_el = NULL;
+    Element * y_el = y; Element * x_el = x;
+    if (get_from_namespace(x_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);
+    int * result = malloc(sizeof(int)); *result = !(*(int *)x_el->value);
+    result_el = malloc(sizeof(Element));
+    result_el->origin = NULL;
+    result_el->type_id = x_el->type_id;
+    result_el->vtype_id = INTEGER;
+    result_el->value = result;
+    result_el->literal = NULL;
+    x_el->origin = NULL;
+    element_destructor(x_el);
+    return result_el;
 }
 
 void * _more(void * x, void * y) {
