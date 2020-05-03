@@ -65,6 +65,9 @@ Array ** copy_function_code(Array ** function_code) {
         } else if (function_code[counter]->type_id == STMT_NAMESPACE) {
             NameSpace * copied_namespace_statement = copy_namespace_statement(function_code[counter]->element);
             copied_code = append(copied_code, STMT_NAMESPACE, copied_namespace_statement);
+        } else if (function_code[counter]->type_id == STMT_IF) {
+            If * copied_if = copy_if(function_code[counter]->element);
+            copied_code = append(copied_code, STMT_IF, copied_if);
         } else if (function_code[counter]->type_id == STMT_FUNC) {
             Function * copied_function_statement = copy_function(function_code[counter]->element);
             copied_code = append(copied_code, STMT_FUNC, copied_function_statement);

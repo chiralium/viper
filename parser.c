@@ -252,6 +252,7 @@ void function_destructor(Function * statement) {
 
 void if_destructor(If * statement) {
     if (statement->else_condition) if_destructor(statement->else_condition);
+    free(statement->condition);
     array_destructor(statement->body);
     free(statement);
 }
@@ -292,5 +293,13 @@ Function * copy_function(Function * function_statement) {
     copied_statement->namespace = (function_statement->namespace != NULL)  ? alloc_string(function_statement->namespace) : NULL;
     copied_statement->arg_list = copy_array(copied_statement->arg_list, function_statement->arg_list);
     copied_statement->body = copy_array(copied_statement->body, function_statement->body);
+    return copied_statement;
+}
+
+If * copy_if(If * if_statement) {
+    If * copied_statement = malloc(sizeof(If));
+    copied_statement->condition = alloc_string(if_statement->condition);
+    copied_statement->body = copy_array(copied_statement->body, if_statement->body);
+    if (if_statement->else_condition != NULL) copied_statement->else_condition = copy_if(if_statement->else_condition);
     return copied_statement;
 }

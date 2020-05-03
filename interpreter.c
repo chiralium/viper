@@ -259,7 +259,7 @@ Constant * return_exec(char * return_expression, Node * local_namespace) {
 
 Constant * if_condition_exec(char * condition, Node * current_namespace) {
     Constant * result;
-    Array ** literals = recursive_descent(condition); free(condition);
+    Array ** literals = recursive_descent(condition);
     Array ** tokens = lexer(literals);
     Array ** parsed_tokens = parser(tokens);
     Array ** expression_tokens = expression_lexer(parsed_tokens);
