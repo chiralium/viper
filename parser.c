@@ -251,7 +251,7 @@ void function_destructor(Function * statement) {
 }
 
 void if_destructor(If * statement) {
-    if (statement->else_condition) if_destructor(statement->else_condition);
+    if (statement->else_condition != NULL) if_destructor(statement->else_condition);
     free(statement->condition);
     array_destructor(statement->body);
     free(statement);
@@ -301,5 +301,6 @@ If * copy_if(If * if_statement) {
     copied_statement->condition = alloc_string(if_statement->condition);
     copied_statement->body = copy_array(copied_statement->body, if_statement->body);
     if (if_statement->else_condition != NULL) copied_statement->else_condition = copy_if(if_statement->else_condition);
+    else copied_statement->else_condition = NULL;
     return copied_statement;
 }
