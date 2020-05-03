@@ -421,3 +421,10 @@ function A foo() : {
 
 foo();
 !(!foo);
+pi <= pi + 1;
+"hello world" == "hello world!";
+
+function cmp(x, y) : {
+    return x == y;
+}
+!cmp("hello world", "hello world!");
