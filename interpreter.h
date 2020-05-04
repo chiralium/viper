@@ -11,6 +11,7 @@
 
 /* Exceptions */
 #define INTERPRETER_INVALID_IF_STATEMENT_VALUE "invalid boolean expression"
+#define INTERPRETER_INVALID_RETURN_STATEMENT   "the return statement is not in a function"
 
 /* Call stack point types */
 #define INTERPRETER_CALL_STACK_MAIN      0
@@ -25,6 +26,9 @@ typedef struct CallStackPoint {
 
 /* The function will create the new call stack point */
 CallStackPoint * new_call_stack_point(char * label, char point_type);
+
+/* The function will return true if last call stack point if a function */
+int is_function_state(void);
 
 /* Main entry point to program executing */
 Constant * main_entry(char * input_stream);

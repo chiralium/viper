@@ -83,6 +83,7 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             free(code[code_counter]); result = NULL;
         } else if (code[code_counter]->type_id == STMT_RETURN) {
             Return * return_statement = code[code_counter]->element;
+            if (!is_function_state()) throw_statement_exception(return_statement->expression, INTERPRETER_INVALID_RETURN_STATEMENT);
             result = return_exec(return_statement->expression, current_namespace);
             free(code[code_counter]->element); free(code[code_counter]); code_counter++;
             break;
@@ -314,4 +315,9 @@ CallStackPoint * new_call_stack_point(char * label, char type) {
     point->label = label;
     point->point_type = type;
     return point;
+}
+
+int is_function_state() {
+    CallStackPoint * last_point = get_last_el(call_stack)->element;
+    return last_point->point_type == INTERPRETER_CALL_STACK_FUNCTION;
 }
