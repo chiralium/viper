@@ -37,7 +37,7 @@ Constant * function_precalc(FuncCall * function_call) {
     Function * function_object = get_function_from_container(function_container, signature);
     if (function_object == NULL) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_container->name);
 
-    call_stack = append(call_stack, STRING, alloc_string(function_object->name));// add function name into call stack
+    call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point(function_object->name, INTERPRETER_CALL_STACK_FUNCTION));// add function name into call stack
 
     Array ** function_code; function_code = copy_function_code(function_object->body); // copy the function code cause the code should be destroyed by lexers, parser and expression parser
 

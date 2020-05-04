@@ -37,5 +37,6 @@
 #define CONSTANT              7
 #define MEMORY_ELEMENT       13
 #define FUNCTION_CONTAINER   14
+#define CALLSTACK_POINT      16
 
 #endif //VIPER_V4_TYPES_H

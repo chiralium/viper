@@ -124,7 +124,7 @@ void namespace_declaration(NameSpaceObject * namespace, Node * current_namespace
 
 /* The function will be execute the namespace body and store the namespace */
 Constant * namespace_exec(NameSpace * namespace_stmt) {
-    call_stack = append(call_stack, STRING, alloc_string(namespace_stmt->name));
+    call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point(namespace_stmt->name, INTERPRETER_CALL_STACK_NAMESPACE));
     Array ** namespace_code = namespace_stmt->body;
     /* parsing the namespace code */
     Array ** tokens = lexer(namespace_code);
@@ -231,7 +231,7 @@ Constant * function_exec(Array ** function_code, Node * local_namespace) {
 
 /* The entry point of return statement */
 Constant * return_exec(char * return_expression, Node * local_namespace) {
-    call_stack = append(call_stack, STRING, alloc_string("return"));
+    call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point("return", INTERPRETER_CALL_STACK_RETURN));
 
     Constant * result;
     Array ** literals = recursive_descent(return_expression); free(return_expression);
@@ -309,14 +309,9 @@ Node * meta_data() {
     return root;
 }
 
-int is_main_call(Array ** call_stack) {
-    Array * last_call = get_last_el(call_stack);
-    char * call_name = last_call->element;
-    return strcmp(call_name, "__MAIN__") == 0;
-}
-
-int is_return_call(Array ** call_stack) {
-    Array * last_call = get_last_el(call_stack);
-    char * call_name = last_call->element;
-    return strcmp(call_name, "return") == 0;
+CallStackPoint * new_call_stack_point(char * label, char type) {
+    CallStackPoint * point = malloc(sizeof(CallStackPoint));
+    point->label = label;
+    point->point_type = type;
+    return point;
 }

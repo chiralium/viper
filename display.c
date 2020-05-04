@@ -2,6 +2,7 @@
 #include "display.h"
 #include "ViArray.h"
 #include "functions.h"
+#include "interpreter.h"
 
 void display_array_beauty(Array ** _array, char * tabs) {
     strcat(tabs, "-");
@@ -286,7 +287,8 @@ void display_callstack(Array ** points) {
     printf("CallStack: ");
     set_color_scheme(COLOR_SCHEME_CALL_STACK_TAIL);
     while (*points) {
-        printf("-> %s ", (*points)->element);
+        CallStackPoint * point = (*points)->element;
+        printf("-> %s ", point->label);
         points++;
     }
     set_color_scheme(-1);

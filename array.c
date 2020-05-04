@@ -2,6 +2,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "expression.h"
+#include "interpreter.h"
 
 Array ** new_array(void) {
     Array **_array = (Array **)calloc(2, sizeof(Array *));

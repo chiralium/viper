@@ -12,6 +12,20 @@
 /* Exceptions */
 #define INTERPRETER_INVALID_IF_STATEMENT_VALUE "invalid boolean expression"
 
+/* Call stack point types */
+#define INTERPRETER_CALL_STACK_MAIN      0
+#define INTERPRETER_CALL_STACK_RETURN    1
+#define INTERPRETER_CALL_STACK_FUNCTION  2
+#define INTERPRETER_CALL_STACK_NAMESPACE 3
+
+typedef struct CallStackPoint {
+    char * label;
+    char point_type;
+} CallStackPoint;
+
+/* The function will create the new call stack point */
+CallStackPoint * new_call_stack_point(char * label, char point_type);
+
 /* Main entry point to program executing */
 Constant * main_entry(char * input_stream);
 /* Main entry point to program parsing */
@@ -42,15 +56,7 @@ void if_body_exec(Array ** code, Node * current_namespace);
 /* The function will be execute all the if-statement from if to else */
 void if_statement_exec(If * statement, Node * current_namespace);
 
-
-/* Display the callstack */
-void display_callstack(Array ** points);
-/* The function will be display the heap table */
-void display_memory_table(Array ** memory_table);
-
 /* The function will be create the meta-data in namespace */
 Node * meta_data();
-/* The function will return 1 if the current call is return-statement */
-int is_return_call(Array ** call_stack);
 
 #endif //VIPER_V4_INTERPRETER_H
