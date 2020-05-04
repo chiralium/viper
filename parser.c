@@ -298,7 +298,7 @@ Function * copy_function(Function * function_statement) {
 
 If * copy_if(If * if_statement) {
     If * copied_statement = malloc(sizeof(If));
-    copied_statement->condition = alloc_string(if_statement->condition);
+    copied_statement->condition = (if_statement->condition != NULL) ? alloc_string(if_statement->condition) : NULL;
     copied_statement->body = copy_array(copied_statement->body, if_statement->body);
     if (if_statement->else_condition != NULL) copied_statement->else_condition = copy_if(if_statement->else_condition);
     else copied_statement->else_condition = NULL;

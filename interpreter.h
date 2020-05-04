@@ -27,8 +27,10 @@ typedef struct CallStackPoint {
 /* The function will create the new call stack point */
 CallStackPoint * new_call_stack_point(char * label, char point_type);
 
-/* The function will return true if last call stack point if a function */
+/* The function will return true if last call stack point is a function */
 int is_function_state(void);
+/* The function will retturn true if last call stack point is a return statement */
+int is_return_state(void);
 
 /* Main entry point to program executing */
 Constant * main_entry(char * input_stream);
@@ -56,9 +58,9 @@ Constant * return_exec(char * return_expression, Node * local_namespace);
 /* The function will be execute the if-statement condition */
 Constant * if_condition_exec(char * condition, Node * current_namespace);
 /* The function will be execute the if-statement body */
-void if_body_exec(Array ** code, Node * current_namespace);
+Constant * if_body_exec(Array ** code, Node * current_namespace);
 /* The function will be execute all the if-statement from if to else */
-void if_statement_exec(If * statement, Node * current_namespace);
+Constant * if_statement_exec(If * statement, Node * current_namespace);
 
 /* The function will be create the meta-data in namespace */
 Node * meta_data();

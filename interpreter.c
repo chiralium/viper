@@ -8,6 +8,7 @@
 extern Array ** call_stack;
 extern Array ** memory_table;
 
+char previous_point = 0;
 /*
  * Entire simple data should be stored in NameSpace,
  * entire complex data stored into heap. NameSpace just stored the pointers to this data.
@@ -65,7 +66,8 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_IF) {
             If * if_statement = code[code_counter]->element;
-            if_statement_exec(if_statement, current_namespace);
+            result = if_statement_exec(if_statement, current_namespace);
+            if (previous_point == INTERPRETER_CALL_STACK_RETURN) break;
             if_destructor(if_statement); free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_WHILE) {
             free(code[code_counter]->element);
@@ -140,7 +142,9 @@ Constant * namespace_exec(NameSpace * namespace_stmt) {
     NameSpaceObject * calculated_namespace_object = new_namespace_object(alloc_string(namespace_stmt->name), local_namespace);
     Constant * namespace = new_constant(NAMESPACE, calculated_namespace_object);
 
-    Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+    Array * last_call = pop_last_el(call_stack);
+    previous_point = ((CallStackPoint *)(last_call->element))->point_type;
+    free(last_call->element); free(last_call);
 
     free(namespace_stmt->name); free(namespace_stmt);
     return namespace;
@@ -225,7 +229,11 @@ Constant * function_exec(Array ** function_code, Node * local_namespace) {
     Constant * returned_value;
     composer(function_code);
     returned_value = interpreter(function_code, local_namespace); (returned_value == NULL) ? returned_value = new_constant(NONE, NULL) : NULL;
-    Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+
+    Array * last_call = pop_last_el(call_stack);
+    previous_point = ((CallStackPoint *)(last_call->element))->point_type;
+    free(last_call->element); free(last_call);
+
     namespace_destructor(local_namespace);
     return returned_value;
 }
@@ -254,7 +262,10 @@ Constant * return_exec(char * return_expression, Node * local_namespace) {
     free(expression_tokens[0]); free(expression_tokens);
     array_destructor(literals); array_destructor(tokens);
 
-    Array * last_call = pop_last_el(call_stack); free(last_call->element); free(last_call);
+    Array * last_call = pop_last_el(call_stack);
+    previous_point = ((CallStackPoint *)(last_call->element))->point_type;
+    free(last_call->element);free(last_call);
+
     return result;
 }
 
@@ -273,26 +284,29 @@ Constant * if_condition_exec(char * condition, Node * current_namespace) {
     return result;
 }
 
-void if_body_exec(Array ** code, Node * current_namespace) {
+Constant * if_body_exec(Array ** code, Node * current_namespace) {
+    Constant * result;
     Array ** tokens = lexer(code);
     Array ** parsed_tokens = parser(tokens);
     Array ** expression_tokens = expression_lexer(parsed_tokens);
 
     composer(expression_tokens);
 
-    interpreter(expression_tokens, current_namespace);
+    result = interpreter(expression_tokens, current_namespace);
     array_destructor(tokens);
+    return result;
 }
 
-void if_statement_exec(If * statement, Node * current_namespace) {
+Constant * if_statement_exec(If * statement, Node * current_namespace) {
     if (statement->condition != NULL) {
         char * condition = alloc_string(statement->condition);
         Constant * condition_value = if_condition_exec(statement->condition, current_namespace); int flag = *(int *)condition_value->value;
         if (!is_simple_data(condition_value->type_id)) throw_statement_exception(condition, INTERPRETER_INVALID_IF_STATEMENT_VALUE);
         free(condition); constant_destructor(condition_value);
-        if (flag) if_body_exec(statement->body, current_namespace);
+        if (flag) return if_body_exec(statement->body, current_namespace);
         else if (statement->else_condition != NULL) if_statement_exec(statement->else_condition, current_namespace);
-    } else if_body_exec(statement->body, current_namespace);
+    } else return if_body_exec(statement->body, current_namespace);
+    return NULL;
 }
 
 Node * meta_data() {
@@ -317,7 +331,12 @@ CallStackPoint * new_call_stack_point(char * label, char type) {
     return point;
 }
 
-int is_function_state() {
+int is_function_state(void) {
     CallStackPoint * last_point = get_last_el(call_stack)->element;
     return last_point->point_type == INTERPRETER_CALL_STACK_FUNCTION;
+}
+
+int is_return_state(void) {
+    CallStackPoint * last_point = get_last_el(call_stack)->element;
+    return last_point->point_type == INTERPRETER_CALL_STACK_RETURN;
 }

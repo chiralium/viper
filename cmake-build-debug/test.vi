@@ -437,3 +437,24 @@ if (a > 0) : {
 } else : {
     "is zero";
 }
+
+namespace A : {
+    counter = 0;
+    array = {};
+}
+
+function fill(x) : {
+    if (A->counter >= x) : {
+        A->array[] = A->counter * 3.14;
+        return x;
+    } else (A->counter == 5) : {
+        "A->counter = 5";
+    } else : {
+        A->array[] = A->counter * 3.14;
+        A->counter = A->counter + 1;
+        fill(x);
+    }
+}
+
+fill(10);
+A->array;
