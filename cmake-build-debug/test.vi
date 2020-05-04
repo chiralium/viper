@@ -1,7 +1,7 @@
-function is_positive(a) : {
-    if (a > 0) : {
-        return "is positive";
+a = 3;
+if (a == 3) : {
+    function f() : {
+        return "a = 3";
     }
 }
-
-a = is_positive(3); a;
+f();

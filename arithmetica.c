@@ -280,6 +280,7 @@ int _get_priority(char * operator) {
     else if (strcmp(operator, ARITHMETICA_LESS) == 0 ||
              strcmp(operator, ARITHMETICA_MORE) == 0 ||
              strcmp(operator, ARITHMETICA_MEQ) ==  0 ||
+             strcmp(operator, ARITHMETICA_EQ) == 0   ||
              strcmp(operator, ARITHMETICA_LEQ) ==  0) return 3;
     else if (strcmp(operator, ARITHMETICA_PLUS) == 0 || strcmp(operator, ARITHMETICA_SUB) == 0) return 4;
     else if (strcmp(operator, ARITHMETICA_MUL) == 0 || strcmp(operator, ARITHMETICA_DIV) == 0) return 5;
