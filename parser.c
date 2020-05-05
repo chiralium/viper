@@ -19,6 +19,9 @@ Array ** parser(Array ** tokens) {
         } else if (token->type_id == LEXER_RETURN_TK) {
             Return * return_statement = malloc(sizeof(Return));
             token = next_token(tokens);
+            if (token == NULL) throw_statement_exception("return", PARSER_INVALID_RETURN_VALUE);
+            char * expression = trim(token->value);
+            if (expression == NULL) throw_statement_exception("return", PARSER_INVALID_RETURN_VALUE);
             return_statement->expression = alloc_string(token->value);
             parsed_tokens = append(parsed_tokens, STMT_RETURN, return_statement);
         } else if (token->type_id == LEXER_NAMESPACE_TK) {

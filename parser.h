@@ -29,6 +29,7 @@
 #define PARSER_MISSING_NAMESPACE_BODY        "the body of `namespace` statement is not defined"
 #define PARSER_MISSING_NAMESPACE_NAME        "the namespace name is not defined"
 #define PARSER_INVALID_STATEMENT_NAME        "the name of the statement is not valid"
+#define PARSER_INVALID_RETURN_VALUE          "the return statement have no value"
 
 /* Parameters */
 #define PARSER_MAX_FUNCTION_ARGS 50
