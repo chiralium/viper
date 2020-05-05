@@ -1,0 +1,29 @@
+namespace F : {
+    i = 0;
+    words_count = 0;
+    buffer = "";
+    words = {};
+}
+
+function string_info(string) : {
+    if (string[F->i] == "\n") : {
+        F->words_count = F->words_count + 1;
+        return 0;
+    } else : {
+        if (string[F->i] == " ") : {
+            F->words[] = F->buffer;
+            F->buffer = "";
+            F->words_count = F->words_count + 1;
+        } else : {
+            F->buffer = F->buffer + string[F->i];
+        }
+        F->i = F->i + 1;
+        string_info(string);
+    }
+}
+
+string = "this is the example of function that can be read the string to end of line char\n";
+string_info(string);
+
+"the count of words = "; F->words_count;
+"the all words = "; F->words;
