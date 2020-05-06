@@ -510,7 +510,7 @@ function calc() : {
         return OP[WORDS[F->i]](WORDS[F->i - 1], " " + WORDS[F->i + 1]);
     } else : {
         F->i = F->i + 1;
-        calc();
+        return calc();
     }
 }
 calc();

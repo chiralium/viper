@@ -305,7 +305,7 @@ Constant * if_statement_exec(If * statement, Node * current_namespace) {
         if (!is_simple_data(condition_value->type_id)) throw_statement_exception(condition, INTERPRETER_INVALID_IF_STATEMENT_VALUE);
         free(condition); constant_destructor(condition_value);
         if (flag) return if_body_exec(statement->body, current_namespace);
-        else if (statement->else_condition != NULL) if_statement_exec(statement->else_condition, current_namespace);
+        else if (statement->else_condition != NULL) return if_statement_exec(statement->else_condition, current_namespace);
     } else return if_body_exec(statement->body, current_namespace);
     return NULL;
 }
