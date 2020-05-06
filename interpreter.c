@@ -152,6 +152,7 @@ Constant * namespace_exec(NameSpace * namespace_stmt) {
 
 /* The function will be parse the function code and store it into namespace */
 void function_declaration(Function * function_object, Node * current_namespace) {
+    if (is_function_state()) throw_function_exception(function_object->name, INTERPRETER_INVALID_FUNCTION_DECLARATION, function_object->name);
     Array ** function_code = function_object->body;
     /* parsing the function code */
     Array ** tokens = lexer(function_code);  // extracting simple tokens

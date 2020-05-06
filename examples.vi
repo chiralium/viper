@@ -22,8 +22,34 @@ function string_info(string) : {
     }
 }
 
-string = "this is the example of function that can be read the string to end of line char\n";
+string = "hello + world \n";
 string_info(string);
 
 "the count of words = "; F->words_count;
 "the all words = "; F->words;
+
+WORDS = F->words; WORDS[] = "END";
+namespace arithmetica : {
+    function add(x, y) : {
+        return x + y;
+    }
+
+    function sub(x, y) : {
+        return x - y;
+    }
+}
+
+OP = {"+" => arithmetica->add, "-" => arithmetica->sub};
+
+F->i = 0;
+function calc() : {
+    if (WORDS[F->i] == "END") : {
+        return 0;
+    } else (WORDS[F->i] == "+")  : {
+        return OP[WORDS[F->i]](WORDS[F->i - 1], " " + WORDS[F->i + 1]);
+    } else : {
+        F->i = F->i + 1;
+        calc();
+    }
+}
+calc();

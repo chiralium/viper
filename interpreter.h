@@ -10,8 +10,9 @@
 #define VIPER_V4_INTERPRETER_H
 
 /* Exceptions */
-#define INTERPRETER_INVALID_IF_STATEMENT_VALUE "invalid boolean expression"
-#define INTERPRETER_INVALID_RETURN_STATEMENT   "the return statement is not in a function"
+#define INTERPRETER_INVALID_IF_STATEMENT_VALUE   "invalid boolean expression"
+#define INTERPRETER_INVALID_RETURN_STATEMENT     "the return statement is not in a function"
+#define INTERPRETER_INVALID_FUNCTION_DECLARATION "the nested function is not available yet"
 
 /* Call stack point types */
 #define INTERPRETER_CALL_STACK_MAIN      0
