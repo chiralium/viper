@@ -401,9 +401,6 @@ foo();
 namespace A : {
     "Custom namespace for function";
     pi = 3.14; g = 9.8; e = 2.7;
-};
-
-function A foo() : {
     function f(x) : {
         return x;
     }
@@ -415,6 +412,9 @@ function A foo() : {
     function f(x, y, z) : {
         return x ^ z + 2 * x * y - y ^ z;
     }
+};
+
+function A foo() : {
     f1 = f(pi); f2 = f(f1, g); f3 = f(f1, f2, e);
     return f1 + f2 + f3;
 }
@@ -458,3 +458,59 @@ function fill(x) : {
 
 fill(10);
 A->array;
+
+namespace F : {
+    i = 0;
+    words_count = 0;
+    buffer = "";
+    words = {};
+}
+
+function string_info(string) : {
+    if (string[F->i] == "\n") : {
+        F->words_count = F->words_count + 1;
+        return 0;
+    } else : {
+        if (string[F->i] == " ") : {
+            F->words[] = F->buffer;
+            F->buffer = "";
+            F->words_count = F->words_count + 1;
+        } else : {
+            F->buffer = F->buffer + string[F->i];
+        }
+        F->i = F->i + 1;
+        string_info(string);
+    }
+}
+
+string = "hello + world \n";
+string_info(string);
+
+"the count of words = "; F->words_count;
+"the all words = "; F->words;
+
+WORDS = F->words; WORDS[] = "END";
+namespace arithmetica : {
+    function add(x, y) : {
+        return x + y;
+    }
+
+    function sub(x, y) : {
+        return x - y;
+    }
+}
+
+OP = {"+" => arithmetica->add, "-" => arithmetica->sub};
+
+F->i = 0;
+function calc() : {
+    if (WORDS[F->i] == "END") : {
+        return 0;
+    } else (WORDS[F->i] == "+")  : {
+        return OP[WORDS[F->i]](WORDS[F->i - 1], " " + WORDS[F->i + 1]);
+    } else : {
+        F->i = F->i + 1;
+        calc();
+    }
+}
+calc();
