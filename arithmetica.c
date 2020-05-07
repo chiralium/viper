@@ -428,7 +428,7 @@ int get_int_value(void * elexpr) {
     if (el->vtype_id == INTEGER) return *(int *)(el->value);
     else if (el->vtype_id == FLOAT) return (int)(*(float *)(el->value));
     else {
-        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, el->vtype_id, 'i');
+        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, get_type_label(el->vtype_id), "integer");
         throw_typecasting_exception(expression_as_string, message);
     }
 }
@@ -438,7 +438,7 @@ float get_float_value(void * elexpr) {
     if (el->vtype_id == INTEGER) return (float)(*(int *)(el->value));
     else if (el->vtype_id == FLOAT) return *(float *)(el->value);
     else {
-        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, el->vtype_id, 'f');
+        char message[EXPRESSION_MAX_LEN]; sprintf(message, ARITHMETICA_TYPECASTING_ERROR, get_type_label(el->vtype_id), "float");
         throw_typecasting_exception(expression_as_string, message);
     }
 }
@@ -511,7 +511,10 @@ void * _add(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -547,7 +550,10 @@ void * _sub(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -581,7 +587,10 @@ void * _mul(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -614,7 +623,10 @@ void * _div(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -647,7 +659,10 @@ void * _pow(void * x, void * y){
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -697,7 +712,10 @@ void * _more(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -730,7 +748,10 @@ void * _less(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -763,7 +784,10 @@ void * _moreeq(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -796,7 +820,10 @@ void * _lesseq(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 
@@ -841,7 +868,10 @@ void * _equal(void * x, void * y) {
 
         y_el->origin = NULL; x_el->origin = NULL;
         element_destructor(x_el);
-    } else throw_typecasting_exception(expression_as_string, ARITHMETICA_INVALID_OPERAND);
+    } else {
+        char message[100]; sprintf(message, ARITHMETICA_INVALID_OPERAND, get_type_label(y_el->vtype_id));
+        throw_typecasting_exception(expression_as_string, message);
+    }
     return result_el;
 }
 

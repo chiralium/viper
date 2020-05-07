@@ -11,6 +11,8 @@
 #define NONE         12
 #define NAMESPACE    13
 
+char * get_type_label(char type_id);
+
 /* Basic information types */
 #define INTEGER      'i'
 #define FLOAT        'f'

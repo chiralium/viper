@@ -81,8 +81,8 @@ typedef struct Element {
 /* Exceptions */
 #define ARITHMETICA_BRACES_NOT_BALANCED       "invalid syntax of expression, braces is not balanced"
 #define ARITHMETICA_INVALID_EXPRESSION_SYNTAX "invalid syntax of expression"
-#define ARITHMETICA_INVALID_OPERAND           "invalid type of operand"
-#define ARITHMETICA_TYPECASTING_ERROR         "converting from <%c>-type to <%c>-type"
+#define ARITHMETICA_INVALID_OPERAND           "invalid type of operand <%s>"
+#define ARITHMETICA_TYPECASTING_ERROR         "converting from <%s>-type to <%s>-type"
 #define ARITHMETICA_UNDEFINED_NAME            "undefined name of variable"
 #define ARITHMETICA_STRING_CONCATE_EXCEPTION  "invalid concating operand"
 #define ARITHMETICA_UNDEFINED_OPERATOR        "undefined operator (something wrong with expression parser)"
