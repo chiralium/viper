@@ -35,6 +35,7 @@
 #define ARITHMETICA_COMA ","
 #define ARITHMETICA_ASC  "=>"
 #define ARITHMETICA_EXT  "->"
+#define ARITHMETICA_IS   "<=>"
 
 /* The struct of index */
 typedef struct Index {
@@ -109,6 +110,7 @@ void * _asc(void * x, void * y);
 void * _ext(void * x, void * y);
 void * _tmp(void * x, void * y);
 void * _asg(void * x, void * y);
+void * _is(void * x, void * y);
 
 /* Some sort of assignments functions */
 
