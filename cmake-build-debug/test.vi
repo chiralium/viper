@@ -1,5 +1,16 @@
-x = 2 + 2;
-function change() : {
-    global x;
-    x = x + 1;
+A = {};
+counter = 0;
+
+function to(x) : {
+    global A; global counter;
+    if (counter == x) : {
+        return A;
+    } else : {
+        counter = counter + 1;
+        A[] = counter;
+        return to(x);
+    }
 }
+
+to(10);
+A;

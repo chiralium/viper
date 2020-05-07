@@ -13,6 +13,7 @@
 #define INTERPRETER_INVALID_IF_STATEMENT_VALUE   "invalid boolean expression"
 #define INTERPRETER_INVALID_RETURN_STATEMENT     "the return statement is not in a function"
 #define INTERPRETER_INVALID_FUNCTION_DECLARATION "the nested function is not available yet"
+#define INTERPRETER_INVALID_GLOBAL_SCOPE         "the global statement is not in local scope"
 
 /* Call stack point types */
 #define INTERPRETER_CALL_STACK_MAIN      0
@@ -62,6 +63,9 @@ Constant * if_condition_exec(char * condition, Node * current_namespace);
 Constant * if_body_exec(Array ** code, Node * current_namespace);
 /* The function will be execute all the if-statement from if to else */
 Constant * if_statement_exec(If * statement, Node * current_namespace);
+
+/* The function will be replace the local node by node from global namespace */
+void global_exec(Global * statement, Node * local_namespace);
 
 /* The function will be create the meta-data in namespace */
 Node * meta_data();

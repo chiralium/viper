@@ -920,6 +920,7 @@ void * _asc(void * x, void * y) {
 
 void _asg_from_pointer_to_data(Element * y, Element * x) {
     Node * old_namespace_object = y->origin; Constant * old_value = old_namespace_object->value;
+    if (old_namespace_object->is_global) old_namespace_object = old_namespace_object->extend;
     Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
     (is_simple_data(old_value->type_id)) ? free(old_value->value) : NULL;
     free(old_namespace_object->value); y->origin = NULL;
@@ -928,6 +929,7 @@ void _asg_from_pointer_to_data(Element * y, Element * x) {
 
 void _asg_from_pointer_to_pointer(Element * y, Element * x) {
     Node * old_namespace_object = y->origin; Constant * old_value = old_namespace_object->value;
+    if (old_namespace_object->is_global) old_namespace_object = old_namespace_object->extend;
     if (x->origin == NULL) x->origin = old_namespace_object;
     (is_simple_data(old_value->type_id)) ? free(old_value->value) : NULL;
     free(old_namespace_object->value); y->origin = NULL;
@@ -938,11 +940,13 @@ void _asg_from_pointer_to_pointer(Element * y, Element * x) {
 void _asg_from_data_to_data(Element * y, Element * x) {
     Node * old_namespace_object = find_node(namespace, faq6(y->literal));
     if (old_namespace_object != NULL) {
+        if (old_namespace_object->is_global) old_namespace_object = old_namespace_object->extend;
         /* variable is already set */
         Constant * old_value = old_namespace_object->value; constant_destructor(old_value);
         Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
         old_namespace_object->value = new_value;
     } else {
+        //if (old_namespace_object->is_global) old_namespace_object = old_namespace_object->extend;
         /* variable initialization */
         Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
         Node * new_namespace_object = new_node(faq6(y->literal), new_value);
@@ -953,6 +957,7 @@ void _asg_from_data_to_data(Element * y, Element * x) {
 void _asg_from_data_to_pointer(Element * y, Element * x) {
     Node * old_namespace_object = find_node(namespace, faq6(y->literal));
     if (old_namespace_object != NULL) {
+        if (old_namespace_object->is_global) old_namespace_object = old_namespace_object->extend;
         /* variable is already set */
         Constant * old_value = old_namespace_object->value; constant_destructor(old_value);
         Constant * new_value = new_constant(x->vtype_id, x->value);

@@ -17,6 +17,9 @@ Node * new_node(int key, void * value) {
     node->left = NULL;
     node->right = NULL;
     node->parent = NULL;
+
+    node->extend = NULL;
+    node->is_global = 0;
 }
 
 Node * extending(Node * root, Node * extended_namespace) {
@@ -24,6 +27,7 @@ Node * extending(Node * root, Node * extended_namespace) {
         Constant * node_value = root->value;
         Constant * extended_value = new_constant(node_value->type_id, copy_data(node_value->value, node_value->type_id));
         Node * extended_node = new_node(root->key, extended_value);
+        if (root->extend == NULL) extended_node->extend = root;
         (extended_namespace == NULL) ? extended_namespace = insert_node(extended_namespace, extended_node) : insert_node(extended_namespace, extended_node);
         if (root->left != NULL) extending(root->left, extended_namespace);
         if (root->right != NULL) extending(root->right, extended_namespace);
@@ -153,6 +157,7 @@ int namespace_destructor(Node * root) {
         if (is_simple_data(value->type_id)) {
             free(value->value); free(value);
         } else free(value);
+
         if (root->left != NULL) namespace_destructor(root->left);
         if (root->right != NULL) namespace_destructor(root->right);
         free(root);

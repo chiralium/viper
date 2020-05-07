@@ -85,6 +85,7 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             free(code[code_counter]); result = NULL;
         } else if (code[code_counter]->type_id == STMT_GLOBAL) {
             Global * global_stmt = code[code_counter]->element;
+            global_exec(global_stmt, current_namespace);
             global_destructor(global_stmt);
             free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_RETURN) {
@@ -103,6 +104,13 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
 Constant * calculate_expression(Array ** expression, Node * current_namespace) {
     Constant * value = arithmetica_wrapper(expression, current_namespace);
     return value;
+}
+
+void global_exec(Global * global_stmt, Node * local_namespace) {
+    Node * local_node = find_node(local_namespace, faq6(global_stmt->name));
+    if (local_node == NULL) throw_arithmetical_exception(global_stmt->name, ARITHMETICA_UNDEFINED_NAME);
+    if (local_node->extend == NULL) throw_arithmetical_exception(global_stmt->name, INTERPRETER_INVALID_GLOBAL_SCOPE);
+    local_node->is_global = 1;
 }
 
 /* The calculated namespace must be declared into current namespace by his name */

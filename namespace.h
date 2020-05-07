@@ -21,6 +21,8 @@ typedef struct Node {
     struct Node * left;
     struct Node * right;
     struct Node * parent;
+    struct Node * extend;
+    int is_global;
 } Node;
 
 /* Create new namespace object */
