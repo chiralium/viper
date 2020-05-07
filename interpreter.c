@@ -83,6 +83,10 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             Function * function_object = code[code_counter]->element;
             function_declaration(function_object, current_namespace);
             free(code[code_counter]); result = NULL;
+        } else if (code[code_counter]->type_id == STMT_GLOBAL) {
+            Global * global_stmt = code[code_counter]->element;
+            global_destructor(global_stmt);
+            free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_RETURN) {
             Return * return_statement = code[code_counter]->element;
             if (!is_function_state()) throw_statement_exception(return_statement->expression, INTERPRETER_INVALID_RETURN_STATEMENT);

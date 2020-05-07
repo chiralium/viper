@@ -74,6 +74,9 @@ Array ** copy_function_code(Array ** function_code) {
         } else if (function_code[counter]->type_id == STMT_RETURN) {
             Return * copied_return_statement = copy_return(function_code[counter]->element);
             copied_code = append(copied_code, STMT_RETURN, copied_return_statement);
+        } else if (function_code[counter]->type_id == STMT_GLOBAL) {
+            Global * copied_global_statemet = copy_global(function_code[counter]->element);
+            copied_code = append(copied_code, STMT_GLOBAL, copied_global_statemet);
         }
         counter++;
     }
@@ -88,6 +91,7 @@ void function_code_destructor(Array ** function_code, int start_position) {
         else if (function_code[counter]->type_id == STMT_RETURN) return_destructor(function_code[counter]->element);
         else if (function_code[counter]->type_id == STMT_FUNC) function_destructor(function_code[counter]->element);
         else if (function_code[counter]->type_id == STMT_IF) if_destructor(function_code[counter]->element);
+        else if (function_code[counter]->type_id == STMT_GLOBAL) global_destructor(function_code[counter]->element);
         else if (function_code[counter]->type_id == STMT_WHILE) while_destructor(function_code[counter]->element);
         free(function_code[counter]); counter++;
     }

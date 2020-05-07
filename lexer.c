@@ -82,6 +82,7 @@ int is_keyword(char * literal) {
     else if (strcmp(literal, KW_WHILE) == 0) return LEXER_WHILE_TK;
     else if (strcmp(literal, KW_RETURN) == 0) return LEXER_RETURN_TK;
     else if (strcmp(literal, KW_NAMESPACE) == 0) return LEXER_NAMESPACE_TK;
+    else if (strcmp(literal, KW_GLOBAL) == 0) return LEXER_GLOBAL_TK;
     return 0;
 }
 

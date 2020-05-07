@@ -30,9 +30,15 @@
 #define PARSER_MISSING_NAMESPACE_NAME        "the namespace name is not defined"
 #define PARSER_INVALID_STATEMENT_NAME        "the name of the statement is not valid"
 #define PARSER_INVALID_RETURN_VALUE          "the return statement have no value"
+#define PARSER_INVALID_GLOBAL_VALUE          "the global statement havo no value"
 
 /* Parameters */
 #define PARSER_MAX_FUNCTION_ARGS 50
+
+/* The structure of global statement */
+typedef struct Global {
+    char * name;
+} Global;
 
 /* The structure namespace */
 typedef struct NameSpace {
@@ -129,11 +135,13 @@ void if_destructor(If * statement);
 void while_destructor(While * statement);
 void return_destructor(Return * statement);
 void namespace_destructor_stmt(NameSpace * statement);
+void global_destructor(Global * statement);
 
 /* Copy */
 Return * copy_return(Return * return_statement);
 Function * copy_function(Function * function_statement);
 NameSpace * copy_namespace_statement(NameSpace * namespace_statement);
+Global * copy_global(Global * global_statement);
 If * copy_if(If * if_statement);
 
 #endif //VIPER_V4_PARSER_H

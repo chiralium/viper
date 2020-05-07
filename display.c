@@ -32,6 +32,9 @@ void display_array_beauty(Array ** _array, char * tabs) {
         } else if (_array[array_counter] -> type_id == STMT_RETURN) {
             printf("\n%s%s{STMT_RETURN; `%s`}: \n", tabs, tabs, ((Return *) (_array[array_counter]->element))->expression);
             printf("\n\n");
+        } else if (_array[array_counter] -> type_id == STMT_GLOBAL) {
+            printf("\n%s%s{STMT_GLOBAL; `%s`}: \n", tabs, tabs, ((Global *) (_array[array_counter]->element))->name);
+            printf("\n\n");
         } else if (_array[array_counter] -> type_id == STMT_NAMESPACE) {
             printf("\n%s%s{STMT_NAMESPACE; `%s`: \n", tabs, tabs, ((NameSpace *)(_array[array_counter]->element))->name);
             display_statements(_array[array_counter]->element, 5, tabs);

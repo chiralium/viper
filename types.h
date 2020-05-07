@@ -32,6 +32,7 @@
 #define STMT_WHILE            3
 #define STMT_RETURN          10
 #define STMT_NAMESPACE       15
+#define STMT_GLOBAL          17
 #define ARRAY_EL             'e'
 #define ELEMENT               6
 #define CONSTANT              7

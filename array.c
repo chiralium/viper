@@ -132,6 +132,7 @@ void array_destructor(Array **_array) {
         else if (_array[i] -> type_id == STMT_WHILE) while_destructor(_array[i]->element);
         else if (_array[i] -> type_id == STMT_FUNC) function_destructor(_array[i]->element);
         else if (_array[i] -> type_id == STMT_RETURN) return_destructor(_array[i]->element);
+        else if (_array[i] -> type_id == STMT_GLOBAL) global_destructor(_array[i]->element);
         else if (_array[i] -> type_id == STMT_NAMESPACE) namespace_destructor_stmt(_array[i]->element);
         else free(_array[i] -> element);
         free(_array[i]);

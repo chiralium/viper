@@ -24,6 +24,15 @@ Array ** parser(Array ** tokens) {
             if (expression == NULL) throw_statement_exception("return", PARSER_INVALID_RETURN_VALUE);
             return_statement->expression = alloc_string(token->value);
             parsed_tokens = append(parsed_tokens, STMT_RETURN, return_statement);
+        } else if (token->type_id == LEXER_GLOBAL_TK) {
+            Global * global_statement = malloc(sizeof(Return));
+            token = next_token(tokens);
+            if (token == NULL) throw_statement_exception("global", PARSER_INVALID_GLOBAL_VALUE);
+            char * name = trim(token->value);
+            if (name == NULL) throw_statement_exception("global", PARSER_INVALID_GLOBAL_VALUE);
+            if (!is_statement_name_valid(name)) throw_statement_exception(name, PARSER_INVALID_STATEMENT_NAME);
+            global_statement->name = alloc_string(token->value);
+            parsed_tokens = append(parsed_tokens, STMT_GLOBAL, global_statement);
         } else if (token->type_id == LEXER_NAMESPACE_TK) {
             NameSpace * namespace_statement = get_namespace_statement(tokens);
             parsed_tokens = append(parsed_tokens, STMT_NAMESPACE, namespace_statement);
@@ -277,6 +286,11 @@ void namespace_destructor_stmt(NameSpace * statement) {
     free(statement);
 }
 
+void global_destructor(Global * statement) {
+    free(statement->name);
+    free(statement);
+}
+
 Return * copy_return(Return * return_statement) {
     Return * copied_statement = malloc(sizeof(Return));
     copied_statement->expression = alloc_string(return_statement->expression);
@@ -305,5 +319,11 @@ If * copy_if(If * if_statement) {
     copied_statement->body = copy_array(copied_statement->body, if_statement->body);
     if (if_statement->else_condition != NULL) copied_statement->else_condition = copy_if(if_statement->else_condition);
     else copied_statement->else_condition = NULL;
+    return copied_statement;
+}
+
+Global * copy_global(Global * global_statement) {
+    Global * copied_statement = malloc(sizeof(Global));
+    copied_statement->name = alloc_string(global_statement->name);
     return copied_statement;
 }
