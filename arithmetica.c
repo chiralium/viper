@@ -946,7 +946,6 @@ void _asg_from_data_to_data(Element * y, Element * x) {
         Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
         old_namespace_object->value = new_value;
     } else {
-        //if (old_namespace_object->is_global) old_namespace_object = old_namespace_object->extend;
         /* variable initialization */
         Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
         Node * new_namespace_object = new_node(faq6(y->literal), new_value);
