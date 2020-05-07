@@ -300,6 +300,7 @@ int allocate_token_value(ExpressionToken * exp_token) {
         exp_token->value = function_pointer;
         exp_token->vtype_id = get_operator_type(literal);
     } else if (is_name(literal)) {
+        if (is_keyword(literal)) throw_composer_exception(literal, EXPRESSION_KEYWORD_USAGE);
         exp_token->value = NULL;
         exp_token->vtype_id = UNDEFINED;
     } else throw_composer_exception(literal, EXPRESSION_UNDEFINED_TOKEN);

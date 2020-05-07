@@ -158,11 +158,11 @@ int is_float_number(char * literal) {
 
 int is_name(char * literal) {
     if (literal == NULL) return 0;
-    int is_name = 0;
     if (isdigit(*literal)) return 0;
-    while (*literal) {
-        if (!(is_name = isdigit(*literal) || isalpha(*literal) || *literal == '_')) break;
-        literal++;
+    int is_name = 0; int counter = 0;
+    while (literal[counter]) {
+        if (!(is_name = isdigit(literal[counter]) || isalpha(literal[counter]) || literal[counter] == '_')) break;
+        counter++;
     }
     return is_name;
 }

@@ -33,6 +33,7 @@
 #define EXPRESSION_INVALID_FUNCTION_CALL      "invalid arguments definition (braces is not balanced)"
 #define EXPRESSION_INVALID_FUNCTION_ARGLIST   "invalid arguments definition (empty arguments position after coma)"
 #define EXPRESSION_INVALID_FUNCTION_NAME      "invalid function name"
+#define EXPRESSION_KEYWORD_USAGE              "invalid keyword usage"
 
 /* The struct will contained the token of expression */
 typedef struct ExpressionToken {
