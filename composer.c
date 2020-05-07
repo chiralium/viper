@@ -302,7 +302,7 @@ int allocate_token_value(ExpressionToken * exp_token) {
     } else if (is_name(literal)) {
         if (is_keyword(literal)) throw_composer_exception(literal, EXPRESSION_KEYWORD_USAGE);
         exp_token->value = NULL;
-        exp_token->vtype_id = UNDEFINED;
+        exp_token->vtype_id = (strcmp(literal, "NONE") == 0) ? NONE : UNDEFINED;
     } else throw_composer_exception(literal, EXPRESSION_UNDEFINED_TOKEN);
 }
 

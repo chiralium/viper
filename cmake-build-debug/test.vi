@@ -531,3 +531,11 @@ function fill_to(x) : {
 
 fill_to(10);
 A;
+A = NONE;
+A;
+
+function f(x) : {
+    return x;
+}
+
+f(A); f(NONE);

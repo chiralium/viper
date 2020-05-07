@@ -53,7 +53,7 @@ int allocate_token_value(ExpressionToken * exp_token);
 /* The function will return 1, if the literal containing only number */
 int is_int_number(char * literal);
 
-/* The function will return 1, if the litreal containing only number and dot-symbol */
+/* The function will return 1, if the literal containing only number and dot-symbol */
 int is_float_number(char * literal);
 
 /* Function will return the operator type */
