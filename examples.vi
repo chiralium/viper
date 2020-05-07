@@ -53,3 +53,20 @@ function calc() : {
     }
 }
 calc();
+
+A = {};
+counter = 0;
+
+function fill_to(x) : {
+    global A; global counter;
+    if (counter == x) : {
+        return A;
+    } else : {
+        counter = counter + 1;
+        A[] = counter;
+        return fill_to(x);
+    }
+}
+
+fill_to(10);
+A;
