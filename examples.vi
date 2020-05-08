@@ -108,6 +108,20 @@ function insert(root, node) : {
     }
 }
 
+function find(root, key) : {
+    if (root <=> NONE) : {
+        return NONE;
+    } else : {
+        if (root["key"] == key) : {
+            return root["value"];
+        } else (root["key"] > key) : {
+            return find(root["left"], key);
+        } else (root["key"] < key) : {
+            return find(root["right"], key);
+        }
+    }
+}
+
 new_node1 = {"key" => 17, "value" => 1, "left" => NONE, "right" => NONE};
 new_node2 = {"key" => 7, "value" => 2, "left" => NONE, "right" => NONE};
 new_node3 = {"key" => -4, "value" => 3, "left" => NONE, "right" => NONE};
@@ -130,3 +144,5 @@ insert(tree, new_node8);
 insert(tree, new_node9);
 insert(tree, new_node10);
 tree;
+
+find(tree, 14);
