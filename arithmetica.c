@@ -956,6 +956,7 @@ void * _asc(void * x, void * y) {
     } else if (y_el->vtype_id == STRING) {
         Constant * node_value = new_constant( x_el->vtype_id, copy_data(x_el->value, x_el->vtype_id) );
         Node * result = new_node( faq6(y_el->value), node_value ); memory_table = append(memory_table, MEMORY_ELEMENT, new_memory_element(KEYPAIR, result, "arithmetica.c/_asc"));
+        result->raw_key = alloc_string(y_el->value);
         result_el = malloc(sizeof(Element));
         result_el->origin = NULL;
         result_el->type_id = x_el->type_id;
@@ -1049,6 +1050,7 @@ int is_simple_data(char type_id) {
         case INTEGER:
         case FLOAT:
         case STRING:
+        case NONE:
             return 1;
         default:
             return 0;

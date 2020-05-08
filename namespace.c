@@ -12,6 +12,7 @@ NameSpaceObject * new_namespace_object(char * name, Node * value) {
 Node * new_node(int key, void * value) {
     Node * node = malloc(sizeof(Node));
     node->key = key;
+    node->raw_key = NULL;
     node->value = value;
 
     node->left = NULL;
@@ -160,6 +161,7 @@ int namespace_destructor(Node * root) {
 
         if (root->left != NULL) namespace_destructor(root->left);
         if (root->right != NULL) namespace_destructor(root->right);
+        free(root->raw_key);
         free(root);
     }
 }

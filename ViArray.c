@@ -213,13 +213,15 @@ void display_viarray(Node * root) {
     if (root != NULL) {
         Constant * array_element = root->value;
         if (array_element->type_id == VIARRAY) {
-            printf("[%d] => ", root->key);
+            if (root->raw_key == NULL) printf("[%d] => ", root->key);
+            else printf("[`%s`] => ", root->raw_key);
             printf("{");
             display_viarray(array_element->value);
             printf("}, ");
         }
         else {
-            printf("[%d] => ", root->key);
+            if (root->raw_key == NULL) printf("[%d] => ", root->key);
+            else printf("[`%s`] => ", root->raw_key);
             display_constant(array_element);
             printf(", ");
         }

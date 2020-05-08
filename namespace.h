@@ -17,6 +17,7 @@ typedef struct NameSpaceObject {
 
 typedef struct Node {
     int key;
+    char * raw_key;
     void * value;
     struct Node * left;
     struct Node * right;
