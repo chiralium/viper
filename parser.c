@@ -322,6 +322,14 @@ If * copy_if(If * if_statement) {
     return copied_statement;
 }
 
+While * copy_while(While * while_statement) {
+    While * copied_statemenet = malloc(sizeof(While));
+    copied_statemenet->condition = alloc_string(while_statement->condition);
+    copied_statemenet->body = copy_array(copied_statemenet->body, while_statement->body);
+    return copied_statemenet;
+
+}
+
 Global * copy_global(Global * global_statement) {
     Global * copied_statement = malloc(sizeof(Global));
     copied_statement->name = alloc_string(global_statement->name);

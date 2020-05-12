@@ -143,5 +143,6 @@ Function * copy_function(Function * function_statement);
 NameSpace * copy_namespace_statement(NameSpace * namespace_statement);
 Global * copy_global(Global * global_statement);
 If * copy_if(If * if_statement);
+While * copy_while(While * while_statement);
 
 #endif //VIPER_V4_PARSER_H

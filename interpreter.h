@@ -64,6 +64,11 @@ Constant * if_body_exec(Array ** code, Node * current_namespace);
 /* The function will be execute all the if-statement from if to else */
 Constant * if_statement_exec(If * statement, Node * current_namespace);
 
+/* The function will exec the while-statement */
+Constant * while_statement_exec(While * statement, Node * current_namespace);
+/* The function will parse the while body */
+Array ** while_body_parser(Array ** while_bodt);
+
 /* The function will be replace the local node by node from global namespace */
 void global_exec(Global * statement, Node * local_namespace);
 

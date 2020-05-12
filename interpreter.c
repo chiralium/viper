@@ -70,8 +70,10 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             if (previous_point == INTERPRETER_CALL_STACK_RETURN) break;
             if_destructor(if_statement); free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_WHILE) {
-            free(code[code_counter]->element);
-            free(code[code_counter]);
+            While * while_statement = code[code_counter]->element;
+            result = while_statement_exec(while_statement, current_namespace);
+            if (previous_point == INTERPRETER_CALL_STACK_RETURN) break;
+            free(code[code_counter]->element); free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_NAMESPACE) {
             NameSpace * namespace_stmt = code[code_counter]->element;
             result = namespace_exec(namespace_stmt);
@@ -104,6 +106,36 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
 Constant * calculate_expression(Array ** expression, Node * current_namespace) {
     Constant * value = arithmetica_wrapper(expression, current_namespace);
     return value;
+}
+
+Array ** while_body_parser(Array ** while_body) {
+    Array ** tokens = lexer(while_body);  // extracting simple tokens
+    Array ** parsed_tokens = parser(tokens); // extracting complex statements
+    Array ** expression_tokens = expression_lexer(parsed_tokens); // extracting tokens from expressions (if exists)
+
+    array_destructor(while_body); array_destructor(tokens);
+    return expression_tokens;
+}
+
+Constant * while_statement_exec(While * statement, Node * current_namespace) {
+    Constant * result = NULL;
+    char * condition = alloc_string(statement->condition);
+    Constant * condition_value = if_condition_exec(condition, current_namespace);
+    int is_true = *(int *)(condition_value->value); constant_destructor(condition_value); free(condition);
+    if (is_true) {
+        Array ** while_body = while_body_parser(statement->body);
+        while (is_true) {
+            Array ** copied_body = copy_function_code(while_body);
+            composer(copied_body);
+            result = interpreter(copied_body, current_namespace);
+            condition = alloc_string(statement->condition);
+            condition_value = if_condition_exec(condition, current_namespace);
+            is_true = *(int *)(condition_value->value) == 1; constant_destructor(condition_value); free(condition);
+        }
+        array_destructor(while_body);
+    }
+    free(statement->condition);
+    return result;
 }
 
 void global_exec(Global * global_stmt, Node * local_namespace) {
