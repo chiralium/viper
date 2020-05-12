@@ -72,7 +72,6 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         } else if (code[code_counter]->type_id == STMT_WHILE) {
             While * while_statement = code[code_counter]->element;
             result = while_statement_exec(while_statement, current_namespace);
-            if (previous_point == INTERPRETER_CALL_STACK_RETURN) break;
             free(code[code_counter]->element); free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_NAMESPACE) {
             NameSpace * namespace_stmt = code[code_counter]->element;
@@ -129,6 +128,7 @@ Constant * while_statement_exec(While * statement, Node * current_namespace) {
             Array ** copied_body = copy_function_code(while_body);
             composer(copied_body);
             result = interpreter(copied_body, current_namespace);
+            if (previous_point == INTERPRETER_CALL_STACK_RETURN) break;
             condition = alloc_string(statement->condition);
             condition_value = if_condition_exec(condition, current_namespace);
             if (!is_simple_data(condition_value->type_id)) throw_statement_exception("while", INTERPRETER_INVALID_WHILE_CONDITION);

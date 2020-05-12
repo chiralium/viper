@@ -21,6 +21,7 @@
 #define INTERPRETER_CALL_STACK_RETURN    1
 #define INTERPRETER_CALL_STACK_FUNCTION  2
 #define INTERPRETER_CALL_STACK_NAMESPACE 3
+#define INTERPRETER_CALL_STACK_LOOP      4
 
 typedef struct CallStackPoint {
     char * label;
