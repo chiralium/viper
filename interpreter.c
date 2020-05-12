@@ -121,6 +121,7 @@ Constant * while_statement_exec(While * statement, Node * current_namespace) {
     Constant * result = NULL;
     char * condition = alloc_string(statement->condition);
     Constant * condition_value = if_condition_exec(condition, current_namespace);
+    if (!is_simple_data(condition_value->type_id)) throw_statement_exception("while", INTERPRETER_INVALID_WHILE_CONDITION);
     int is_true = *(int *)(condition_value->value); constant_destructor(condition_value); free(condition);
     if (is_true) {
         Array ** while_body = while_body_parser(statement->body);
@@ -130,6 +131,7 @@ Constant * while_statement_exec(While * statement, Node * current_namespace) {
             result = interpreter(copied_body, current_namespace);
             condition = alloc_string(statement->condition);
             condition_value = if_condition_exec(condition, current_namespace);
+            if (!is_simple_data(condition_value->type_id)) throw_statement_exception("while", INTERPRETER_INVALID_WHILE_CONDITION);
             is_true = *(int *)(condition_value->value) == 1; constant_destructor(condition_value); free(condition);
         }
         array_destructor(while_body);

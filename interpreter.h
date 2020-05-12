@@ -14,6 +14,7 @@
 #define INTERPRETER_INVALID_RETURN_STATEMENT     "the return statement is not in a function"
 #define INTERPRETER_INVALID_FUNCTION_DECLARATION "the nested function is not available yet"
 #define INTERPRETER_INVALID_GLOBAL_SCOPE         "the global statement is not in local scope"
+#define INTERPRETER_INVALID_WHILE_CONDITION      "invalid while expression"
 
 /* Call stack point types */
 #define INTERPRETER_CALL_STACK_MAIN      0

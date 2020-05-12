@@ -173,7 +173,7 @@ Constant * arithmetica(Array ** expression_tokens, Node * current_namespace) {
     }
 
     Array * last = pop_last_el(constant_stack);
-    if (!is_empty(constant_stack)) throw_arithmetical_exception(expression_as_string, ARITHMETICA_SYNTAX_EXCEPTION);
+    if (!is_empty(constant_stack) || last == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_SYNTAX_EXCEPTION);
     Element * result_el = last->element;
 
     if (get_from_namespace(result_el) == -1) throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME);

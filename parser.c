@@ -110,6 +110,7 @@ While * get_while_statement(Array ** tokens) {
 
     if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
         condition = (trim(token->value) == NULL) ? NULL : alloc_string(trim(token->value));
+        if (condition == NULL) throw_statement_exception("while", PARSER_MISSING_WHILE_CONDITION);
         token = next_token(tokens);
         if (token && token->type_id == LEXER_COMPLEX_TK) {
             body = copy_array(body, token->value);
