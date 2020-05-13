@@ -40,8 +40,10 @@ int is_function_state(void);
 int is_return_state(void);
 /* The function will return true if the last call stack point is a loop statement */
 int is_loop_state(void);
-/* The function will return true if the last call stack point is a brea statement */
+/* The function will return true if the last call stack point is a break statement */
 int is_break_state(void);
+/* The function will return true if the last call stack point is a continue statement */
+int is_continue_state(void);
 
 /* Main entry point to program executing */
 Constant * main_entry(char * input_stream);

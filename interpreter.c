@@ -67,10 +67,15 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         } else if (code[code_counter]->type_id == STMT_BREAK) {
             call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point("break", INTERPRETER_CALL_STACK_BREAK));
             break;
+        } else if (code[code_counter]->type_id == STMT_CONTI) {
+            call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point("continue", INTERPRETER_CALL_STACK_CONTI));
+            break;
         } else if (code[code_counter]->type_id == STMT_IF) {
             If * if_statement = code[code_counter]->element;
             result = if_statement_exec(if_statement, current_namespace);
-            if ( is_return_state() || is_break_state() ) break;
+            if ( is_return_state() ||
+                 is_break_state() ||
+                 is_continue_state() ) break;
             if_destructor(if_statement); free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_WHILE) {
             While * while_statement = code[code_counter]->element;
@@ -131,16 +136,23 @@ Constant * while_statement_exec(While * statement, Node * current_namespace) {
             Array ** copied_body = copy_function_code(while_body);
             composer(copied_body);
             result = interpreter(copied_body, current_namespace);
-            if (is_break_state()) {
-                Array * last_call = pop_last_el(call_stack);
-                previous_point = ((CallStackPoint *)(last_call->element))->point_type;
-                free(last_call->element); free(last_call);
-                break;
+            if (is_break_state() || is_continue_state()) {
+                if (is_break_state()) {
+                    Array * last_call = pop_last_el(call_stack);
+                    previous_point = ((CallStackPoint *)(last_call->element))->point_type;
+                    free(last_call->element); free(last_call);
+                    break;
+                } else if (is_continue_state()) {
+                    Array * last_call = pop_last_el(call_stack);
+                    previous_point = ((CallStackPoint *)(last_call->element))->point_type;
+                    free(last_call->element); free(last_call);
+                    continue;
+                }
             }
             if (previous_point == INTERPRETER_CALL_STACK_RETURN) break;
-            condition = alloc_string(statement->condition);
-            condition_value = if_condition_exec(condition, current_namespace);
+            condition = alloc_string(statement->condition); condition_value = if_condition_exec(condition, current_namespace);
             if (!is_simple_data(condition_value->type_id)) throw_statement_exception("while", INTERPRETER_INVALID_WHILE_CONDITION);
+
             is_true = *(int *)(condition_value->value) == 1; constant_destructor(condition_value); free(condition);
         }
         array_destructor(while_body);
@@ -405,4 +417,9 @@ int is_loop_state(void) {
 int is_break_state(void) {
     CallStackPoint * last_point = get_last_el(call_stack)->element;
     return last_point->point_type == INTERPRETER_CALL_STACK_BREAK;
+}
+
+int is_continue_state(void) {
+    CallStackPoint * last_point = get_last_el(call_stack)->element;
+    return last_point->point_type == INTERPRETER_CALL_STACK_CONTI;
 }
