@@ -35,6 +35,8 @@ char * get_type_label(char type_id);
 #define STMT_RETURN          10
 #define STMT_NAMESPACE       15
 #define STMT_GLOBAL          17
+#define STMT_BREAK           18
+#define STMT_CONTI           19
 #define ARRAY_EL             'e'
 #define ELEMENT               6
 #define CONSTANT              7

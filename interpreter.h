@@ -15,6 +15,7 @@
 #define INTERPRETER_INVALID_FUNCTION_DECLARATION "the nested function is not available yet"
 #define INTERPRETER_INVALID_GLOBAL_SCOPE         "the global statement is not in local scope"
 #define INTERPRETER_INVALID_WHILE_CONDITION      "invalid while expression"
+#define INTERPRETER_IS_NOT_IN_LOOP               "the statement not in any loops"
 
 /* Call stack point types */
 #define INTERPRETER_CALL_STACK_MAIN      0
@@ -22,6 +23,8 @@
 #define INTERPRETER_CALL_STACK_FUNCTION  2
 #define INTERPRETER_CALL_STACK_NAMESPACE 3
 #define INTERPRETER_CALL_STACK_LOOP      4
+#define INTERPRETER_CALL_STACK_BREAK     5
+#define INTERPRETER_CALL_STACK_CONTI     6
 
 typedef struct CallStackPoint {
     char * label;
@@ -33,8 +36,12 @@ CallStackPoint * new_call_stack_point(char * label, char point_type);
 
 /* The function will return true if last call stack point is a function */
 int is_function_state(void);
-/* The function will retturn true if last call stack point is a return statement */
+/* The function will return true if last call stack point is a return statement */
 int is_return_state(void);
+/* The function will return true if the last call stack point is a loop statement */
+int is_loop_state(void);
+/* The function will return true if the last call stack point is a brea statement */
+int is_break_state(void);
 
 /* Main entry point to program executing */
 Constant * main_entry(char * input_stream);

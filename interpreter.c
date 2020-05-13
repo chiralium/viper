@@ -64,10 +64,13 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             (is_simple_data(result->type_id)) ? free(result->value) : NULL;
             free(result); result = NULL;
             free(code[code_counter]);
+        } else if (code[code_counter]->type_id == STMT_BREAK) {
+            call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point("break", INTERPRETER_CALL_STACK_BREAK));
+            break;
         } else if (code[code_counter]->type_id == STMT_IF) {
             If * if_statement = code[code_counter]->element;
             result = if_statement_exec(if_statement, current_namespace);
-            if (previous_point == INTERPRETER_CALL_STACK_RETURN) break;
+            if ( is_return_state() || is_break_state() ) break;
             if_destructor(if_statement); free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_WHILE) {
             While * while_statement = code[code_counter]->element;
@@ -128,6 +131,12 @@ Constant * while_statement_exec(While * statement, Node * current_namespace) {
             Array ** copied_body = copy_function_code(while_body);
             composer(copied_body);
             result = interpreter(copied_body, current_namespace);
+            if (is_break_state()) {
+                Array * last_call = pop_last_el(call_stack);
+                previous_point = ((CallStackPoint *)(last_call->element))->point_type;
+                free(last_call->element); free(last_call);
+                break;
+            }
             if (previous_point == INTERPRETER_CALL_STACK_RETURN) break;
             condition = alloc_string(statement->condition);
             condition_value = if_condition_exec(condition, current_namespace);
@@ -386,4 +395,14 @@ int is_function_state(void) {
 int is_return_state(void) {
     CallStackPoint * last_point = get_last_el(call_stack)->element;
     return last_point->point_type == INTERPRETER_CALL_STACK_RETURN;
+}
+
+int is_loop_state(void) {
+    CallStackPoint * last_point = get_last_el(call_stack)->element;
+    return last_point->point_type == INTERPRETER_CALL_STACK_LOOP;
+}
+
+int is_break_state(void) {
+    CallStackPoint * last_point = get_last_el(call_stack)->element;
+    return last_point->point_type == INTERPRETER_CALL_STACK_BREAK;
 }

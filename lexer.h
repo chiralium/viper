@@ -23,6 +23,8 @@
 #define LEXER_RETURN_TK       10
 #define LEXER_NAMESPACE_TK    11
 #define LEXER_GLOBAL_TK       12
+#define LEXER_BREAK_TK        13
+#define LEXER_CONTINUE_TK     14
 
 /* Lexer parameters */
 #define LEXER_MAX_VALUE  1024

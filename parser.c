@@ -13,6 +13,10 @@ Array ** parser(Array ** tokens) {
         } else if (token->type_id == LEXER_WHILE_TK) {
             While * while_statement = get_while_statement(tokens);
             parsed_tokens = append(parsed_tokens, STMT_WHILE, while_statement);
+        } else if (token->type_id == LEXER_BREAK_TK) {
+            parsed_tokens = append(parsed_tokens, STMT_BREAK, NULL);
+        } else if (token->type_id == LEXER_CONTINUE_TK) {
+            parsed_tokens = append(parsed_tokens, STMT_CONTI, NULL);
         } else if (token->type_id == LEXER_FUNCTION_TK) {
             Function *function_statement = get_function_statement(tokens);
             parsed_tokens = append(parsed_tokens, STMT_FUNC, function_statement);

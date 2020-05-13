@@ -80,6 +80,10 @@ Array ** copy_function_code(Array ** function_code) {
         } else if (function_code[counter]->type_id == STMT_GLOBAL) {
             Global * copied_global_statemet = copy_global(function_code[counter]->element);
             copied_code = append(copied_code, STMT_GLOBAL, copied_global_statemet);
+        } else if (function_code[counter]->type_id == STMT_BREAK) {
+            copied_code = append(copied_code, STMT_BREAK, NULL);
+        } else if (function_code[counter]->type_id == STMT_CONTI) {
+            copied_code = append(copied_code, STMT_CONTI, NULL);
         }
         counter++;
     }
