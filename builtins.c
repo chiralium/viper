@@ -51,7 +51,8 @@ Constant * output(Constant * value) {
         default:
             printf("<undefined at [0x%p]>", value->value);
     }
-    constant_destructor(value);
+    (is_simple_data(value->type_id)) ? free(value->value) : NULL;
+    free(value);
     return new_constant(NONE, NULL);
 }
 

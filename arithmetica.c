@@ -330,8 +330,8 @@ Index * new_index(void * object, Array ** params) {
 }
 
 void index_destructor(Index * index) {
-    array_destructor(index->object);
-    array_destructor(index->params);
+    if (index->object != NULL) array_destructor(index->object);
+    if (index->params != NULL) array_destructor(index->params);
     free(index);
 }
 
