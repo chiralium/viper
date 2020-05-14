@@ -1,6 +1,7 @@
 #include "memory.h"
 #include "functions.h"
 #include "display.h"
+#include "builtins.h"
 
 MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
     MemoryElement * memel = malloc(sizeof(MemoryElement));
@@ -32,6 +33,11 @@ MemoryElement * new_memory_element(char type_id, void * address, char * owner) {
         char meta[255]; strcpy(meta, namespace->name);
         memel->meta = alloc_string(meta);
         memel->type = alloc_string("<namespace>");
+    } else if (type_id == BUILT_IN_FUNCTION) {
+        BuiltIn * builtin = address;
+        char meta[255]; strcpy(meta, builtin->name);
+        memel->meta = alloc_string(meta);
+        memel->type = alloc_string("<built-in>");
     } else {
         memel->meta = alloc_string("<subdata>");
         memel->type = alloc_string("<subdata>");
@@ -62,6 +68,9 @@ void garbage_destructor(Array ** memory_table) {
             NameSpaceObject * namespace = memel->address;
             namespace_object_destructor(namespace);
             memel->is_freed = 1;
+        } else if (memel->type_id == BUILT_IN_FUNCTION) {
+            BuiltIn * builtin = memel->address;
+            free(builtin->name); free(builtin);
         }
         memory_table++;
     }
@@ -69,7 +78,7 @@ void garbage_destructor(Array ** memory_table) {
 
 void display_memory_table(Array ** memory_table) {
     set_color_scheme(COLOR_SCHEME_MEMORY_TABLE);
-    printf("*---------------------------------------------------- MEM. ----------------------------------------------------* \n");
+    printf("\n*---------------------------------------------------- MEM. ----------------------------------------------------* \n");
     printf("|       TYPE       |   ADDRESS    |               META               |                OWNER             | free |\n");
     printf("*--------------------------------------------------------------------------------------------------------------* \n");
     int counter = 0;

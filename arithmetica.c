@@ -3,6 +3,7 @@
 #include "functions.h"
 #include "interpreter.h"
 #include "memory.h"
+#include "builtins.h"
 
 /* Main Viper's modules */
 #include "ViArray.h"
@@ -23,47 +24,49 @@ Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namesp
 
 Constant * function_precalc(FuncCall * function_call) {
     Array ** input_args = function_call->arg_list; Array ** function_pointer_expression = function_call->function_pointer;
-
     // calculate the function pointer expression
-    Constant * function_pointer = arithmetica(function_pointer_expression, namespace);
-    if (function_pointer->type_id != FUNCTION_CONTAINER) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_CALLABLE);
-    FunctionContainer * function_container = function_pointer->value;
-    free(function_pointer);
-
-    // calculate the function signature
-    int signature = get_function_signature(input_args);
-
-    // get function from container by signature
-    Function * function_object = get_function_from_container(function_container, signature);
-    if (function_object == NULL) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_container->name);
-
-    call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point(function_object->name, INTERPRETER_CALL_STACK_FUNCTION));// add function name into call stack
-
-    Array ** function_code; function_code = copy_function_code(function_object->body); // copy the function code cause the code should be destroyed by lexers, parser and expression parser
-
-    // calculate the input arguments
-    Array ** calculated_args = new_array();
-    int counter = 0;
-    while (input_args[counter]) {
-        Constant * argument_value = arithmetica(input_args[counter]->element, namespace);
-        calculated_args = append(calculated_args, CONSTANT, argument_value);
-        free(input_args[counter]);
-        counter++;
+    Constant * function_pointer = arithmetica(function_pointer_expression, namespace); Constant * returned_value = NULL;
+    if (function_pointer->type_id != FUNCTION_CONTAINER && function_pointer->type_id != BUILT_IN_FUNCTION) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_CALLABLE);
+    if (function_pointer->type_id == FUNCTION_CONTAINER) {
+        FunctionContainer * function_container = function_pointer->value; free(function_pointer);
+        int signature = get_function_signature(input_args); // calculate the function signature
+        Function * function_object = get_function_from_container(function_container, signature); // get function from container by signature
+        if (function_object == NULL) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_container->name);
+        call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point(function_object->name, INTERPRETER_CALL_STACK_FUNCTION));// add function name into call stack
+        Array ** function_code; function_code = copy_function_code(function_object->body); // copy the function code cause the code should be destroyed by lexers, parser and expression parser
+        // calculate the input arguments
+        Array ** calculated_args = new_array();
+        int counter = 0;
+        while (input_args[counter]) {
+            Constant * argument_value = arithmetica(input_args[counter]->element, namespace);
+            calculated_args = append(calculated_args, CONSTANT, argument_value);
+            free(input_args[counter]);
+            counter++;
+        }
+        free(input_args); free(function_call);
+        Node * local_namespace = performing_local_namespace(calculated_args, function_object); // performing the local name space
+        char * previous_statement_expression = expression_as_string; // save the previous debug string
+        Node * global_namespace = namespace; // save the previous namespace
+        namespace = local_namespace;
+        returned_value = function_exec(function_code, local_namespace);
+        expression_as_string = previous_statement_expression;
+        namespace = global_namespace;
+    } else if (function_pointer->type_id == BUILT_IN_FUNCTION) {
+        BuiltIn * builtin_function = function_pointer->value; free(function_pointer);
+        int signature = builtin_function->args;
+        if (_get_len(input_args) != signature) throw_function_exception(expression_as_string, FUNCTIONS_INVALID_ARG_LIST, builtin_function->name);
+        // calculate the input arguments
+        Array ** calculated_args = new_array();
+        int counter = 0;
+        while (input_args[counter]) {
+            Constant * argument_value = arithmetica(input_args[counter]->element, namespace);
+            calculated_args = append(calculated_args, CONSTANT, argument_value);
+            free(input_args[counter]);
+            counter++;
+        }
+        free(input_args); free(function_call);
+        returned_value = builtin_function_execute(builtin_function, calculated_args);
     }
-    free(input_args); free(function_call);
-
-    // performing the local name space
-    Node * local_namespace = performing_local_namespace(calculated_args, function_object);
-
-    // starting executing the function
-    char * previous_statement_expression = expression_as_string; // save the previous debug string
-    Node * global_namespace = namespace; // save the previous namesapce
-
-    namespace = local_namespace;
-    Constant * returned_value = function_exec(function_code, local_namespace);
-
-    expression_as_string = previous_statement_expression;
-    namespace = global_namespace;
     return returned_value;
 }
 

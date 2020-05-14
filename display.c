@@ -3,6 +3,7 @@
 #include "ViArray.h"
 #include "functions.h"
 #include "interpreter.h"
+#include "builtins.h"
 
 void display_array_beauty(Array ** _array, char * tabs) {
     strcat(tabs, "-");
@@ -257,6 +258,10 @@ void display_constant(Constant * constant) {
             printf("<function `%s` at [0x%p]>",
                    ((FunctionContainer *)(constant->value))->name,
                    constant->value);
+            break;
+        case BUILT_IN_FUNCTION:
+            printf("<built-in function `%s` at [0x%p]>",
+                   ((BuiltIn *)(constant->value))->name, constant->value);
             break;
         case NAMESPACE:
             printf("<namespace `%s` at [0x%p]>",

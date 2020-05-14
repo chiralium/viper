@@ -43,5 +43,6 @@ char * get_type_label(char type_id);
 #define MEMORY_ELEMENT       13
 #define FUNCTION_CONTAINER   14
 #define CALLSTACK_POINT      16
+#define BUILT_IN_FUNCTION    20
 
 #endif //VIPER_V4_TYPES_H
