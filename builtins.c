@@ -98,13 +98,25 @@ Constant * to_int(Constant * value) {
     return new_constant(INTEGER, integer);
 }
 
-
+BuiltIn builtin_to_float = {"float", to_float, 1};
+Constant * to_float(Constant * value) {
+    float * integer = malloc(sizeof(float));
+    if (value->type_id == INTEGER) *integer = *(int *)value->value;
+    else if (value->type_id == FLOAT) *integer = *(float *)value->value;
+    else if (value->type_id == STRING) {
+        if (is_int_number(value->value)) *integer = atoi(value->value);
+        else if (is_float_number(value->value)) *integer = atof(value->value);
+        else throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_TO_INTEGER_SYNTAX_ERROR);
+    } else throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_TO_INTEGER_INVALID_TYPE);
+    return new_constant(FLOAT, integer);
+}
 
 BuiltIn * builtins[100] = {&builtin_input,
                            &builtin_output,
                            &builtin_len,
                            &builtin_to_string,
-                           &builtin_to_int};
+                           &builtin_to_int,
+                           &builtin_to_float};
 
 Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
     int signature = builtin->args;
