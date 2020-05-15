@@ -72,9 +72,25 @@ Constant * len(Constant * value) {
     return new_constant(INTEGER, length);
 }
 
+BuiltIn builtin_to_string = {"string", to_string, 1};
+Constant * to_string(Constant * value) {
+    char str[ARITHMETICA_MAX_STRING_LEN];
+    if (value->type_id == INTEGER) snprintf(str, sizeof(str), "%d", *(int *)value->value);
+    else if (value->type_id == FLOAT) snprintf(str, sizeof(str), "%f", *(float *)value->value);
+    else if (value->type_id == STRING) strcpy(str, value->value);
+    else if (value->type_id == NONE) strcpy(str, "NONE");
+    else throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_TO_STRING_INVALID_TYPE);
+
+    return new_constant(STRING, alloc_string(str));
+}
+
+
+
+
 BuiltIn * builtins[100] = {&builtin_input,
                            &builtin_output,
-                           &builtin_len};
+                           &builtin_len,
+                           &builtin_to_string};
 
 Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
     int signature = builtin->args;

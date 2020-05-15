@@ -1,5 +1,2 @@
-s = input(":::"); i = 0;
-while (i < len(s)) : {
-    output(s[i] + "\n");
-    i = i + 1;
-}
+a = 3.14;
+output(string(a)[1]);
