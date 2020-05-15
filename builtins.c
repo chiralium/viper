@@ -2,6 +2,7 @@
 #include "functions.h"
 #include "ViArray.h"
 #include "memory.h"
+#include "composer.h"
 
 extern Array ** memory_table;
 extern char * expression_as_string;
@@ -84,13 +85,26 @@ Constant * to_string(Constant * value) {
     return new_constant(STRING, alloc_string(str));
 }
 
+BuiltIn builtin_to_int = {"integer", to_int, 1};
+Constant * to_int(Constant * value) {
+    int * integer = malloc(sizeof(int));
+    if (value->type_id == INTEGER) *integer = *(int *)value->value;
+    else if (value->type_id == FLOAT) *integer = *(float *)value->value;
+    else if (value->type_id == STRING) {
+        if (is_int_number(value->value)) *integer = atoi(value->value);
+        else if (is_float_number(value->value)) *integer = atof(value->value);
+        else throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_TO_INTEGER_SYNTAX_ERROR);
+    } else throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_TO_INTEGER_INVALID_TYPE);
+    return new_constant(INTEGER, integer);
+}
 
 
 
 BuiltIn * builtins[100] = {&builtin_input,
                            &builtin_output,
                            &builtin_len,
-                           &builtin_to_string};
+                           &builtin_to_string,
+                           &builtin_to_int};
 
 Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
     int signature = builtin->args;

@@ -149,14 +149,15 @@ c = "";
 while ( !(c == "stop") ) : {
     c = input(">>>: ");
     if (c == "find") : {
-        key = input("\n Enter the key of the node: ");
+        key = integer(input("\n Enter the key of the node: "));
         finded_node = find(tree, key);
         output("\n------------------------\n");
-        output("\n key => "); output(finded_node->key);
-        output("\n value => "); output(finded_node->value);
+        output("\n key => "); output(key);
+        output("\n value => "); output(finded_node);
+        output("\n");
     } else (c == "insert") : {
-        key = input("\n Enter the key of the node: ");
-        value = input("\n Enter the value of the node: ");
+        key = integer(input("\n Enter the key of the node: "));
+        value = integer(input("\n Enter the value of the node: "));
         new = {"key" => key, "value" => value, "left" => NONE, "right" => NONE};
         insert(tree, new);
         output("\n------------------------\n");

@@ -13,6 +13,8 @@
 #define BUILTIN_FUNCTION_LEN_INVALID_TYPE        "the built-in function `len` having invalid arg. type"
 #define BUILTIN_FUNCTION_INPUT_INVALID_TYPE      "the built-in function `input` having invalid arg. type"
 #define BUILTIN_FUNCTION_TO_STRING_INVALID_TYPE  "the built-in function 'string' having invalid arg. type"
+#define BUILTIN_FUNCTION_TO_INTEGER_SYNTAX_ERROR "the string representing of integer value have syntax error"
+#define BUILTIN_FUNCTION_TO_INTEGER_INVALID_TYPE "the built-in function 'integer' having invalid arg. type"
 
 typedef struct BuiltIn {
     char * name;
