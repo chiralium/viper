@@ -4,6 +4,7 @@
 #include "memory.h"
 
 extern Array ** memory_table;
+extern char * expression_as_string;
 
 BuiltIn * new_builtin(char * name, void * function_pointer, int args) {
     BuiltIn * builtin = malloc(sizeof(BuiltIn));
@@ -63,8 +64,18 @@ Constant * input(Constant * value) {
     return new_constant(STRING, alloc_string(input_buffer));
 }
 
+BuiltIn builtin_len = {"len", len, 1};
+Constant * len(Constant * value) {
+    if (value->type_id != VIARRAY && value->type_id != STRING) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_LEN_INVALID_TYPE);
+    int * length = malloc(sizeof(int));
+    if (value->type_id == VIARRAY) *length = get_length(value->value);
+    else if (value->type_id == STRING) *length = strlen(value->value);
+    return new_constant(INTEGER, length);
+}
+
 BuiltIn * builtins[100] = {&builtin_input,
-                           &builtin_output};
+                           &builtin_output,
+                           &builtin_len};
 
 Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
     int signature = builtin->args;

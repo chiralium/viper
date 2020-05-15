@@ -1,12 +1,5 @@
-a = {};
-i = 0;
-while (i < 10) : {
-    output("\n#"); output(i);
-    el = input(":");
-    if (el == "stop") : {
-        break;
-    }
-    a[] = el;
+s = input(">>>"); i = 0;
+while (i < len(s)) : {
+    output(s[i] + "\n");
     i = i + 1;
 }
-output(a);

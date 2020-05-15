@@ -10,6 +10,8 @@
 #ifndef VIPER_V4_BUILTINS_H
 #define VIPER_V4_BUILTINS_H
 
+#define BUILTIN_FUNCTION_LEN_INVALID_TYPE "the built-in function `len` having invalid arg. type"
+
 typedef struct BuiltIn {
     char * name;
     void * function_pointer;
@@ -26,5 +28,8 @@ void import_builtins(Node * namespace);
 /* Input/Output */
 Constant * output(Constant * value);
 Constant * input(Constant * value);
+
+/* Get length of array */
+Constant * len(Constant * value);
 
 #endif //VIPER_V4_BUILTINS_H
