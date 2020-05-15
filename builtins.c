@@ -58,7 +58,8 @@ Constant * output(Constant * value) {
 BuiltIn builtin_input = {"input", input, 1};
 Constant * input(Constant * value) {
     char input_buffer[ARITHMETICA_MAX_STRING_LEN];
-    output(value); gets(input_buffer);
+    if (value->type_id != STRING) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_INPUT_INVALID_TYPE);
+    printf("%s", value->value); gets(input_buffer);
     return new_constant(STRING, alloc_string(input_buffer));
 }
 

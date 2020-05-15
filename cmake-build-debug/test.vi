@@ -1,4 +1,4 @@
-s = "hello world and etc."; i = 0;
+s = input(":::"); i = 0;
 while (i < len(s)) : {
     output(s[i] + "\n");
     i = i + 1;

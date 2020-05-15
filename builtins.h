@@ -10,7 +10,8 @@
 #ifndef VIPER_V4_BUILTINS_H
 #define VIPER_V4_BUILTINS_H
 
-#define BUILTIN_FUNCTION_LEN_INVALID_TYPE "the built-in function `len` having invalid arg. type"
+#define BUILTIN_FUNCTION_LEN_INVALID_TYPE   "the built-in function `len` having invalid arg. type"
+#define BUILTIN_FUNCTION_INPUT_INVALID_TYPE "the built-in function `input` having invalid arg. type"
 
 typedef struct BuiltIn {
     char * name;
