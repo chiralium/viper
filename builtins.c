@@ -52,8 +52,6 @@ Constant * output(Constant * value) {
         default:
             printf("<undefined at [0x%p]>", value->value);
     }
-    (is_simple_data(value->type_id)) ? free(value->value) : NULL;
-    free(value);
     return new_constant(NONE, NULL);
 }
 
@@ -81,12 +79,12 @@ Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
     int signature = builtin->args;
     if (signature == 1) {
         Constant * (*function_pointer)(Constant *) = builtin->function_pointer;
-        Constant * value = function_pointer((Constant *)(input_args[0]->element));
+        Constant * first_arg = input_args[0]->element;
+        Constant * value = function_pointer(first_arg);
+
+        is_simple_data(first_arg->type_id) ? constant_destructor(first_arg) : free(first_arg);
         free(input_args[0]); free(input_args);
         return value;
-    } else if (signature == 2) {
-        Constant * (*function_pointer)(Constant *, Constant *) = builtin->function_pointer;
-        return function_pointer((Constant *)(input_args[0]->element), (Constant *)(input_args[1]->element));
     }
 }
 
