@@ -17,6 +17,8 @@ char * readfile(char * filename) {
     }
 
     unsigned long size = get_size(f);
+    if (!size) exit(0); // just exit if the file is empty
+
     char byte = '\0';
     char * output_stream = (char *)calloc(size + 1, sizeof(char));
     unsigned long output_stream_counter = 0;
