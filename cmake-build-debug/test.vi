@@ -1,2 +1,1 @@
-a = "hello world!";
-output( a );
+a = "hello world";

@@ -141,7 +141,8 @@ int is_in(char symbol, char * stop_symbols) {
 int is_int_number(char * literal) {
     int is_number = 0;
     while (*literal) {
-        if (!(is_number = isdigit(*literal))) break;
+        is_number = isdigit( *literal );
+        if ( !is_number && *literal != OP_MINUS ) break;
         literal++;
     }
     return is_number;
