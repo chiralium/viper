@@ -77,7 +77,6 @@ void garbage_destructor(Array ** memory_table) {
 }
 
 void display_memory_table(Array ** memory_table) {
-    set_color_scheme(COLOR_SCHEME_MEMORY_TABLE);
     printf("\n*---------------------------------------------------- MEM. ----------------------------------------------------* \n");
     printf("|       TYPE       |   ADDRESS    |               META               |                OWNER             | free |\n");
     printf("*--------------------------------------------------------------------------------------------------------------* \n");
@@ -100,7 +99,6 @@ void display_memory_table(Array ** memory_table) {
         counter++;
     }
     printf("*--------------------------------------------------------------------------------------------------------------* \n");
-    set_color_scheme(-1);
 }
 
 void memory_table_destructor(Array ** memory_table) {
