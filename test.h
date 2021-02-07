@@ -41,6 +41,20 @@ int test_fread();
     /* Testing recursive_descent */
     int test_recursive_descent();
 
+/* Test #2: lexer.h */
+int test_lexer();
+    /* Testing cut_token */
+    int test_cut_token();
+
+    /* Testing is_keyword */
+    int test_is_keyword();
+
+    /* Testing extract_token */
+    int test_extract_token();
+
+    /* Testing lexer */
+    int _test_lexer();
+
 /* Utils */
 int array_cmp(Array ** a, Array ** b);
 
