@@ -10,7 +10,7 @@
 
 void test(void);
 
-/* Test #1: array.h */
+/* Test #0: array.h */
 int test_array();
     /* Testing the get_last_el */
     int test_get_last_el();
@@ -29,6 +29,17 @@ int test_array();
 
     /* Testing pop_last_el */
     int test_pop_last_el();
+
+/* Test #1: fread.h */
+int test_fread();
+    /* Testing cut_structure_node */
+    int test_cut_node_structure();
+
+    /* Testing cut_complex_structure */
+    int test_cut_complex_structure();
+
+    /* Testing recursive_descent */
+    int test_recursive_descent();
 
 /* Utils */
 int array_cmp(Array ** a, Array ** b);

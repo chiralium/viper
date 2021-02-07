@@ -1,4 +1,6 @@
 #include "array.h"
+#include "fread.h"
+
 #include "stdio.h"
 #include "types.h"
 #include "display.h"
@@ -8,9 +10,171 @@ void test() {
     printf("Testing mode!\n");
 
     int test_array_result = test_array();
+    printf("\nStatus: %s\n", test_array_result ? "PASSED" : "FAILED");
 
-    printf("Status: %s\n", test_array_result ? "PASSED" : "FAILED");
+    int test_fread_result = test_fread();
+    printf("\nStatus: %s\n", test_fread_result ? "PASSED" : "FAILED");
 }
+
+/* Fread */
+int test_fread() {
+    printf("\nTest #1: fread.h\n");
+    return test_cut_node_structure() &&
+           test_cut_complex_structure() &&
+           test_recursive_descent()
+           ;
+}
+
+int test_recursive_descent() {
+    int result = 1;
+    printf("\ntest_recursive_descent:\n");
+    char * testing_data[] = {
+            "2+2",
+            "2 * 3 / 4 + (5 / 3.14)",
+            "if ( a > 0 ) : {...}",
+            "while ( a > 0 ) : { a += 1; b = 1 }",
+            "if ( a > 0 ) : { a += 1; if ( a > 3 ) : {...} }",
+            0,
+    };
+
+    Array ** expect_data = new_array();
+
+    Array ** by_line = new_array();
+    by_line = append(by_line, STRING, alloc_string("2+2"));
+    expect_data = append( expect_data, ARRAY, by_line );
+
+    by_line = new_array();
+    by_line = append(by_line, STRING, alloc_string("2 * 3 / 4 + (5 / 3.14)"));
+    expect_data = append( expect_data, ARRAY, by_line );
+
+    by_line = new_array();
+    by_line = append(by_line, STRING, alloc_string("if ( a > 0 ) "));
+    Array ** temp = new_array(); temp = append(temp, STRING, alloc_string("..."));
+    by_line = append(by_line, ARRAY, temp);
+    expect_data = append( expect_data, ARRAY, by_line );
+
+    by_line = new_array();
+    by_line = append(by_line, STRING, alloc_string("while ( a > 0 ) "));
+
+    temp = new_array();
+    temp = append(temp, STRING, alloc_string("a += 1"));
+    temp = append(temp, STRING, alloc_string("b = 1 "));
+    by_line = append(by_line, ARRAY, temp);
+    expect_data = append( expect_data, ARRAY, by_line );
+
+    by_line = new_array();
+    by_line = append(by_line, STRING, alloc_string("if ( a > 0 ) "));
+
+    temp = new_array();
+    temp = append(temp, STRING, alloc_string("a += 1"));
+    temp = append(temp, STRING, alloc_string("if ( a > 3 ) "));
+    Array ** temp2 = new_array();
+    temp2 = append(temp2, STRING, alloc_string("..."));
+    temp = append(temp, ARRAY, temp2);
+
+    by_line = append(by_line, ARRAY, temp);
+    expect_data = append( expect_data, ARRAY, by_line );
+
+    int counter = 0;
+    while ( testing_data[counter] ) {
+        char *input_stream = alloc_string(testing_data[counter]);
+        Array ** result_data = recursive_descent(input_stream);
+        result *= array_cmp( expect_data[counter]->element, result_data);
+
+        printf("input: `%s` -- %s => ", testing_data[counter], result ? "OK" : "FAIL");
+        display_array(result_data);
+        printf("\n");
+
+
+        counter++;
+    }
+
+
+    return result;
+}
+
+int test_cut_complex_structure() {
+    int result = 1;
+    printf("\ntest_cut_complex_structure:\n");
+
+    char * testing_data[] = {
+            "{...}",
+            "{1, 2, 3}",
+            "{1, 2, {3, 4}, 5}",
+            0,
+    };
+
+    char * expect_data[] = {
+            "...",
+            "1, 2, 3",
+            "1, 2, {3, 4}, 5",
+            0,
+    };
+
+    int counter = 0;
+    while ( testing_data[counter] ) {
+        char *input_stream = alloc_string(testing_data[counter]);
+        char *result_string = cut_complex_structure(input_stream);
+        char *expect = expect_data[counter];
+
+        result *= !strcmp(expect, result_string);
+        printf("input: `%s` -- %s => / %s /\n", testing_data[counter], result ? "OK" : "FAIL", result_string);
+        counter++;
+    }
+
+    return result;
+}
+
+int test_cut_node_structure() {
+    int result = 1;
+    printf("\ntest_cut_node_structure:\n");
+    char * testing_data[] = {
+            "2;",
+            "2",
+            "2 + 2",
+            "2\n+2",
+            "2; 3+4",
+            "\"hello world\"",
+            "if (a > 2) : {...}",
+            "{1, 2, 3}",
+            "{1, {2, 3}, 4}",
+            "{1, }",
+            "(2+2)*3",
+            "string = \"hello + world \\n\";",
+            0
+    };
+
+    char * expect_data[] = {
+            "2",
+            "2",
+            "2 + 2",
+            "2+2",
+            "2",
+            "\"hello world\"",
+            "if (a > 2) ",
+            "{1, 2, 3}",
+            "{1, {2, 3}, 4}",
+            "{1, }",
+            "(2+2)*3",
+            "string = \"hello + world \\n\"",
+            0
+    };
+
+    int counter = 0;
+    while ( testing_data[counter] ) {
+        char *input_stream = alloc_string(testing_data[counter]);
+        char *result_string = cut_structure_node(input_stream);
+        char *expect = expect_data[counter];
+
+        result *= !strcmp(expect, result_string);
+        printf("input: `%s` -- %s => / %s /\n", testing_data[counter], result ? "OK" : "FAIL", result_string);
+        counter++;
+    }
+
+    return result;
+}
+
+/* Fread */
 
 /* Arrays */
 int test_array() {
@@ -175,7 +339,18 @@ int array_cmp(Array ** a, Array ** b) {
         while( a[counter] ) {
             if ( a[counter]->type_id != b[counter]->type_id ) return 0;
             else {
-                if ( (int *)(a[counter]->element) != (int *)(b[counter]->element) ) return 0;
+                switch (a[counter]->type_id) {
+                    case INTEGER:
+                        if ( (int *)(a[counter]->element) != (int *)(b[counter]->element) ) return 0;
+                        break;
+                    case STRING:
+                        if ( strcmp(a[counter]->element, b[counter]->element) ) return 0;
+                        break;
+                    case ARRAY:
+                        return array_cmp(a[counter]->element, b[counter]->element);
+                        break;
+                }
+
             }
             counter++;
         }
