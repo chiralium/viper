@@ -3,9 +3,13 @@
 #include "ViArray.h"
 #include "memory.h"
 #include "composer.h"
+#include "arithmetica.h"
+
+#include <unistd.h>
 
 extern Array ** memory_table;
 extern char * expression_as_string;
+Node * namespace;
 
 BuiltIn * new_builtin(char * name, void * function_pointer, int args) {
     BuiltIn * builtin = malloc(sizeof(BuiltIn));
@@ -13,6 +17,14 @@ BuiltIn * new_builtin(char * name, void * function_pointer, int args) {
     builtin->function_pointer = function_pointer;
     builtin->args = args;
     return builtin;
+}
+
+BuiltIn builtin_timeout = { "setTimeout", timeout, 2};
+Constant * timeout( Constant * callback, Constant * delay ) {
+    int args_is_valid = callback->type_id == FUNCTION_CONTAINER && delay->type_id == INTEGER;
+    if ( !args_is_valid ) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_SETTIMEOUT_INVALID_TYPE);
+    sleep(*(int *)delay->value);
+    return callback_precalc(callback, new_array());
 }
 
 BuiltIn builtin_output = {"output", output, 1};
@@ -116,7 +128,8 @@ BuiltIn * builtins[100] = {&builtin_input,
                            &builtin_len,
                            &builtin_to_string,
                            &builtin_to_int,
-                           &builtin_to_float};
+                           &builtin_to_float,
+                           &builtin_timeout};
 
 Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
     int signature = builtin->args;
@@ -127,6 +140,22 @@ Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
 
         is_simple_data(first_arg->type_id) ? constant_destructor(first_arg) : free(first_arg);
         free(input_args[0]); free(input_args);
+        return value;
+    } else if ( signature == 2 ) {
+        Constant * (*function_pointer)(Constant *, Constant *) = builtin->function_pointer;
+        Constant * arg_list[] = {
+                input_args[0]->element,
+                input_args[1]->element
+        };
+        Constant * value = function_pointer(arg_list[0], arg_list[1]);
+
+        while ( --signature ) {
+            is_simple_data(arg_list[signature]->type_id) ?
+            constant_destructor(arg_list[signature]) :
+            free(arg_list[signature]);
+            free(input_args[signature]);
+        }
+        free(input_args);
         return value;
     }
 }
