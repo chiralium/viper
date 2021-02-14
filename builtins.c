@@ -19,7 +19,7 @@ BuiltIn * new_builtin(char * name, void * function_pointer, int args) {
     return builtin;
 }
 
-BuiltIn builtin_timeout = { "setTimeout", timeout, 2};
+BuiltIn builtin_timeout = { BT_TIMEOUT, timeout, 2 };
 Constant * timeout( Constant * callback, Constant * delay ) {
     int args_is_valid = callback->type_id == FUNCTION_CONTAINER && delay->type_id == INTEGER;
     if ( !args_is_valid ) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_SETTIMEOUT_INVALID_TYPE);
@@ -27,7 +27,7 @@ Constant * timeout( Constant * callback, Constant * delay ) {
     return callback_precalc(callback, new_array());
 }
 
-BuiltIn builtin_output = {"output", output, 1};
+BuiltIn builtin_output = { BT_OUTPUT, output, 1 };
 Constant * output(Constant * value) {
     switch (value->type_id) {
         /* Vipers types */
@@ -68,7 +68,7 @@ Constant * output(Constant * value) {
     return new_constant(NONE, NULL);
 }
 
-BuiltIn builtin_input = {"input", input, 1};
+BuiltIn builtin_input = { BT_INPUT, input, 1 };
 Constant * input(Constant * value) {
     char input_buffer[ARITHMETICA_MAX_STRING_LEN];
     if (value->type_id != STRING) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_INPUT_INVALID_TYPE);
@@ -76,7 +76,7 @@ Constant * input(Constant * value) {
     return new_constant(STRING, alloc_string(input_buffer));
 }
 
-BuiltIn builtin_len = {"len", len, 1};
+BuiltIn builtin_len = { BT_LEN, len, 1 };
 Constant * len(Constant * value) {
     if (value->type_id != VIARRAY && value->type_id != STRING) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_LEN_INVALID_TYPE);
     int * length = malloc(sizeof(int));
@@ -85,7 +85,7 @@ Constant * len(Constant * value) {
     return new_constant(INTEGER, length);
 }
 
-BuiltIn builtin_to_string = {"string", to_string, 1};
+BuiltIn builtin_to_string = { BT_STRING, to_string, 1 };
 Constant * to_string(Constant * value) {
     char str[ARITHMETICA_MAX_STRING_LEN];
     if (value->type_id == INTEGER) snprintf(str, sizeof(str), "%d", *(int *)value->value);
@@ -97,7 +97,7 @@ Constant * to_string(Constant * value) {
     return new_constant(STRING, alloc_string(str));
 }
 
-BuiltIn builtin_to_int = {"integer", to_int, 1};
+BuiltIn builtin_to_int = { BT_INTEGER, to_int, 1 };
 Constant * to_int(Constant * value) {
     int * integer = malloc(sizeof(int));
     if (value->type_id == INTEGER) *integer = *(int *)value->value;
@@ -110,7 +110,7 @@ Constant * to_int(Constant * value) {
     return new_constant(INTEGER, integer);
 }
 
-BuiltIn builtin_to_float = {"float", to_float, 1};
+BuiltIn builtin_to_float = { BT_FLOAT, to_float, 1 };
 Constant * to_float(Constant * value) {
     float * integer = malloc(sizeof(float));
     if (value->type_id == INTEGER) *integer = *(int *)value->value;

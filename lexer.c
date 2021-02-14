@@ -1,5 +1,6 @@
 #include "lexer.h"
 #include "display.h"
+#include "builtins.h"
 
 char * cut_token(char * literal, char stop_symbol) {
     char stack_tmp[LEXER_MAX_VALUE + 1]; char symbol;
@@ -85,6 +86,18 @@ int is_keyword(char * literal) {
     else if (strcmp(literal, KW_GLOBAL) == 0) return LEXER_GLOBAL_TK;
     else if (strcmp(literal, KW_BREAK) == 0) return LEXER_BREAK_TK;
     else if (strcmp(literal, KW_CONTI) == 0) return LEXER_CONTINUE_TK;
+    return 0;
+}
+
+int is_builtin(char * literal) {
+    if (!literal) return 0;
+    if (strcmp(literal, BT_OUTPUT) == 0  ||
+        strcmp(literal, BT_STRING) == 0  ||
+        strcmp(literal, BT_FLOAT) == 0   ||
+        strcmp(literal, BT_INTEGER) == 0 ||
+        strcmp(literal, BT_TIMEOUT) == 0 ||
+        strcmp(literal, BT_INPUT) == 0   ||
+        strcmp(literal, BT_LEN) == 0) return LEXER_BUILTIN_TK;
     return 0;
 }
 

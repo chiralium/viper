@@ -17,6 +17,14 @@
 #define BUILTIN_FUNCTION_TO_INTEGER_SYNTAX_ERROR "the string representing of integer value have syntax error"
 #define BUILTIN_FUNCTION_TO_INTEGER_INVALID_TYPE "the built-in function 'integer' having invalid arg. type"
 
+#define BT_OUTPUT   "output"
+#define BT_STRING   "string"
+#define BT_FLOAT    "float"
+#define BT_INTEGER  "integer"
+#define BT_TIMEOUT  "setTimeout"
+#define BT_INPUT    "input"
+#define BT_LEN      "len"
+
 typedef struct BuiltIn {
     char * name;
     void * function_pointer;

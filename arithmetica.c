@@ -1057,7 +1057,7 @@ void * _asg(void * x, void * y) {
     Element * x_el = x; Element * y_el = y;
     if (x_el->origin == NULL) get_from_namespace(x_el) == -1 ? throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME) : NULL;
     if (y_el->origin == NULL) get_from_namespace(y_el);
-    if (!is_name(y_el->literal) && y_el->origin == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
+    if ( (!is_name(y_el->literal) && y_el->origin == NULL) || is_builtin(y_el->literal) ) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
 
     if (y_el->origin == NULL && is_simple_data(x_el->vtype_id))
         _asg_from_data_to_data(y_el, x_el);
