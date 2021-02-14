@@ -25,6 +25,7 @@
 #define LEXER_GLOBAL_TK       12
 #define LEXER_BREAK_TK        13
 #define LEXER_CONTINUE_TK     14
+#define LEXER_BUILTIN_TK      15
 
 /* Lexer parameters */
 #define LEXER_MAX_VALUE  1024
@@ -51,6 +52,9 @@ int is_special(char symbol);
 
 /* The function return the token id if the literal is keyword, else return 0 */
 int is_keyword(char * literal);
+
+/* The function return token id if the literal is built-in function, else return 0 */
+int is_builtin(char * literal);
 
 /* Free the memory of token */
 void token_destructor(Token * token);

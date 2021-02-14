@@ -57,11 +57,11 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
         if (code[code_counter]->type_id == ARRAY) {
             // if this condition is true, then this element is a expression
             result = calculate_expression(code[code_counter]->element, current_namespace);
+
             /*display_callstack(call_stack);
-            set_color_scheme(COLOR_SCHEME_INTERPRETER_OUTPUT);
             printf(">>> ");
-            set_color_scheme(-1);
             display_constant(result); printf("\n");*/
+
             (is_simple_data(result->type_id)) ? free(result->value) : NULL;
             free(result); result = NULL;
             free(code[code_counter]);
