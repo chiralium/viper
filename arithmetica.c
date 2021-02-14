@@ -46,6 +46,7 @@ Constant * callback_precalc(Constant * callback, Array ** input_args) {
     namespace = local_namespace;
     returned_value = function_exec( function_code, local_namespace );
     namespace = global_namespace;
+    expression_as_string = previous_statement_expression;
     return returned_value;
 }
 
