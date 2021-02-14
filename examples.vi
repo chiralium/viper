@@ -198,3 +198,33 @@ while (i < m) : {
 o = {"positive" => positive,
      "negative" => negative,
      "zero" => zero};
+
+namespace CallBackNameSpace : {
+    message = "Am I is callback!";
+    counter = 0;
+    finish = 4;
+}
+
+function callback(x) : {
+    return x;
+}
+
+function callback() : {
+    CallBackNameSpace->counter = CallBackNameSpace->counter + 1;
+    output(CallBackNameSpace->message + " == " + string(CallBackNameSpace->counter) + "\n");
+
+    if (CallBackNameSpace->counter == CallBackNameSpace->finish) : {
+        return 3.14;
+    } else : {
+        return setTimeout(callback, 2);
+    }
+}
+
+output(
+    callback(
+        setTimeout(
+            callback,
+            1
+        )
+    )
+);

@@ -74,7 +74,7 @@ typedef struct Element {
 } Element;
 
 /* Types parameters */
-#define ARITHMETICA_MAX_STRING_LEN 255
+#define ARITHMETICA_MAX_STRING_LEN 1024
 
 /* Operators parameters */
 #define ARITMHETICA_MAX_INDEX_PARAM 3
