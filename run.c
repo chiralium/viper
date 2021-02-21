@@ -3,9 +3,9 @@
 Array ** call_stack;
 Array ** memory_table;
 
-void run(void) {
+void run(char * filename) {
     // Read the source file
-    char *filename = "/home/evgeniy/computer/lab/viper/cmake-build-debug/test.vi"; char *input_stream; input_stream = readfile(filename);
+    char *input_stream; input_stream = readfile(filename);
 
     // Initialize the call stack array
     call_stack = new_array(); call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point("__MAIN__", INTERPRETER_CALL_STACK_MAIN));

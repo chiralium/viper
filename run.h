@@ -11,6 +11,6 @@
 #define VIPER_V4_RUN_H
 
 // Main entry point
-void run(void);
+void run(char * filename);
 
 #endif //VIPER_V4_RUN_H

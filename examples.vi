@@ -217,13 +217,13 @@ function callback() : {
     if (CallBackNameSpace->counter == CallBackNameSpace->finish) : {
         return 3.14;
     } else : {
-        return setTimeout(callback, 2);
+        return async(callback, 2);
     }
 }
 
 output(
     callback(
-        setTimeout(
+        async(
             callback,
             1
         )
