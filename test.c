@@ -1,11 +1,17 @@
 #include "array.h"
 #include "fread.h"
 #include "lexer.h"
+#include "interpreter.h"
+#include "display.h"
 
 #include "stdio.h"
 #include "types.h"
 #include "display.h"
 #include "test.h"
+
+Array ** call_stack;
+Array ** memory_table;
+Node * global_namespace;
 
 void test() {
     printf("Testing mode!\n");
@@ -18,7 +24,114 @@ void test() {
 
     int test_lexer_result = test_lexer();
     printf("\nStatus: %s", test_lexer_result ? "PASSED" : "FAILED");
+
+    int test_viper_result = test_viper();
+    printf("\nStatus %s", test_viper_result ? "PASSED" : "FAILED");
 }
+/* Viper */
+int test_viper() {
+    printf("\nTest #3: viper\n");
+    return test_assign_int() &&
+           test_assign_string()
+           ;
+}
+
+int test_assign_string() {
+    printf("\ntest_assign_string\n");
+    int result = 1;
+    char testing_data[1024] = "a = \"hello world!!!\"; b = \"hello \" + \"world!\"; c = a + b + string(123);";
+
+    strcat(testing_data,
+           "newline = \"function A : {output(1)}\";");
+    strcat(testing_data,
+           "q = \"\\\"hello world\\\"\";");
+    strcat(testing_data,
+           "s = \"hello\"[0];");
+    strcat(testing_data,
+           "d = \"hello\"[0,3];");
+    strcat(testing_data,
+           "abc = \"abcdefghijklmnopqrst\"[0, 6, 2];");
+    strcat(testing_data,
+           "concat = string(3.14) + \" is number of \\\"pi\\\"\";");
+
+    printf("input: %s\n", testing_data);
+    char * keys[] = {
+            "a",
+            "b",
+            "c",
+            "newline",
+            "q",
+            "s",
+            "d",
+            "abc",
+            "concat",
+            0
+    };
+    char * result_data[] = {
+            "hello world!!!",
+            "hello world!",
+            "hello world!!!hello world!123",
+            "function A : {output(1)}",
+            "\"hello world\"",
+            "h",
+            "hel",
+            "aceg",
+            "3.140000 is number of \"pi\"",
+            0,
+    };
+
+    int counter = 0;
+    char * input_string = alloc_string(testing_data);
+    wrapper(input_string);
+
+    while (keys[counter]) {
+        Node * expected = find_node(global_namespace, faq6(keys[counter]));
+        Constant * value = expected->value;
+        result *= value->type_id == STRING && !strcmp((char *)(value->value), result_data[counter]);
+        printf("key: %s, [%s] -> [%s]\n", keys[counter], result ? "OK" : "FAIL", (char *)(value->value));
+        counter++;
+    }
+    return result;
+}
+
+int test_assign_int() {
+    printf("\ntest_assign_int:\n");
+    int result = 1;
+    char * testing_data = "a = 3; b = 7; c = 1 + 2; d = a + b; e = d / b; formula = 2 + 314; formula = (3 + 314 + formula) + formula; f = integer(\"6996\")";
+    char * keys[] = {
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "formula",
+            "f",
+            0
+    };
+    int result_data[] = {
+            3,
+            7,
+            3,
+            10,
+            9 / 7,
+            949,
+            6996,
+    };
+
+    int counter = 0;
+    char * input_string = alloc_string(testing_data);
+    wrapper(input_string);
+
+    while (keys[counter]) {
+        Node * expected = find_node(global_namespace, faq6(keys[counter]));
+        Constant * value = expected->value;
+        result *= value->type_id == INTEGER && *(int *)(value->value) == result_data[counter];
+        printf("key: %s, [%s] -> [%d]\n", keys[counter], result ? "OK" : "FAIL", *(int *)(value->value));
+        counter++;
+    }
+    return result;
+}
+
 
 /* Lexer */
 int test_lexer() {
@@ -559,6 +672,25 @@ int test_pop_el() {
 }
 
 /* Utils */
+Constant * wrapper(char * input_stream) {
+    // Initialize the call stack array
+    call_stack = new_array(); call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point("__MAIN__", INTERPRETER_CALL_STACK_MAIN));
+    // Initialize the heap array, that contained the addresses */
+    memory_table = new_array();
+
+    Constant * result;
+    /* parsing the input text stream */
+    Array ** parsed = main_parsing(input_stream);
+
+    /* initialization the namespace of interpreter */
+    global_namespace = meta_data();
+
+    /* interpreting the program in a global_namespace */
+    result = interpreter(parsed, global_namespace); (result == NULL) ? result = new_constant(NONE, NULL) : NULL;
+    display_memory_table(memory_table);
+    return result;
+}
+
 int array_cmp(Array ** a, Array ** b) {
     unsigned long a_length = _get_len(a);
     unsigned long b_length = _get_len(b);
