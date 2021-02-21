@@ -1,7 +1,30 @@
-global_var = 3.14;
 
-namespace A : {
-    output("Namespace declaration: " + __name__ + "\n");
-    output("This namespace are extending the global namespace data. For example built-in function `output`\n");
-    output("Even global_var, that stored in global namespace: " + string(global_var) + "\n");
+namespace CallBackNameSpace : {
+    message = "Am I is callback!";
+    counter = 0;
+    finish = 3;
 }
+
+function callback(x) : {
+    return x;
+}
+
+function callback() : {
+    CallBackNameSpace->counter = CallBackNameSpace->counter + 1;
+    output(CallBackNameSpace->message + " == " + string(CallBackNameSpace->counter) + "\n");
+
+    if (CallBackNameSpace->counter == CallBackNameSpace->finish) : {
+        return 3.14;
+    } else : {
+        return async(callback, 1);
+    }
+}
+
+output(
+    callback(
+        async(
+            callback,
+            1
+        )
+    )
+);

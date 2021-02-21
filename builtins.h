@@ -10,7 +10,7 @@
 #ifndef VIPER_V4_BUILTINS_H
 #define VIPER_V4_BUILTINS_H
 
-#define BUILTIN_FUNCTION_SETTIMEOUT_INVALID_TYPE "the built-in function `setTimeout` having invalid arg. type"
+#define BUILTIN_FUNCTION_ASYNC_INVALID_TYPE      "the built-in function `async` having invalid arg. type"
 #define BUILTIN_FUNCTION_LEN_INVALID_TYPE        "the built-in function `len` having invalid arg. type"
 #define BUILTIN_FUNCTION_INPUT_INVALID_TYPE      "the built-in function `input` having invalid arg. type"
 #define BUILTIN_FUNCTION_TO_STRING_INVALID_TYPE  "the built-in function 'string' having invalid arg. type"
@@ -21,7 +21,7 @@
 #define BT_STRING   "string"
 #define BT_FLOAT    "float"
 #define BT_INTEGER  "integer"
-#define BT_TIMEOUT  "setTimeout"
+#define BT_ASYNC    "async"
 #define BT_INPUT    "input"
 #define BT_LEN      "len"
 
@@ -51,6 +51,7 @@ Constant * to_int(Constant * value);
 Constant * to_float(Constant * value);
 
 /* System */
-Constant * timeout(Constant * callback, Constant * delay);
+Constant * async(Constant * callback, Constant * delay);
 
+Constant * Btest(Constant * A, Constant * B);
 #endif //VIPER_V4_BUILTINS_H

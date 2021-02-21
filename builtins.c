@@ -19,10 +19,15 @@ BuiltIn * new_builtin(char * name, void * function_pointer, int args) {
     return builtin;
 }
 
-BuiltIn builtin_timeout = { BT_TIMEOUT, timeout, 2 };
-Constant * timeout( Constant * callback, Constant * delay ) {
+BuiltIn builtin_test = { "test", Btest, 2 };
+Constant * Btest( Constant * A, Constant * B ) {
+    return new_constant(NONE, NULL);
+}
+
+BuiltIn builtin_async = { BT_ASYNC, async, 2 };
+Constant * async( Constant * callback, Constant * delay ) {
     int args_is_valid = callback->type_id == FUNCTION_CONTAINER && delay->type_id == INTEGER;
-    if ( !args_is_valid ) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_SETTIMEOUT_INVALID_TYPE);
+    if ( !args_is_valid ) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_ASYNC_INVALID_TYPE);
     sleep(*(int *)delay->value);
     return callback_precalc(callback, new_array());
 }
@@ -129,7 +134,8 @@ BuiltIn * builtins[100] = {&builtin_input,
                            &builtin_to_string,
                            &builtin_to_int,
                            &builtin_to_float,
-                           &builtin_timeout};
+                           &builtin_async,
+                           &builtin_test};
 
 Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
     int signature = builtin->args;
@@ -149,10 +155,11 @@ Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
         };
         Constant * value = function_pointer(arg_list[0], arg_list[1]);
 
-        while ( --signature ) {
-            is_simple_data(arg_list[signature]->type_id) ?
-            constant_destructor(arg_list[signature]) :
-            free(arg_list[signature]);
+        while ( signature-- ) {
+            is_simple_data(arg_list[signature]->type_id)
+                ? constant_destructor(arg_list[signature])
+                : free(arg_list[signature]);
+
             free(input_args[signature]);
         }
         free(input_args);

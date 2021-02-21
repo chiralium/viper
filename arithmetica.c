@@ -25,7 +25,7 @@ Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namesp
 Constant * callback_precalc(Constant * callback, Array ** input_args) {
     Constant * returned_value = NULL;
     if ( callback->type_id != FUNCTION_CONTAINER ) throw_arithmetical_exception(expression_as_string, ARITHMETICA_CALLBACK_IS_NOT_FUNCTION);
-    FunctionContainer * function_container = callback->value; free( callback );
+    FunctionContainer * function_container = callback->value;
     int signature = get_function_signature( input_args );
     Function * function_object = get_function_from_container( function_container, signature );
     if ( function_object == NULL ) throw_function_exception( expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_container->name );
