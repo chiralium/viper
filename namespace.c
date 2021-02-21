@@ -23,6 +23,10 @@ Node * new_node(int key, void * value) {
     node->is_global = 0;
 }
 
+Node * extract_namespace_from_object(NameSpaceObject * object) {
+    return object->namespace;
+}
+
 Node * extending(Node * root, Node * extended_namespace) {
     if (root != NULL) {
         Constant * node_value = root->value;

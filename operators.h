@@ -9,6 +9,7 @@
 #define OP_MINUS '-'
 #define OP_MUL   '*'
 #define OP_DIV   '/'
+#define OP_LESS  '<'
 
 #define OP_OPEN_CBRACK  '('
 #define OP_CLOSE_CBRACK ')'

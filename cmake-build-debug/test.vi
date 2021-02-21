@@ -1,1 +1,10 @@
-output("abcdefghijklmnopqrst"[0, 6, 2]);
+namespace A : {
+    data = 3.14;
+}
+
+namespace B < A: {
+    d = 2.8;
+    r = data * d;
+}
+
+output(B->r);

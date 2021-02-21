@@ -49,25 +49,48 @@ Array ** parser(Array ** tokens) {
 }
 
 NameSpace * get_namespace_statement(Array ** tokens) {
-    char * name; Array ** body;
+    char * name; char * extending_name = NULL; Array ** body;
 
     Token * token = next_token(tokens);
 
     if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
-        name = alloc_string(trim(token->value));
+        name = extract_namespace_name(token->value);
         if (!is_statement_name_valid(name)) throw_statement_exception(name, PARSER_INVALID_STATEMENT_NAME);
+
+        if (*(char *)(token->value)) {
+            extending_name = extract_extending_namespace_name(token->value);
+            if (!is_statement_name_valid(extending_name)) throw_statement_exception(name, PARSER_INVALID_STATEMENT_NAME);
+        }
+
         token = next_token(tokens);
         if (token && token->type_id == LEXER_COMPLEX_TK) body = copy_array(body, token->value);
         else throw_statement_exception(name, PARSER_MISSING_NAMESPACE_BODY);
     } else throw_statement_exception("namespace", PARSER_MISSING_NAMESPACE_NAME);
-    NameSpace * namespace_statement = make_namespace(name, body);
+    NameSpace * namespace_statement = make_namespace(name, body, extending_name);
     return namespace_statement;
 }
 
-NameSpace * make_namespace(char * name, Array ** body) {
+char * extract_extending_namespace_name(char * literal) {
+    char * name = trim(literal);
+    pop_first(name);
+    if (*name) {
+        name = cut_token(trim(name), OP_SPACE);
+        if (*name) return name;
+        else throw_statement_exception("namespace", PARSER_MISSING_EXTENDING_NAME);
+    } else throw_statement_exception("namespace", PARSER_MISSING_EXTENDING_NAME);
+}
+
+char * extract_namespace_name(char * literal) {
+    char * name = trim(cut_token(literal, OP_LESS));
+    if (*name) return name;
+    else throw_statement_exception("namespace", PARSER_MISSING_NAMESPACE_NAME);
+}
+
+NameSpace * make_namespace(char * name, Array ** body, char * extending_name) {
     NameSpace * namespace = malloc(sizeof(NameSpace));
     namespace->name = name;
     namespace->body = body;
+    namespace->extends = extending_name;
     return namespace;
 }
 
@@ -140,7 +163,7 @@ Function * get_function_statement(Array ** tokens) {
 
     if (token && token->type_id == LEXER_KEYWORD_PARAM_TK) {
         name = extract_name(token->value);
-        namespace_name = extract_namespace_name(name);
+        namespace_name = extract_namespace_name_fn(name);
         if (!is_statement_name_valid(namespace_name) && namespace_name != NULL) throw_statement_exception(namespace_name, PARSER_INVALID_STATEMENT_NAME);
         if (!is_statement_name_valid(name)) throw_statement_exception(name, PARSER_INVALID_STATEMENT_NAME);
         arg_list = extract_args(token->value);
@@ -188,7 +211,7 @@ char * extract_name(char * literal) {
     else throw_statement_exception("function", PARSER_MISSING_FUNC_NAME);
 }
 
-char * extract_namespace_name(char * literal) {
+char * extract_namespace_name_fn(char * literal) {
     char * namespace_and_function_name = alloc_string(literal);
     char * name = cut_token(namespace_and_function_name, OP_SPACE);
     if (*namespace_and_function_name) {
@@ -288,6 +311,7 @@ void return_destructor(Return * statement) {
 void namespace_destructor_stmt(NameSpace * statement) {
     array_destructor(statement->body);
     free(statement->name);
+    free(statement->extends);
     free(statement);
 }
 

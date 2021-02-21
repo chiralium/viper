@@ -29,6 +29,9 @@ typedef struct Node {
 /* Create new namespace object */
 NameSpaceObject * new_namespace_object(char * name, Node * value);
 
+/* Extract namespace from NameSpaceObject */
+Node * extract_namespace_from_object(NameSpaceObject * namespace);
+
 /* Create new namespace that extending the another namespace */
 Node * extending(Node * root, Node * extended_namespace);
 

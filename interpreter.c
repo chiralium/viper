@@ -196,7 +196,7 @@ void namespace_declaration(NameSpaceObject * namespace, Node * current_namespace
 /* The function will be execute the namespace body and store the namespace */
 Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) {
     call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point(namespace_stmt->name, INTERPRETER_CALL_STACK_NAMESPACE));
-    Array ** namespace_code = namespace_stmt->body;
+    Array ** namespace_code = namespace_stmt->body; Node * extending_namespace = NULL;
     /* parsing the namespace code */
     Array ** tokens = lexer(namespace_code);
     Array ** parsed_tokens = parser(tokens);
@@ -204,8 +204,15 @@ Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) 
     composer(expression_tokens);
     array_destructor(namespace_code); array_destructor(tokens);
 
+    if ( namespace_stmt->extends ) {
+        Node * root_node = find_node(current_namespace, faq6(namespace_stmt->extends));
+        if (!root_node) throw_arithmetical_exception(namespace_stmt->extends, ARITHMETICA_UNDEFINED_NAME);
+        Constant * extending_namespace_object = root_node->value;
+        extending_namespace = extract_namespace_from_object(extending_namespace_object->value);
+    }
+
     /* Create the local namespace that extended the global namespace */
-    Node * local_namespace = extending(current_namespace, NULL);
+    Node * local_namespace = extending(extending_namespace ? extending_namespace : current_namespace, NULL);
     /* If the local namespace is empty even after extending, create initial root node with namespace name */
     (local_namespace == NULL)
         ? local_namespace = insert_node(local_namespace, new_node(faq6("__name__"), new_constant(STRING, alloc_string(namespace_stmt->name))))
@@ -220,7 +227,9 @@ Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) 
     previous_point = ((CallStackPoint *)(last_call->element))->point_type;
     free(last_call->element); free(last_call);
 
-    free(namespace_stmt->name); free(namespace_stmt);
+    free(namespace_stmt->name);
+    free(namespace_stmt->extends);
+    free(namespace_stmt);
     return namespace;
 }
 
