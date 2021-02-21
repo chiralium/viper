@@ -95,7 +95,7 @@ int is_builtin(char * literal) {
         strcmp(literal, BT_STRING) == 0  ||
         strcmp(literal, BT_FLOAT) == 0   ||
         strcmp(literal, BT_INTEGER) == 0 ||
-        strcmp(literal, BT_TIMEOUT) == 0 ||
+        strcmp(literal, BT_ASYNC) == 0 ||
         strcmp(literal, BT_INPUT) == 0   ||
         strcmp(literal, BT_LEN) == 0) return LEXER_BUILTIN_TK;
     return 0;

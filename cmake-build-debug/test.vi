@@ -1,8 +1,209 @@
+namespace F : {
+    i = 0;
+    words_count = 0;
+    buffer = "";
+    words = {};
+}
+
+function string_info(String) : {
+    if (String[F->i] == "\n") : {
+        F->words_count = F->words_count + 1;
+        return 0;
+    } else : {
+        if (String[F->i] == " ") : {
+            F->words[] = F->buffer;
+            F->buffer = "";
+            F->words_count = F->words_count + 1;
+        } else : {
+            F->buffer = F->buffer + String[F->i];
+        }
+        F->i = F->i + 1;
+        string_info(String);
+    }
+}
+
+String = "hello + world \n";
+string_info(String);
+
+"the count of words = "; F->words_count;
+"the all words = "; F->words;
+
+WORDS = F->words; WORDS[] = "END";
+namespace arithmetica : {
+    function add(x, y) : {
+        return x + y;
+    }
+
+    function sub(x, y) : {
+        return x - y;
+    }
+}
+
+OP = {"+" => arithmetica->add, "-" => arithmetica->sub};
+
+F->i = 0;
+function calc() : {
+    if (WORDS[F->i] == "END") : {
+        return 0;
+    } else (WORDS[F->i] == "+")  : {
+        return OP[WORDS[F->i]](WORDS[F->i - 1], " " + WORDS[F->i + 1]);
+    } else : {
+        F->i = F->i + 1;
+        return calc();
+    }
+}
+calc();
+
+A = {};
+counter = 0;
+
+function fill_to(x) : {
+    global A; global counter;
+    if (counter == x) : {
+        return A;
+    } else : {
+        counter = counter + 1;
+        A[] = counter;
+        return fill_to(x);
+    }
+}
+
+fill_to(10);
+A;
+
+fibo = {};
+function fib(n) : {
+    if (n == 0) : {
+        return n;
+    } else : {
+        f = n + fib(n - 1);
+        fibo[] = f;
+        return f;
+    }
+}
+fib(10);
+fibo;
+
+tree = {"key" => 0, "value" => 0, "left" => NONE, "right" => NONE};
+
+function insert(root, node) : {
+    if (root <=> NONE) : {
+        return node;
+    } else : {
+        if (root["key"] > node["key"]) : {
+            if (root["left"] <=> NONE) : {
+                root["left"] = node;
+            } else : {
+                insert(root["left"], node);
+            }
+        } else (root["key"] < node["key"]) : {
+            if (root["right"] <=> NONE) : {
+                root["right"] = node;
+            } else : {
+                insert(root["right"], node);
+            }
+        } else (root["key"] == node["key"]) : {
+            root["value"] = node["value"];
+        }
+    }
+}
+
+function find(root, key) : {
+    if (root <=> NONE) : {
+        return NONE;
+    } else : {
+        if (root["key"] == key) : {
+            return root["value"];
+        } else (root["key"] > key) : {
+            return find(root["left"], key);
+        } else (root["key"] < key) : {
+            return find(root["right"], key);
+        }
+    }
+}
+
+new_node1 = {"key" => 17, "value" => 1, "left" => NONE, "right" => NONE};
+new_node2 = {"key" => 7, "value" => 2, "left" => NONE, "right" => NONE};
+new_node3 = {"key" => -4, "value" => 3, "left" => NONE, "right" => NONE};
+new_node4 = {"key" => 3, "value" => 4, "left" => NONE, "right" => NONE};
+new_node5 = {"key" => 1, "value" => 5, "left" => NONE, "right" => NONE};
+new_node6 = {"key" => -8, "value" => 6, "left" => NONE, "right" => NONE};
+new_node7 = {"key" => 9, "value" => 7, "left" => NONE, "right" => NONE};
+new_node8 = {"key" => 5, "value" => 8, "left" => NONE, "right" => NONE};
+new_node9 = {"key" => 11, "value" => 9, "left" => NONE, "right" => NONE};
+new_node10 = {"key" => 14, "value" => 10, "left" => NONE, "right" => NONE};
+
+insert(tree, new_node1);
+insert(tree, new_node2);
+insert(tree, new_node3);
+insert(tree, new_node4);
+insert(tree, new_node5);
+insert(tree, new_node6);
+insert(tree, new_node7);
+insert(tree, new_node8);
+insert(tree, new_node9);
+insert(tree, new_node10);
+tree;
+
+c = "";
+while ( !(c == "stop") ) : {
+    c = input(">>>: ");
+    if (c == "find") : {
+        key = integer(input("\n Enter the key of the node: "));
+        finded_node = find(tree, key);
+        output("\n------------------------\n");
+        output("\n key => "); output(key);
+        output("\n value => "); output(finded_node);
+        output("\n");
+    } else (c == "insert") : {
+        key = integer(input("\n Enter the key of the node: "));
+        value = integer(input("\n Enter the value of the node: "));
+        new = {"key" => key, "value" => value, "left" => NONE, "right" => NONE};
+        insert(tree, new);
+        output("\n------------------------\n");
+        output("Node was inserted");
+    } else : {
+        output("\nUndefined command\n");
+    }
+}
+
+find(tree, 14);
+
+M = {
+        {-1, 2, 3},
+        {3, -4, 5},
+        {-6, 7, -8},
+        {9, -10, -11}
+};
+
+m = 4; n = 3;
+
+i = 0;
+positive = 0; negative = 0; zero = 0;
+while (i < m) : {
+    j = 0;
+    while (j < n) : {
+        if (M[i][j] > 0) : {
+            positive = positive + 1;
+        } else (M[i][j] < 0) : {
+            negative = negative + 1;
+        } else : {
+            zero = zero + 1;
+        }
+        j = j + 1;
+    }
+    i = i + 1;
+}
+
+o = {"positive" => positive,
+     "negative" => negative,
+     "zero" => zero};
+
 
 namespace CallBackNameSpace : {
-    message = "Am I is callback!";
+    message = "Am I is callback?";
     counter = 0;
-    finish = 1;
+    finish = 4;
 }
 
 function callback(x) : {
@@ -16,13 +217,13 @@ function callback() : {
     if (CallBackNameSpace->counter == CallBackNameSpace->finish) : {
         return 3.14;
     } else : {
-        return setTimeout(callback, 1);
+        return async(callback, 2);
     }
 }
 
 output(
     callback(
-        setTimeout(
+        async(
             callback,
             1
         )

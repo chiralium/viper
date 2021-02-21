@@ -84,7 +84,7 @@ Constant * interpreter(Array ** code, Node * current_namespace) {
             free(code[code_counter]->element); free(code[code_counter]);
         } else if (code[code_counter]->type_id == STMT_NAMESPACE) {
             NameSpace * namespace_stmt = code[code_counter]->element;
-            result = namespace_exec(namespace_stmt);
+            result = namespace_exec(namespace_stmt, current_namespace);
             namespace_declaration(result->value, current_namespace);
             (is_simple_data(result->type_id)) ? free(result->value) : NULL;
             free(result); result = NULL;
@@ -194,7 +194,7 @@ void namespace_declaration(NameSpaceObject * namespace, Node * current_namespace
 }
 
 /* The function will be execute the namespace body and store the namespace */
-Constant * namespace_exec(NameSpace * namespace_stmt) {
+Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) {
     call_stack = append(call_stack, CALLSTACK_POINT, new_call_stack_point(namespace_stmt->name, INTERPRETER_CALL_STACK_NAMESPACE));
     Array ** namespace_code = namespace_stmt->body;
     /* parsing the namespace code */
@@ -204,7 +204,13 @@ Constant * namespace_exec(NameSpace * namespace_stmt) {
     composer(expression_tokens);
     array_destructor(namespace_code); array_destructor(tokens);
 
-    Node * local_namespace = new_node(faq6("__name__"), new_constant(STRING, alloc_string(namespace_stmt->name)));
+    /* Create the local namespace that extended the global namespace */
+    Node * local_namespace = extending(current_namespace, NULL);
+    /* If the local namespace is empty even after extending, create initial root node with namespace name */
+    (local_namespace == NULL)
+        ? local_namespace = insert_node(local_namespace, new_node(faq6("__name__"), new_constant(STRING, alloc_string(namespace_stmt->name))))
+        : insert_node(local_namespace, new_node(faq6("__name__"), new_constant(STRING, alloc_string(namespace_stmt->name))));
+
     interpreter(expression_tokens, local_namespace);
 
     NameSpaceObject * calculated_namespace_object = new_namespace_object(alloc_string(namespace_stmt->name), local_namespace);
