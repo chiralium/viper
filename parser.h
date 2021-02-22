@@ -28,9 +28,10 @@
 #define PARSER_COMMON_SYNTAX_EXCEPTION       "undefined block"
 #define PARSER_MISSING_NAMESPACE_BODY        "the body of `namespace` statement is not defined"
 #define PARSER_MISSING_NAMESPACE_NAME        "the namespace name is not defined"
+#define PARSER_MISSING_EXTENDING_NAME        "the namespace have extending token, but have not name"
 #define PARSER_INVALID_STATEMENT_NAME        "the name of the statement is not valid"
 #define PARSER_INVALID_RETURN_VALUE          "the return statement have no value"
-#define PARSER_INVALID_GLOBAL_VALUE          "the global statement havo no value"
+#define PARSER_INVALID_GLOBAL_VALUE          "the global statement have no value"
 
 /* Parameters */
 #define PARSER_MAX_FUNCTION_ARGS 50
@@ -44,6 +45,7 @@ typedef struct Global {
 typedef struct NameSpace {
     char * name;
     Array ** body;
+    char * extends;
 } NameSpace;
 
 /* The structure function will contained the information of function. Then this structure stored in NameSpace */
@@ -82,7 +84,7 @@ typedef struct Return {
 Array ** parser(Array ** tokens);
 
 /* The function will create the new structure of NameSpace */
-NameSpace * make_namespace(char * name, Array ** body);
+NameSpace * make_namespace(char * name, Array ** body, char * extending_name);
 
 /* The function will collect the elements of NameSpace-statement */
 NameSpace * get_namespace_statement(Array ** tokens);
@@ -104,6 +106,12 @@ Array ** extract_args(char * literal);
 
 /* The function will extract the name from literal */
 char * extract_name(char * literal);
+
+/* The function will extract the namespace name */
+char * extract_namespace_name_fn(char * literal);
+
+/* The function will extract the extending namespace name */
+char * extract_extending_namespace_name(char * literal);
 
 /* The function will extract the namespace name */
 char * extract_namespace_name(char * literal);

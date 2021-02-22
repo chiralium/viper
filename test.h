@@ -55,7 +55,15 @@ int test_lexer();
     /* Testing lexer */
     int _test_lexer();
 
+/* Test #3: viper */
+int test_viper();
+    /* Testing assign feature (integer) */
+    int test_assign_int();
+    /* Testing assign feature (string) */
+    int test_assign_string();
+
 /* Utils */
 int array_cmp(Array ** a, Array ** b);
+Constant * wrapper(char * input_stream);
 
 #endif

@@ -23,6 +23,10 @@ Node * new_node(int key, void * value) {
     node->is_global = 0;
 }
 
+Node * extract_namespace_from_object(NameSpaceObject * object) {
+    return object->namespace;
+}
+
 Node * extending(Node * root, Node * extended_namespace) {
     if (root != NULL) {
         Constant * node_value = root->value;
@@ -138,7 +142,7 @@ void * find_node(Node * root, int key) {
 }
 
 int faq6(const char * str) {
-    unsigned int hash = 0;
+    int hash = 0;
     while (*str) {
         hash += (char)(*str);
         hash += (hash << 10);
