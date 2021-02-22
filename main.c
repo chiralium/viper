@@ -7,7 +7,12 @@
 int main(int argc, char * argv[]) {
     if ( argc >= 2 ) {
         if ( !strcmp( argv[1], "-test" ) ) test();
-        else if ( argv[1] ) run(argv[1]);
+        else if ( argv[1] ) {
+            clock_t tic = clock();
+            run(argv[1]);
+            clock_t tac = clock();
+            printf("\n%f sec.\n", (double) (tac - tic) / CLOCKS_PER_SEC);
+        }
     } else {
         clock_t tic = clock();
         run(DEFAULT_FILENAME);

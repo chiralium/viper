@@ -141,8 +141,8 @@ void * find_node(Node * root, int key) {
      }
 }
 
-unsigned int faq6(const char * str) {
-    unsigned int hash = 0;
+int faq6(const char * str) {
+    int hash = 0;
     while (*str) {
         hash += (char)(*str);
         hash += (hash << 10);
