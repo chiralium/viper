@@ -213,10 +213,6 @@ Constant * namespace_exec(NameSpace * namespace_stmt, Node * current_namespace) 
 
     /* Create the local namespace that extended the global namespace */
     Node * local_namespace = extending(extending_namespace ? extending_namespace : current_namespace, NULL);
-    /* If the local namespace is empty even after extending, create initial root node with namespace name */
-    (local_namespace == NULL)
-        ? local_namespace = insert_node(local_namespace, new_node(faq6("__name__"), new_constant(STRING, alloc_string(namespace_stmt->name))))
-        : insert_node(local_namespace, new_node(faq6("__name__"), new_constant(STRING, alloc_string(namespace_stmt->name))));
 
     interpreter(expression_tokens, local_namespace);
 

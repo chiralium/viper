@@ -57,7 +57,7 @@ void set_parent(Node * node, Node * parent);
 int is_belonged(Node * root, Node * node);
 
 /* The hash-function FAQ6 */
-int faq6(const char * str);
+unsigned int faq6(const char * str);
 
 /* Display */
 void display_node(Node * node);
