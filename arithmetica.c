@@ -22,6 +22,34 @@ Constant * arithmetica_wrapper(Array ** expression_tokens, Node * current_namesp
     return result;
 }
 
+Constant * callback_precalc(Constant * callback, Array ** input_args) {
+    Constant * returned_value = NULL;
+    if ( callback->type_id != FUNCTION_CONTAINER ) throw_arithmetical_exception(expression_as_string, ARITHMETICA_CALLBACK_IS_NOT_FUNCTION);
+    FunctionContainer * function_container = callback->value;
+    int signature = get_function_signature( input_args );
+    Function * function_object = get_function_from_container( function_container, signature );
+    if ( function_object == NULL ) throw_function_exception( expression_as_string, FUNCTIONS_INVALID_ARG_LIST, function_container->name );
+    call_stack = append( call_stack, CALLSTACK_POINT, new_call_stack_point( function_object->name, INTERPRETER_CALL_STACK_FUNCTION ) );
+    Array ** function_code; function_code = copy_function_code( function_object->body );
+    Array ** calculate_args = new_array();
+    int counter = 0;
+    while ( input_args[counter] ) {
+        Constant * argument_value = arithmetica( input_args[counter]->element, namespace );
+        calculate_args = append( calculate_args, CONSTANT, argument_value );
+        free( input_args[counter] );
+        counter++;
+    }
+    free( input_args );
+    Node * local_namespace = performing_local_namespace( calculate_args, function_object );
+    char * previous_statement_expression = expression_as_string;
+    Node * global_namespace = local_namespace;
+    namespace = local_namespace;
+    returned_value = function_exec( function_code, local_namespace );
+    namespace = global_namespace;
+    expression_as_string = previous_statement_expression;
+    return returned_value;
+}
+
 Constant * function_precalc(FuncCall * function_call) {
     Array ** input_args = function_call->arg_list; Array ** function_pointer_expression = function_call->function_pointer;
     // calculate the function pointer expression
@@ -995,7 +1023,14 @@ void _asg_from_pointer_to_pointer(Element * y, Element * x) {
 void _asg_from_data_to_data(Element * y, Element * x) {
     Node * old_namespace_object = find_node(namespace, faq6(y->literal));
     if (old_namespace_object != NULL) {
-        if (old_namespace_object->is_global) old_namespace_object = old_namespace_object->extend;
+        if (old_namespace_object->is_global) {
+          /* that means, the node is link to global namespace, so also change value in global namespace */
+          Node * global_node = old_namespace_object->extend;
+          Constant * old_value1 = old_namespace_object->value; constant_destructor(global_node->value);
+          Constant * new_value1 = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
+          global_node->value = new_value1;
+        }
+
         /* variable is already set */
         Constant * old_value = old_namespace_object->value; constant_destructor(old_value);
         Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
@@ -1030,7 +1065,7 @@ void * _asg(void * x, void * y) {
     Element * x_el = x; Element * y_el = y;
     if (x_el->origin == NULL) get_from_namespace(x_el) == -1 ? throw_arithmetical_exception(expression_as_string, ARITHMETICA_UNDEFINED_NAME) : NULL;
     if (y_el->origin == NULL) get_from_namespace(y_el);
-    if (!is_name(y_el->literal) && y_el->origin == NULL) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
+    if ( (!is_name(y_el->literal) && y_el->origin == NULL) || is_builtin(y_el->literal) ) throw_arithmetical_exception(expression_as_string, ARITHMETICA_OBJECT_NOT_ASSIGNABLE);
 
     if (y_el->origin == NULL && is_simple_data(x_el->vtype_id))
         _asg_from_data_to_data(y_el, x_el);

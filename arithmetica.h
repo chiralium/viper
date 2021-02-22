@@ -74,7 +74,7 @@ typedef struct Element {
 } Element;
 
 /* Types parameters */
-#define ARITHMETICA_MAX_STRING_LEN 255
+#define ARITHMETICA_MAX_STRING_LEN 1024
 
 /* Operators parameters */
 #define ARITMHETICA_MAX_INDEX_PARAM 3
@@ -94,6 +94,7 @@ typedef struct Element {
 #define ARITHMETICA_OBJECT_NOT_CALLABLE       "the object is not callable"
 #define ARITHMETICA_OBJECT_NOT_EXTRACTABLE    "the object is not extractable"
 #define ARITHMETICA_INVALID_NAME              "invalid name of attribute"
+#define ARITHMETICA_CALLBACK_IS_NOT_FUNCTION  "callback must be function"
 
 void * _add(void * x, void * y);
 void * _sub(void * x, void * y);
@@ -150,6 +151,9 @@ Constant * index_precalc(Index * index);
 
 /* The function will calculated the function */
 Constant * function_precalc(FuncCall * function_call);
+
+/* The function will calculated callbacks functions */
+Constant * callback_precalc(Constant * callback, Array ** input_args);
 
 /* The function will crate the zero-token */
 void * make_zero_tk();

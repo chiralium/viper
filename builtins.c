@@ -3,9 +3,13 @@
 #include "ViArray.h"
 #include "memory.h"
 #include "composer.h"
+#include "arithmetica.h"
+
+#include <unistd.h>
 
 extern Array ** memory_table;
 extern char * expression_as_string;
+Node * namespace;
 
 BuiltIn * new_builtin(char * name, void * function_pointer, int args) {
     BuiltIn * builtin = malloc(sizeof(BuiltIn));
@@ -15,7 +19,20 @@ BuiltIn * new_builtin(char * name, void * function_pointer, int args) {
     return builtin;
 }
 
-BuiltIn builtin_output = {"output", output, 1};
+BuiltIn builtin_test = { "test", Btest, 2 };
+Constant * Btest( Constant * A, Constant * B ) {
+    return new_constant(NONE, NULL);
+}
+
+BuiltIn builtin_async = { BT_ASYNC, async, 2 };
+Constant * async( Constant * callback, Constant * delay ) {
+    int args_is_valid = callback->type_id == FUNCTION_CONTAINER && delay->type_id == INTEGER;
+    if ( !args_is_valid ) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_ASYNC_INVALID_TYPE);
+    sleep(*(int *)delay->value);
+    return callback_precalc(callback, new_array());
+}
+
+BuiltIn builtin_output = { BT_OUTPUT, output, 1 };
 Constant * output(Constant * value) {
     switch (value->type_id) {
         /* Vipers types */
@@ -56,7 +73,7 @@ Constant * output(Constant * value) {
     return new_constant(NONE, NULL);
 }
 
-BuiltIn builtin_input = {"input", input, 1};
+BuiltIn builtin_input = { BT_INPUT, input, 1 };
 Constant * input(Constant * value) {
     char input_buffer[ARITHMETICA_MAX_STRING_LEN];
     if (value->type_id != STRING) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_INPUT_INVALID_TYPE);
@@ -64,7 +81,7 @@ Constant * input(Constant * value) {
     return new_constant(STRING, alloc_string(input_buffer));
 }
 
-BuiltIn builtin_len = {"len", len, 1};
+BuiltIn builtin_len = { BT_LEN, len, 1 };
 Constant * len(Constant * value) {
     if (value->type_id != VIARRAY && value->type_id != STRING) throw_typecasting_exception(expression_as_string, BUILTIN_FUNCTION_LEN_INVALID_TYPE);
     int * length = malloc(sizeof(int));
@@ -73,7 +90,7 @@ Constant * len(Constant * value) {
     return new_constant(INTEGER, length);
 }
 
-BuiltIn builtin_to_string = {"string", to_string, 1};
+BuiltIn builtin_to_string = { BT_STRING, to_string, 1 };
 Constant * to_string(Constant * value) {
     char str[ARITHMETICA_MAX_STRING_LEN];
     if (value->type_id == INTEGER) snprintf(str, sizeof(str), "%d", *(int *)value->value);
@@ -85,7 +102,7 @@ Constant * to_string(Constant * value) {
     return new_constant(STRING, alloc_string(str));
 }
 
-BuiltIn builtin_to_int = {"integer", to_int, 1};
+BuiltIn builtin_to_int = { BT_INTEGER, to_int, 1 };
 Constant * to_int(Constant * value) {
     int * integer = malloc(sizeof(int));
     if (value->type_id == INTEGER) *integer = *(int *)value->value;
@@ -98,7 +115,7 @@ Constant * to_int(Constant * value) {
     return new_constant(INTEGER, integer);
 }
 
-BuiltIn builtin_to_float = {"float", to_float, 1};
+BuiltIn builtin_to_float = { BT_FLOAT, to_float, 1 };
 Constant * to_float(Constant * value) {
     float * integer = malloc(sizeof(float));
     if (value->type_id == INTEGER) *integer = *(int *)value->value;
@@ -116,7 +133,9 @@ BuiltIn * builtins[100] = {&builtin_input,
                            &builtin_len,
                            &builtin_to_string,
                            &builtin_to_int,
-                           &builtin_to_float};
+                           &builtin_to_float,
+                           &builtin_async,
+                           &builtin_test};
 
 Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
     int signature = builtin->args;
@@ -127,6 +146,23 @@ Constant * builtin_function_execute(BuiltIn * builtin, Array ** input_args) {
 
         is_simple_data(first_arg->type_id) ? constant_destructor(first_arg) : free(first_arg);
         free(input_args[0]); free(input_args);
+        return value;
+    } else if ( signature == 2 ) {
+        Constant * (*function_pointer)(Constant *, Constant *) = builtin->function_pointer;
+        Constant * arg_list[] = {
+                input_args[0]->element,
+                input_args[1]->element
+        };
+        Constant * value = function_pointer(arg_list[0], arg_list[1]);
+
+        while ( signature-- ) {
+            is_simple_data(arg_list[signature]->type_id)
+                ? constant_destructor(arg_list[signature])
+                : free(arg_list[signature]);
+
+            free(input_args[signature]);
+        }
+        free(input_args);
         return value;
     }
 }

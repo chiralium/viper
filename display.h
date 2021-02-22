@@ -27,6 +27,5 @@ void display_index(Index * index, char tabs[512]);
 void display_function(FuncCall * function, char tabs[512]);
 void display_constant(Constant * constant);
 void display_callstack(Array ** call_stack);
-void set_color_scheme(int scheme);
 
 #endif //VIPER_V4_DISPLAY_H

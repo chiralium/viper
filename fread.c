@@ -125,8 +125,7 @@ char pop_first(char * input_stream) {
     char symbol;
     if (*input_stream) {
         symbol = *input_stream;
-        input_stream++;
-        strcpy(input_stream - 1, input_stream);
+        memmove( input_stream, input_stream + 1, strlen( input_stream ) );
     } else symbol = '\0';
     return symbol;
 }
