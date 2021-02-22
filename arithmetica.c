@@ -1023,7 +1023,14 @@ void _asg_from_pointer_to_pointer(Element * y, Element * x) {
 void _asg_from_data_to_data(Element * y, Element * x) {
     Node * old_namespace_object = find_node(namespace, faq6(y->literal));
     if (old_namespace_object != NULL) {
-        if (old_namespace_object->is_global) old_namespace_object = old_namespace_object->extend;
+        if (old_namespace_object->is_global) {
+          /* that means, the node is link to global namespace, so also change value in global namespace */
+          Node * global_node = old_namespace_object->extend;
+          Constant * old_value1 = old_namespace_object->value; constant_destructor(global_node->value);
+          Constant * new_value1 = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));
+          global_node->value = new_value1;
+        }
+
         /* variable is already set */
         Constant * old_value = old_namespace_object->value; constant_destructor(old_value);
         Constant * new_value = new_constant(x->vtype_id, copy_data(x->value, x->vtype_id));

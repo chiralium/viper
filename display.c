@@ -290,7 +290,7 @@ void display_function(FuncCall * function, char tabs[512]) {
 }
 
 void display_callstack(Array ** points) {
-    printf("CallStack: ");
+    printf("\nCallStack: ");
     while (*points) {
         CallStackPoint * point = (*points)->element;
         printf("-> %s ", point->label);

@@ -390,7 +390,7 @@ Constant * if_statement_exec(If * statement, Node * current_namespace) {
 }
 
 Node * meta_data() {
-    char * ver = calloc(sizeof(char), 10); strcpy(ver, "VIPER.v4");
+    char * ver = calloc(sizeof(char), 10); strcpy(ver, "VIPER`.v4");
     Constant * version = new_constant(STRING, ver);
 
     float * pi = malloc(sizeof(float)); *pi = 3.14;
