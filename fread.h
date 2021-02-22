@@ -20,7 +20,7 @@
 #define FPARSER_ESCAPE                   '\\'
 
 /* Special constants */
-#define FPARSER_MAX_STRUCT_LEN           8192
+#define FPARSER_MAX_STRUCT_LEN           8192 * 2
 #define FPARSER_EOL                      10
 #define FPARSER_SPACE                    32
 

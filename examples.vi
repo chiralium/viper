@@ -257,4 +257,91 @@ namespace APP : {
 
     Program->app();
 
+    namespace Actions : {
+        function add_f(x, y) : {
+            return x + y;
+        }
+
+        function sub_f(x, y) : {
+            return x - y;
+        }
+
+        function mul_f(x, y) : {
+            return x * y;
+        }
+
+        function div_f(x, y) : {
+            return x / y;
+        }
+
+        add = "+";
+        sub = "-";
+        mul = "*";
+        div = "/";
+
+        mapper = {
+                add => add_f,
+                sub => sub_f,
+                mul => mul_f,
+                div => div_f
+        };
+    }
+
+    namespace Calculator < Actions : {
+        function parse(expression) : {
+            tokens = {};
+            l = len(expression); counter = 0;
+            number = ""; action = "";
+            while (counter < l) : {
+                if ( (expression[counter] == add) +
+                     (expression[counter] == sub) +
+                     (expression[counter] == mul) +
+                     (expression[counter] == div) ) : {
+
+                    tokens[] = number;
+                    tokens[] = expression[counter];
+                    number = "";
+                } else : {
+                    number = number + expression[counter];
+                }
+                counter = counter + 1;
+            }
+            tokens[] = number;
+            return tokens;
+        }
+
+        function calc(tokens) : {
+            l = len(tokens); counter = 0;
+            acc = NONE;
+            while (counter < l) : {
+                token = tokens[counter];
+                if ( (token == add) + (token == sub) + (token == div) + (token == mul) ) : {
+                    if (acc <=> NONE) : {
+                        x = integer(tokens[counter - 1]); y = integer(tokens[counter + 1]);
+                        acc = mapper[token](x, y);
+                    } else : {
+                        y = integer(tokens[counter + 1]);
+                        acc = mapper[token](acc, y);
+                    }
+                }
+                counter = counter + 1;
+            }
+            return acc;
+        }
+
+        function app() : {
+            while (1) : {
+                expression = input("\n:>>>");
+                if ( expression == "exit" ) : {
+                    break;
+                }
+                output("\n");
+                output(tokens = parse(expression));
+                output("\n");
+                output(calc(tokens));
+            }
+        }
+    }
+
+    Calculator->app();
 }
